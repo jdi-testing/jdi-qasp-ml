@@ -1,0 +1,1 @@
+conda remove --name py37-torch --all -y

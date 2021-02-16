@@ -1,0 +1,28 @@
+name: py37-torch
+channels:
+  - pytorch
+  # - conda-forge
+  - defaults
+dependencies:
+  - python=3.7.9
+  - pip
+  - conda
+  - pyyaml
+  - pytorch=1.7.1
+  - cudatoolkit=10.1
+  - matplotlib
+  - imgaug
+  - tqdm
+  - torchvision
+  - pip:
+    - jupyter
+    - h5py==3.1.0
+    - numpy==1.19.2
+    - pandas
+    - tensorboard
+    - terminaltables
+    - pillow
+    - imagecorruptions
+    - selenium
+    - sympy
+prefix: D:\Anaconda3\envs\py37-torch

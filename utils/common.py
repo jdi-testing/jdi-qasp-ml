@@ -71,7 +71,7 @@ def draw_boxes(box_a, box_b):
 
 
 # Maximize window
-def maximize_window(driver=driver):
+def maximize_window(driver=None):
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll' + X )
     driver.set_window_size(S('Width'), S('Height'))
     driver.find_element_by_tag_name('body')
@@ -79,7 +79,7 @@ def maximize_window(driver=driver):
 
 
 
-def screenshot(driver=driver, save_to_file:str=None, display:bool = False):
+def screenshot(driver=None, save_to_file:str=None, display:bool = False):
     """
         take a screenshot, returns numpy array
         and optionaly shows the screenshot 
@@ -105,7 +105,7 @@ def screenshot(driver=driver, save_to_file:str=None, display:bool = False):
 
 def get_pict(web_element):
     """
-	returns web elements png as a nympy.ndarray 
+	    returns web elements png as a nympy.ndarray 
     """
     if web_element.is_displayed():
         print('displayed')
@@ -131,7 +131,7 @@ def get_pict(web_element):
 
 MAX_PICT_SIZE_TRESHOLD = 228
 
-def is_hover(e, driver):
+def is_hover(e, driver, wait_time=.1):
 
     """
         Checks the element changes when mouse is hover
@@ -144,17 +144,23 @@ def is_hover(e, driver):
 
     if not e.is_displayed():
         return (False, None, None)
+
+    if (e.rect['x'] < 0) or (e.rect['y'] < 0) or (e.rect['width'] <= 0) or (e.rect['height'] <=0 ):
+        return (False, None, None)
     
     return_picts = True
     
     if max(e.size['width'], e.size['height']) > MAX_PICT_SIZE_TRESHOLD:
         return_picts = False
     
-    ActionChains(driver)\
-        .move_to_element(driver.find_element_by_xpath('//body'))\
-        .perform()
+    try:
+        ActionChains(driver)\
+            .move_to_element(driver.find_element_by_xpath('//html'))\
+            .perform()
+    except Exception as ex:
+        print('Warning:', ex, 'element:', e.tag_name, e)
     
-    sleep(.2)
+    sleep(wait_time)
     
     try:
     
@@ -164,7 +170,7 @@ def is_hover(e, driver):
         hover = ActionChains(driver).move_to_element(e)
         hover.perform()
 
-        sleep(.2)
+        sleep(wait_time)
         _after = e.screenshot_as_base64
         # print(_after)
         _hover = _after!=_before
@@ -181,7 +187,7 @@ def is_hover(e, driver):
 
 
 
-def get_all_elements(driver=driver):
+def get_all_elements(driver=None):
 
     """
         get all web elemets for a current page
@@ -205,8 +211,9 @@ def get_all_elements(driver=driver):
         'selected',
         'text',
         'is_hover',
-        'b64_before_hover',
-        'b64_after_hover'
+        'base64png_before_hover',
+        'base64png_after_hover',
+        'tag_class'
     ]
 
     elements_a = []
@@ -214,6 +221,7 @@ def get_all_elements(driver=driver):
     for e in tqdm(elements_all):
         
         txt = e.get_attribute('text')
+        tag_class = e.get_attribute("class")
         hover, hover_before, hover_after = is_hover(e=e, driver=driver)
         
         try:
@@ -222,8 +230,6 @@ def get_all_elements(driver=driver):
                 raise('More then one parent for element:', e)
             parent_id = parents[0].id
         except:
-            display(HTML(f'No parent for tag:<b>{e.tag_name}</b>'))
-            display(e.id)
             parent_id = None
         
         elements_a.append([
@@ -240,10 +246,50 @@ def get_all_elements(driver=driver):
             txt,
             hover,
             hover_before,
-            hover_after
+            hover_after,
+            tag_class
         ])
 
     e_df = pd.DataFrame(elements_a)
     e_df.columns = columns
     return e_df
+
+
+def setup_web_driver():
+    
+    SITE_ROOT = 'https://jdi-testing.github.io/jdi-light/'
+    DRIVER_FILE = 'geckodriver.exe'
+    LOGIN = 'Roman'
+    PASSWORD = 'Jdi1234'
+    SAVE_SCREEN = True
+    WAIT_TIME_SECONDS = 7
+    HEADLESS = True #False
+
+
+    options = selenium.webdriver.FirefoxOptions()
+    options.headless = HEADLESS 
+    driver = Firefox(executable_path = os.path.join(os.getcwd(),'geckodriver.exe'), options=options)
+    driver.get(SITE_ROOT)
+    
+    driver.find_element_by_id("user-icon").click()
+    driver.find_element_by_id("name").send_keys(LOGIN)
+    driver.find_element_by_id("password").send_keys(PASSWORD)
+    driver.find_element_by_id("login-button").click()
+    sleep(WAIT_TIME_SECONDS)
+        
+    return driver
+
+
+if __name__ == "__main__":
+
+    with setup_web_driver() as driver:
+              
+        driver.find_element_by_link_text("Elements packs").click()
+        driver.find_element_by_link_text("Angular").click()
+        maximize_window(driver=driver)
+        sleep(3.0)
+        
+        plt.imshow(screenshot(driver, save_to_file='dataset/images/angular.png'))
+        elements_df = get_all_elements(driver=driver)
+        elements_df.to_parquet('dataset/df/angular.parquet')
 

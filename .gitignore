@@ -1,3 +1,9 @@
 tmp/*
 *.log
+.vscode/*
+.ipynb_checkpoints/*
+*.pyc
+*.log
+
+
 

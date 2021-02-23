@@ -51,7 +51,7 @@ def iou_xywh(box_a, box_b):
     
     si = (min(x1+w1,x2+w2)- max(x1,x2)) * (min(y1+h1,y2+h2)- max(y1,y2))
     
-    return si/(s1+s2-si),6
+    return si/(s1+s2-si)
 
 
 
@@ -91,7 +91,7 @@ def screenshot(driver=None, save_to_file:str=None, display:bool = False):
         fn = 'tmp/'+str(datetime.now())+".png"
         fn = fn.replace(':','_').replace(' ',"T")
     else:
-        fn = save_to_file.strip('.png')+'.png'
+        fn = re.sub('\.png$', '', save_to_file) + '.png'
     
     if not driver.save_screenshot(fn):
         print('cannot save screenshot')
@@ -167,8 +167,11 @@ def is_hover(e, driver, wait_time=.1):
         _before = e.screenshot_as_base64
 
         # print(_before)
-        hover = ActionChains(driver).move_to_element(e)
-        hover.perform()
+        try:
+            ActionChains(driver).move_to_element(e).perform()
+        except:
+            driver.executeScript("arguments[0].scrollIntoView(true);", e)
+            ActionChains(driver).move_to_element(e).perform()
 
         sleep(wait_time)
         _after = e.screenshot_as_base64
@@ -213,7 +216,11 @@ def get_all_elements(driver=None):
         'is_hover',
         'base64png_before_hover',
         'base64png_after_hover',
-        'tag_class'
+        'attr_class',
+        'attr_onclick',
+        'attr_type',
+        'attr_role',
+        'attr_id'
     ]
 
     elements_a = []
@@ -222,6 +229,10 @@ def get_all_elements(driver=None):
         
         txt = e.get_attribute('text')
         tag_class = e.get_attribute("class")
+        tag_onclick = e.get_attribute("onclick")
+        tag_type = e.get_attribute("type")
+        tag_role = e.get_attribute("role")
+        tag_id = e.get_attribute("id")
         hover, hover_before, hover_after = is_hover(e=e, driver=driver)
         
         try:
@@ -247,7 +258,11 @@ def get_all_elements(driver=None):
             hover,
             hover_before,
             hover_after,
-            tag_class
+            tag_class,
+            tag_onclick,
+            tag_type,
+            tag_role,
+            tag_id
         ])
 
     e_df = pd.DataFrame(elements_a)
@@ -256,20 +271,22 @@ def get_all_elements(driver=None):
 
 
 def setup_web_driver():
-    
+
     SITE_ROOT = 'https://jdi-testing.github.io/jdi-light/'
-    DRIVER_FILE = 'geckodriver.exe'
     LOGIN = 'Roman'
     PASSWORD = 'Jdi1234'
-    SAVE_SCREEN = True
     WAIT_TIME_SECONDS = 7
     HEADLESS = True #False
 
+    options = Options()
+    if HEADLESS:
+        options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
 
-    options = selenium.webdriver.FirefoxOptions()
-    options.headless = HEADLESS 
-    driver = Firefox(executable_path = os.path.join(os.getcwd(),'geckodriver.exe'), options=options)
-    driver.get(SITE_ROOT)
+    CHROME_DRIVER_PATH = os.path.join(os.getcwd(), 'chromedriver.exe')
+    if os.path.exists(CHROME_DRIVER_PATH):
+        driver = selenium.webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=options)
+        driver.get(SITE_ROOT)
     
     driver.find_element_by_id("user-icon").click()
     driver.find_element_by_id("name").send_keys(LOGIN)

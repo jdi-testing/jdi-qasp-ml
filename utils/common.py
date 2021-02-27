@@ -146,7 +146,10 @@ def is_hover(e, driver, wait_time=.1):
                 - base64 png image after        
     """
 
-    return (False,None,None) # stub
+    ############################################################
+    ### Stub
+    ############################################################
+    # return (False,None,None) # stub
 
     if not e.is_displayed():
         return (False, None, None)

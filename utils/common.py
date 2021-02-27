@@ -20,6 +20,10 @@ from selenium.webdriver import Firefox, ActionChains
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
+from .config import logger
+
+TQDM_BAR_FORMAT = '{desc:25}{percentage:3.0f}%|{bar:50}{r_bar}'
+
 @numba.jit
 def iou_xywh(box_a, box_b):
 
@@ -75,7 +79,7 @@ def maximize_window(driver=None):
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll' + X )
     driver.set_window_size(S('Width'), S('Height'))
     driver.find_element_by_tag_name('body')
-    print('Window maximized')
+    logger.info('Window maximized')
 
 
 
@@ -141,6 +145,8 @@ def is_hover(e, driver, wait_time=.1):
                 - base64 png image before hover
                 - base64 png image after        
     """
+
+    return (False,None,None) # stub
 
     if not e.is_displayed():
         return (False, None, None)
@@ -226,13 +232,16 @@ def get_all_elements(driver=None):
     elements_a = []
 
     for e in tqdm(elements_all):
-        
-        txt = e.get_attribute('text')
-        tag_class = e.get_attribute("class")
-        tag_onclick = e.get_attribute("onclick")
-        tag_type = e.get_attribute("type")
-        tag_role = e.get_attribute("role")
-        tag_id = e.get_attribute("id")
+        try:
+            txt = e.get_attribute('text')
+            tag_class = e.get_attribute("class")
+            tag_onclick = e.get_attribute("onclick")
+            tag_type = e.get_attribute("type")
+            tag_role = e.get_attribute("role")
+            tag_id = e.get_attribute("id")
+        except Exception as ex:
+            logger.error(f"{e.id}, {e.tag_name}, {e.rect}")
+
         hover, hover_before, hover_after = is_hover(e=e, driver=driver)
         
         try:

@@ -133,9 +133,9 @@ def get_pict(web_element):
 
 
 
-MAX_PICT_SIZE_TRESHOLD = 228
+MAX_PICT_SIZE_TRESHOLD = 128 # 256
 
-def is_hover(e, driver, wait_time=.1):
+def is_hover_old(e, driver, wait_time=.1):
 
     """
         Checks the element changes when mouse is hover
@@ -151,14 +151,16 @@ def is_hover(e, driver, wait_time=.1):
     ############################################################
     # return (False,None,None) # stub
 
-    if not e.is_displayed():
+    if (not e.is_displayed()) or (e.tag_name == 'iframe'):
+        return (False, None, None)
+
+    if min(e.size['width'], e.size['height']) > MAX_PICT_SIZE_TRESHOLD:
         return (False, None, None)
 
     if (e.rect['x'] < 0) or (e.rect['y'] < 0) or (e.rect['width'] <= 0) or (e.rect['height'] <=0 ):
         return (False, None, None)
-    
+
     return_picts = True
-    
     if max(e.size['width'], e.size['height']) > MAX_PICT_SIZE_TRESHOLD:
         return_picts = False
     
@@ -172,9 +174,7 @@ def is_hover(e, driver, wait_time=.1):
     sleep(wait_time)
     
     try:
-    
         _before = e.screenshot_as_base64
-
         # print(_before)
         try:
             ActionChains(driver).move_to_element(e).perform()
@@ -194,9 +194,76 @@ def is_hover(e, driver, wait_time=.1):
         return (_hover, _before, _after)        
     
     except:
-        
         return (False, None, None)
 
+def is_hover(e, driver, wait_time=.1):
+
+    """
+        Checks the element changes when mouse is hover
+        returns tuple (bool, before, after):
+                - bool: if it changes, 
+                and if element's size less then (MAX_PICT_SIZE_TRESHOLD x MAX_PICT_SIZE_TRESHOLD) then
+                - base64 png image before hover
+                - base64 png image after        
+    """
+
+    ############################################################
+    ### Stub
+    ############################################################
+    # return (False,None,None) # stub
+
+    try:
+
+        if not e.is_displayed():
+            return (False, None, None)
+
+        if min(e.size['width'], e.size['height']) > MAX_PICT_SIZE_TRESHOLD:
+            return (False, None, None)
+
+        if (e.rect['x'] < 1.0) or (e.rect['y'] < 1.0) or (e.rect['width'] <= 1.0) or (e.rect['height'] <= 1.0):
+            return (False, None, None)
+
+        return_picts = True
+        if max(e.size['width'], e.size['height']) > MAX_PICT_SIZE_TRESHOLD:
+            return_picts = False
+        
+        try:
+            ActionChains(driver)\
+                .move_to_element(driver.find_element_by_xpath('//html'))\
+                .perform()
+        except Exception as ex:
+            logger.warning(f'{ex}, element: {e.tag_name}, {e.id}, {e.rect}')
+        
+        sleep(wait_time)
+        
+        try:
+            _before = e.screenshot_as_base64
+            # print(_before)
+            try:
+                ActionChains(driver).move_to_element(e).perform()
+            except:
+                logger.warning(f'{ex}, element: {e.tag_name}, {e.id}, {e.rect}')
+                # driver.executeScript("arguments[0].scrollIntoView(true);", e)
+                # ActionChains(driver).move_to_element(e).perform()
+                # suppress exception
+                pass
+
+            #sleep(wait_time)
+            _after = e.screenshot_as_base64
+            # print(_after)
+            _hover = _after!=_before
+            
+            if return_picts == False: # Drop big picts
+                _before = None
+                _after = None
+
+            return (_hover, _before, _after)        
+        
+        except:
+            return (False, None, None)
+    except Exception as ex:
+        logger.warning(f'Suppressed :{ex}')
+        pass
 
 
 def get_all_elements(driver=None):
@@ -208,7 +275,6 @@ def get_all_elements(driver=None):
     
     elements_all = driver.find_elements_by_xpath('//*')
     print(f'Number of discovered elements: {len(elements_all)}')
-    # maximize_window(driver=driver)
     
     columns = [
         'parent_id',
@@ -234,7 +300,7 @@ def get_all_elements(driver=None):
 
     elements_a = []
 
-    for e in tqdm(elements_all):
+    for e in tqdm(elements_all, desc='Collecting web elements features'):
         try:
             txt = e.get_attribute('text')
             tag_class = e.get_attribute("class")
@@ -255,6 +321,8 @@ def get_all_elements(driver=None):
         except:
             parent_id = None
         
+        #logger.info(f'{e.tag_name}, {e.rect}, {tag_class}')
+
         elements_a.append([
             parent_id,
             e.id,
@@ -280,6 +348,103 @@ def get_all_elements(driver=None):
     e_df = pd.DataFrame(elements_a)
     e_df.columns = columns
     return e_df
+
+
+def build_elements_dataset(driver=None):
+
+    """
+        get all web elemets for a current page
+        returns pandas dataframe
+    """
+
+    elements_list = driver.find_elements_by_xpath('//*')
+    print(f'Number of discovered elements: {len(elements_list)}')
+    
+    logger.info('collect features: text')
+    text = [ e.text for e in elements_list]
+
+    logger.info('collect features: parent_id')
+    parent_id = [e.find_elements_by_xpath('./..')[0].id 
+                    if e.tag_name != 'html' else None for e in elements_list]
+
+    logger.info('collect features: element_id')                
+    elements_id = [ e.id for e in elements_list]
+
+    logger.info('collect features: rect')
+    rect = [ e.rect for e in elements_list]
+
+    logger.info('collect features: tag_name')
+    tag_name = [ e.tag_name for e in elements_list]
+
+    logger.info('collect features: displayed')
+    displayed = [ e.is_displayed() for e in elements_list]
+
+    logger.info('collect features: enabled')
+    enabled = [ e.is_enabled() for e in elements_list]
+
+    logger.info('collect features: selected')
+    selected =  [ e.is_selected() for e in elements_list]
+
+    logger.info('collect features: attr_class')
+    attr_class = [ e.get_attribute('class') for e in elements_list]
+
+    logger.info('collect features: attr_id')
+    attr_id = [ e.get_attribute('id') for e in elements_list]
+
+    logger.info('collect features: attr_role')
+    attr_role = [ e.get_attribute('role') for e in elements_list]
+
+    logger.info('collect features: attr_type')
+    attr_type = [ e.get_attribute('type') for e in elements_list]
+
+    logger.info('collect features: attr_onmouseover')
+    attr_onmouseover = [ e.get_attribute('onmouseover') for e in elements_list]
+
+    logger.info('collect features: attr_onclick')
+    attr_onclick = [ e.get_attribute('onclick') for e in elements_list]
+
+    logger.info('collect features: attr_ondblclick')
+    attr_ondblclick = [ e.get_attribute('ondblclick') for e in elements_list]
+
+    hover_list = []
+    hover_before_list = []
+    hover_after_list = []
+
+    # hover have to be called as the latest
+    for e in tqdm(elements_list, desc='Mouse hover checking'):
+        try:
+            hover, hover_before, hover_after = is_hover(e=e, driver=driver)
+            hover_list.append(hover)
+            hover_before_list.append(hover_before)
+            hover_after_list.append(hover_after) 
+        except Exception as ex:
+            logger.error(f"Suppressed error: {ex}, {e.tag_name} , {e.rect}")
+            hover_list.append(False)
+            hover_before_list.append(None)
+            hover_after_list.append(None)
+
+    return  pd.DataFrame({
+        'parent_id': parent_id,
+        'element_id': elements_id,
+        'tag_name': tag_name,
+        'x': [ e['x'] for e in rect],
+        'y': [ e['y'] for e in rect],
+        'width': [ e['width'] for e in rect],
+        'height': [ e['height'] for e in rect],
+        'displayed': displayed,
+        'enabled': enabled,
+        'selected': selected,
+        'attr_class': attr_class,
+        'attr_id': attr_id,
+        'attr_role': attr_role,
+        'attr_type': attr_type,
+        'attr_onmouseover': attr_onmouseover,
+        'attr_onclick': attr_onclick,
+        'attr_ondblclick': attr_ondblclick,
+        'hover': hover_list,
+        'hover_before': hover_before_list,
+        'hover_after': hover_after_list
+    })
 
 
 def setup_web_driver():

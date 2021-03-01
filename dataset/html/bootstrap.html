@@ -1,28 +1,28 @@
-<html lang="en"><head style="">
-    <meta charset="utf-8" style="">
-    <title style="">Bootstrap</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" style="">
-    <meta name="viewport" content="width=device-width, initial-scale=1" style="">
-    <link rel="stylesheet" href="bootstrap/css/bootstrap-4.3.min.css" style="">
-    <link rel="stylesheet" href="css/uui-all.css" style="">
-    <link rel="stylesheet" href="css/custom-styles.css" style="">
-    <link rel="stylesheet" href="fonts/font-awesome/css/font-awesome.min.css" style="">
-    <link rel="stylesheet" href="css/lib/components/datepicker3.css" style="">
-    <link rel="stylesheet" href="css/lib/components/jquery.mCustomScrollbar.css" style="">
-    <link rel="stylesheet" href="css/lib/components/scrollspy.css" style="">
-    <link rel="stylesheet" href="jquery-ui/css/smoothness/jquery-ui-1.10.4.custom.min.css" style="">
-    <link rel="stylesheet" href="css/fix-bootstrap4.3.css" style="">
-    <script src="js/lib/jquery-1.11.1.min.js" style=""></script>
-    <script src="js/lib/components/jquery.mCustomScrollbar.concat.min.js" style=""></script>
-    <script src="js/lib/jquery.cookie.js" style=""></script>
-    <script src="js/lib/popper.min.js" style=""></script>
-    <script src="jquery-ui/jquery-ui-1.10.4.custom.min.js" style=""></script>
-    <script src="bootstrap/js/bootstrap-4.3.min.js" style=""></script>
-    <script src="js/lib/bs-custom-file-input.min.js" style=""></script>
-    <script src="js/uui-core.min.js" type="text/javascript" style=""></script>
-    <script src="js/utils.js" type="text/javascript" style=""></script>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>Bootstrap</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-4.3.min.css">
+    <link rel="stylesheet" href="css/uui-all.css">
+    <link rel="stylesheet" href="css/custom-styles.css">
+    <link rel="stylesheet" href="fonts/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/lib/components/datepicker3.css">
+    <link rel="stylesheet" href="css/lib/components/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="css/lib/components/scrollspy.css">
+    <link rel="stylesheet" href="jquery-ui/css/smoothness/jquery-ui-1.10.4.custom.min.css">
+    <link rel="stylesheet" href="css/fix-bootstrap4.3.css">
+    <script src="js/lib/jquery-1.11.1.min.js"></script>
+    <script src="js/lib/components/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="js/lib/jquery.cookie.js"></script>
+    <script src="js/lib/popper.min.js"></script>
+    <script src="jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="bootstrap/js/bootstrap-4.3.min.js"></script>
+    <script src="js/lib/bs-custom-file-input.min.js"></script>
+    <script src="js/uui-core.min.js" type="text/javascript"></script>
+    <script src="js/utils.js" type="text/javascript"></script>
 
-    <script style="">
+    <script>
         $(document).ready(function () {
            bsCustomFileInput.init()
         })
@@ -31,13 +31,13 @@
 </head>
 <body>
 <header>
-     <div class="uui-header dark-gray">        <nav role="navigation">            <div class="sidebar-toggle-box blue" style="display: none;">                <div data-toggle="tooltip" data-placement="right" title="" class="sidebar-tooltip" data-original-title="Toggle Navigation">                    <span class="fa fa-reorder"></span>                </div>            </div>            <div class="epam-logo">				<a href="/jdi-light/index.html">					<span>Information<br>Framework</span>					<img src="images/Logo_Epam_Color.svg" alt="ALT" id="epam-logo" width="86">				</a>            </div>			<ul class="uui-navigation nav navbar-nav m-l8">                <li>                    <a href="index.html">Home</a>                </li>                <li>                    <a href="contacts.html">Contact form</a>                </li>                <li class="dropdown">                    <a class="dropdown-toggle" data-toggle="dropdown"> Service                        <span class="caret"></span>                    </a>                    <ul class="dropdown-menu" role="menu" style="">                        <li><a href="support.html">Support</a></li>                        <li><a href="dates.html">Dates</a></li>                        <li><a href="search.html">Search</a></li>                        <li><a href="complex-table.html">Complex Table </a></li>                        <li><a href="simple-table.html">Simple Table </a></li>                        <li><a href="user-table.html">User Table </a></li>                        <li><a href="table-pages.html">Table with pages</a></li>                        <li><a href="different-elements.html">Different elements</a></li>						<li><a href="performance.html">Performance</a></li>                    </ul>                </li>                <li>                    <a href="metals-colors.html">Metals &amp; Colors</a>                </li>            </ul>            <ul class="uui-navigation navbar-nav navbar-right">                <li class="dropdown uui-profile-menu">                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">                        <div class="profile-photo">                            <!--i class="fa fa-user"></i-->                            <img src="images/icons/user-icon.jpg" alt="" id="user-icon">                            <span ui="label" id="user-name">Roman Iovlev</span>                        </div>                        <span class="caret"></span>                    </a>                    <div class="dropdown-menu dropdown-menu-login" role="menu" style="">                        <form class="form-horizontal login hidden" id="login-form" style="">                            <div class="form-horizontal-pad">                                <div class="form-group form-group10">                                    <label for="name" class="col-sm-3">Login</label>                                    <div class="col-sm-9">                                        <input id="name" type="text" class="uui-form-element">                                    </div>                                </div>                                <div class="form-group form-group10">                                    <label for="password" class="col-sm-3">Password</label>                                    <div class="col-sm-9">                                        <input id="password" type="password" class="uui-form-element">                                    </div>                                </div>                                <span class="login-txt hidden" style="">* Login Faild</span>                            </div>                            <button type="submit" class="uui-button dark-blue btn-login" id="login-button"><i class="fa fa-sign-in"></i><span>Enter</span></button>                        </form>                        <div class="logout">                            <button type="submit" class="uui-button dark-blue btn-login"><i class="fa fa-sign-out"></i><span>Logout</span></button>                        </div>                    </div>                </li>            </ul>            <div class="search">                <span class="icon-search"></span>                <div class="search-active hidden" style="">                    <span class="search-title">Search this Site</span>                    <span class="icon-search active" onclick="window.open('search.html','_self')"></span>                    <div class="search-field">                        <input type="text">                    </div>                </div>            </div>        </nav>    </div>
+     <div class="uui-header dark-gray">        <nav role="navigation">            <div class="sidebar-toggle-box blue" style="display: none;">                <div data-toggle="tooltip" data-placement="right" title="" class="sidebar-tooltip" data-original-title="Toggle Navigation">                    <span class="fa fa-reorder"></span>                </div>            </div>            <div class="epam-logo">				<a href="/jdi-light/index.html">					<span>Information<br>Framework</span>					<img src="images/Logo_Epam_Color.svg" alt="ALT" id="epam-logo" width="86">				</a>            </div>			<ul class="uui-navigation nav navbar-nav m-l8">                <li>                    <a href="index.html">Home</a>                </li>                <li>                    <a href="contacts.html">Contact form</a>                </li>                <li class="dropdown">                    <a class="dropdown-toggle" data-toggle="dropdown"> Service                        <span class="caret"></span>                    </a>                    <ul class="dropdown-menu" role="menu">                        <li><a href="support.html">Support</a></li>                        <li><a href="dates.html">Dates</a></li>                        <li><a href="search.html">Search</a></li>                        <li><a href="complex-table.html">Complex Table </a></li>                        <li><a href="simple-table.html">Simple Table </a></li>                        <li><a href="user-table.html">User Table </a></li>                        <li><a href="table-pages.html">Table with pages</a></li>                        <li><a href="different-elements.html">Different elements</a></li>						<li><a href="performance.html">Performance</a></li>                    </ul>                </li>                <li>                    <a href="metals-colors.html">Metals &amp; Colors</a>                </li>            </ul>            <ul class="uui-navigation navbar-nav navbar-right">                <li class="dropdown uui-profile-menu">                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">                        <div class="profile-photo">                            <!--i class="fa fa-user"></i-->                            <img src="images/icons/user-icon.jpg" alt="" id="user-icon">                            <span ui="label" id="user-name">Roman Iovlev</span>                        </div>                        <span class="caret"></span>                    </a>                    <div class="dropdown-menu dropdown-menu-login" role="menu">                        <form class="form-horizontal login hidden" id="login-form">                            <div class="form-horizontal-pad">                                <div class="form-group form-group10">                                    <label for="name" class="col-sm-3">Login</label>                                    <div class="col-sm-9">                                        <input id="name" type="text" class="uui-form-element">                                    </div>                                </div>                                <div class="form-group form-group10">                                    <label for="password" class="col-sm-3">Password</label>                                    <div class="col-sm-9">                                        <input id="password" type="password" class="uui-form-element">                                    </div>                                </div>                                <span class="login-txt hidden">* Login Faild</span>                            </div>                            <button type="submit" class="uui-button dark-blue btn-login" id="login-button"><i class="fa fa-sign-in"></i><span>Enter</span></button>                        </form>                        <div class="logout">                            <button type="submit" class="uui-button dark-blue btn-login"><i class="fa fa-sign-out"></i><span>Logout</span></button>                        </div>                    </div>                </li>            </ul>            <div class="search">                <span class="icon-search"></span>                <div class="search-active hidden">                    <span class="search-title">Search this Site</span>                    <span class="icon-search active" onclick="window.open('search.html','_self')"></span>                    <div class="search-field">                        <input type="text">                    </div>                </div>            </div>        </nav>    </div>
 </header>
 <div class="wrapper">
-    <div name="navigation-sidebar" class="uui-side-bar mCustomScrollbar _mCS_1 mCS_no_scrollbar" style="max-height: inherit; display: block;"><div id="mCSB_1" class="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" tabindex="0" style="max-height: inherit;"><div id="mCSB_1_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position:relative; top:0; left:0;" dir="ltr">	<div id="mCSB_1" class="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" tabindex="0" style="max-height: inherit;">	    <div id="mCSB_1_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position:relative; top:0; left:0;" dir="ltr">        <ul class="sidebar-menu">            <li ui="label" index="1">                <a href="index.html">                    <span>Home</span>                </a>            </li>            <li ui="label" index="2">                <a href="contacts.html">                    <span>Contact form</span>                </a>            </li>            <li class="menu-title" index="3">                <a ui="label">                    <span>Service</span>                    <div class="fa fa-caret-down arrow"></div>                </a>                <ul class="sub hide-menu" style="">                    <li ui="label" index="1"><a href="support.html"><p>                        <span>Support</span>                    </p></a></li>                    <li ui="label" index="2"><a href="dates.html">                        <span>Dates</span>                    </a></li>                    <li ui="label" index="3"><a href="complex-table.html">                        <span>Complex Table </span>                    </a></li>                    <li ui="label" index="4"><a href="simple-table.html">                        <span>Simple Table</span>                    </a></li>                    <li ui="label" index="5"><a href="search.html">                        <span>Search</span>                    </a></li>                    <li ui="label" index="6"><a href="user-table.html">                        <span>User Table</span>                    </a></li>                    <li ui="label" index="7"><a href="table-pages.html">                        <span>Table with pages</span>                    </a></li>                    <li ui="label" index="8"><a href="different-elements.html">                        <span>Different elements</span>                    </a></li>                    <li ui="label" index="9"><a href="performance.html">                        <span>Performance</span>                    </a></li>                </ul>            </li>            <li ui="label" index="4">                <a href="metals-colors.html">                    <span>Metals &amp; Colors</span>                </a>            </li>            <li class="menu-title active" index="5">                <a ui="label">                    <span>Elements packs</span>                    <div class="fa fa-caret-down arrow"></div>                </a>                <ul class="sub">                    <li ui="label" index="1"><a href="html5.html">                        <span>HTML 5</span>                    </a></li>                    <li ui="label" index="2"><a href="mobile-html5.html">                        <span>Mobile and HTML 5</span>                    </a></li>                    <li ui="label" index="3" class="active"><a href="bootstrap-new.html">                        <span>Bootstrap</span>                    </a></li>                    <li ui="label" index="4"><a href="bootstrap_form.html">                        <span>Bootstrap form</span>                    </a></li>                    <li ui="label" index="5"><a href="bootstrap_forms.html">                        <span>Bootstrap forms</span>                    </a></li>                    <li ui="label" index="6"><a href="react-ant.html">                        <span>React Ant</span>                    </a></li>                    <li ui="label" index="7"><a href="angular.html">                        <span>Angular</span>                    </a></li>                </ul>            </li>        </ul>    </div>    <div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-light mCSB_scrollTools_vertical" style="display: none;">        <div class="mCSB_draggerContainer">            <div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 0px; top: 0px; height: 0px;" oncontextmenu="return false;">                <div class="mCSB_dragger_bar" style="line-height: 0px;"></div>            </div>            <div class="mCSB_draggerRail"></div>        </div>    </div></div></div><div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-light mCSB_scrollTools_vertical"><div class="mCSB_draggerContainer"><div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position:absolute;" oncontextmenu="return false;"><div class="mCSB_dragger_bar"></div></div><div class="mCSB_draggerRail"></div></div></div></div></div>
+    <div name="navigation-sidebar" class="uui-side-bar mCustomScrollbar _mCS_1 mCS_no_scrollbar" style="max-height: inherit; display: block;"><div id="mCSB_1" class="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" tabindex="0" style="max-height: inherit;"><div id="mCSB_1_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position:relative; top:0; left:0;" dir="ltr">	<div id="mCSB_1" class="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" tabindex="0" style="max-height: inherit;">	    <div id="mCSB_1_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position:relative; top:0; left:0;" dir="ltr">        <ul class="sidebar-menu">            <li ui="label" index="1">                <a href="index.html">                    <span>Home</span>                </a>            </li>            <li ui="label" index="2">                <a href="contacts.html">                    <span>Contact form</span>                </a>            </li>            <li class="menu-title" index="3">                <a ui="label">                    <span>Service</span>                    <div class="fa fa-caret-down arrow"></div>                </a>                <ul class="sub hide-menu">                    <li ui="label" index="1"><a href="support.html"><p>                        <span>Support</span>                    </p></a></li>                    <li ui="label" index="2"><a href="dates.html">                        <span>Dates</span>                    </a></li>                    <li ui="label" index="3"><a href="complex-table.html">                        <span>Complex Table </span>                    </a></li>                    <li ui="label" index="4"><a href="simple-table.html">                        <span>Simple Table</span>                    </a></li>                    <li ui="label" index="5"><a href="search.html">                        <span>Search</span>                    </a></li>                    <li ui="label" index="6"><a href="user-table.html">                        <span>User Table</span>                    </a></li>                    <li ui="label" index="7"><a href="table-pages.html">                        <span>Table with pages</span>                    </a></li>                    <li ui="label" index="8"><a href="different-elements.html">                        <span>Different elements</span>                    </a></li>                    <li ui="label" index="9"><a href="performance.html">                        <span>Performance</span>                    </a></li>                </ul>            </li>            <li ui="label" index="4">                <a href="metals-colors.html">                    <span>Metals &amp; Colors</span>                </a>            </li>            <li class="menu-title active" index="5">                <a ui="label">                    <span>Elements packs</span>                    <div class="fa fa-caret-down arrow"></div>                </a>                <ul class="sub">                    <li ui="label" index="1"><a href="html5.html">                        <span>HTML 5</span>                    </a></li>                    <li ui="label" index="2"><a href="mobile-html5.html">                        <span>Mobile and HTML 5</span>                    </a></li>                    <li ui="label" index="3" class="active"><a href="bootstrap-new.html">                        <span>Bootstrap</span>                    </a></li>                    <li ui="label" index="4"><a href="bootstrap_form.html">                        <span>Bootstrap form</span>                    </a></li>                    <li ui="label" index="5"><a href="bootstrap_forms.html">                        <span>Bootstrap forms</span>                    </a></li>                    <li ui="label" index="6"><a href="react-ant.html">                        <span>React Ant</span>                    </a></li>                    <li ui="label" index="7"><a href="angular.html">                        <span>Angular</span>                    </a></li>                </ul>            </li>        </ul>    </div>    <div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-light mCSB_scrollTools_vertical" style="display: none;">        <div class="mCSB_draggerContainer">            <div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 0px; top: 0px; height: 0px;" oncontextmenu="return false;">                <div class="mCSB_dragger_bar" style="line-height: 0px;"></div>            </div>            <div class="mCSB_draggerRail"></div>        </div>    </div></div></div><div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-light mCSB_scrollTools_vertical"><div class="mCSB_draggerContainer"><div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position:absolute;" oncontextmenu="return false;"><div class="mCSB_dragger_bar"></div></div><div class="mCSB_draggerRail"></div></div></div></div></div>
     <div class="uui-main-container page-inside">
         <main>
-            <div class="pattern-top" style=""></div>
+            <div class="pattern-top"></div>
             <div class="main-content">
                 <div class="main-content-hg">
 
@@ -157,7 +157,7 @@
                             <div class="alert alert-warning alert-dismissible fade show" id="dismissible-alert" role="alert">
                                 <strong>Dismissible alert!</strong><br> Hide alert clicking on "x".
                                 <button type="button" class="close" id="close-alert-button" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
+                                    <span aria-hidden="true">Ã—</span>
                                 </button>
                             </div>
                         </div>
@@ -395,7 +395,7 @@
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                                    <div class="dropdown-menu" style="">
+                                    <div class="dropdown-menu">
                                         <a class="dropdown-item" href="https://jdi-testing.github.io/jdi-light/index.html" target="_blank">JDI
                                             home</a>
                                         <a class="dropdown-item" href="https://github.com/jdi-docs" target="_blank">JDI
@@ -431,7 +431,7 @@
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                                    <div class="dropdown-menu" style="">
+                                    <div class="dropdown-menu">
                                         <a class="dropdown-item" href="https://jdi-testing.github.io/jdi-light/index.html" target="_blank">JDI
                                             home</a>
                                         <a class="dropdown-item" href="https://github.com/jdi-docs" target="_blank">JDI
@@ -470,7 +470,7 @@
                         <br>
                         <nav id="navbar-nav-with-disabled" class="navbar navbar-expand-lg navbar-light bg-light">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.3/components/navbar/#nav" target="_blank">Navbar</a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
@@ -487,7 +487,7 @@
                         <br>
                         <nav id="navbar-nav-with-dropdown" class="navbar navbar-expand-lg navbar-light bg-light">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.3/components/navbar/#nav" target="_blank">Navbar</a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -505,7 +505,7 @@
                                         <a class="nav-link dropdown-toggle" href="https://getbootstrap.com/docs/4.3/components/navbar/" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" target="_blank">
                                             Navbar
                                         </a>
-                                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="">
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                             <a class="dropdown-item" href="https://getbootstrap.com/docs/4.3/components/navbar/#brand" target="_blank">Brand</a>
                                             <a class="dropdown-item" href="https://getbootstrap.com/docs/4.3/components/navbar/#nav" target="_blank">Nav</a>
                                             <a class="dropdown-item" href="https://getbootstrap.com/docs/4.3/components/navbar/#forms" target="_blank">Forms</a>
@@ -530,7 +530,7 @@
 
                         <nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbar-supported-content">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.3/components/navbar/#nav" target="_blank">Navbar brand</a>
-                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
 
@@ -544,7 +544,7 @@
                                     </li>
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="">
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                             <a class="dropdown-item" onclick="alert('Action Clicked!');">Action</a>
                                             <a class="dropdown-item" onclick="alert('Another action Clicked!');">Another
                                                 action</a>
@@ -658,7 +658,7 @@
                         <br>
                         <nav class="navbar navbar-expand-lg navbar-light bg-light">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.3/components/navbar/#nav" target="_blank">Navbar w/ text</a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="collapse navbar-collapse" id="navbarText">
@@ -690,7 +690,7 @@
                     <div class="doc-space line">
                         <nav id="navbar-dark-colorscheme" class="navbar navbar-expand-lg navbar-dark bg-dark mb-1">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.0/components/navbar/#color-schemes" target="_blank">Navbar</a>
-                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="navbar-collapse collapse" id="navbarColor01" style="">
@@ -714,7 +714,7 @@
                         </nav>
                         <nav id="navbar-blue-colorscheme" class="navbar navbar-expand-lg navbar-dark bg-primary mb-1">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.0/components/navbar/#color-schemes" target="_blank">Navbar</a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="collapse navbar-collapse" id="navbarColor02">
@@ -738,7 +738,7 @@
                         </nav>
                         <nav id="navbar-light-colorscheme" class="navbar navbar-expand-lg navbar-light mb-1" style="background-color: #e3f2fd;">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.0/components/navbar/#color-schemes" target="_blank">Navbar</a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="collapse navbar-collapse" id="navbarColor03">
@@ -795,7 +795,7 @@
                     <div class="doc-space line">
                         <nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light" id="navbar-sticky-top">
                             <a class="navbar-brand" href="https://getbootstrap.com/docs/4.3/components/navbar/#placement">Sticky Top</a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="collapse navbar-collapse" id="navbarNav">
@@ -846,7 +846,7 @@
                     <div class="doc-space line">
 
                         <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-2">
-                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="navbar-collapse collapse" id="navbarTogglerDemo01" style="">
@@ -873,7 +873,7 @@
 
                         <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-2">
                             <a class="navbar-brand" href="javascript:void();">Navbar</a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
 
@@ -899,7 +899,7 @@
 
 
                         <nav class="navbar navbar-expand-lg navbar-dark mb-3 bg-dark">
-                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation" style="">
+                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <a class="navbar-brand" href="javascript:void();">Navbar</a>
@@ -936,7 +936,7 @@
                     <div class="doc-space line">
                         <div class="html-left">
                             <div class="pos-f-t" id="navbar-external-content">
-                                <div class="collapse" id="navbarToggleExternalContent" style="">
+                                <div class="collapse" id="navbarToggleExternalContent">
                                     <div class="bg-dark p-4">
                                         <h5 class="text-white h4">Collapsed content</h5>
                                         <span class="text-muted">Toggleable via the navbar brand.</span>
@@ -987,7 +987,7 @@
                                 <ul class="pagination" id="pagination-icons">
                                     <li class="page-item">
                                         <a class="page-link" href="https://github.com/jdi-docs" target="_blank" aria-label="Previous">
-                                            <span aria-hidden="true">«</span>
+                                            <span aria-hidden="true">Â«</span>
                                         </a>
                                     </li>
                                     <li class="page-item"><a class="page-link" href="https://github.com/jdi-testing" target="_blank">1</a></li>
@@ -995,7 +995,7 @@
                                     <li class="page-item"><a class="page-link" href="https://getbootstrap.com" target="_blank">3</a></li>
                                     <li class="page-item">
                                         <a class="page-link" href="https://jdi-docs.github.io/jdi-light/" target="_blank" aria-label="Next">
-                                            <span aria-hidden="true">»</span>
+                                            <span aria-hidden="true">Â»</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -1181,7 +1181,7 @@
                                 <a id="expand-link" class="btn btn-primary" data-toggle="collapse" href="#hidden-text" role="button" aria-expanded="false" aria-controls="collapseExample">Expand text</a>
    
                             </p>
-                            <div class="collapse" id="hidden-text" style="">
+                            <div class="collapse" id="hidden-text">
                                 <div class="card card-body" style="margin-bottom: 16px;">
                                     Collapse text shown
                                 </div>
@@ -1212,7 +1212,7 @@
                                 <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 5px;">
                                     <span class="sr-only">Toggle Dropdown</span>
                                 </button>
-                                <div class="dropdown-menu" style="">
+                                <div class="dropdown-menu">
                                     <a class="dropdown-item" onclick="alert('Stone clicked');">Stone</a>
                                     <a class="dropdown-item" onclick="alert('Paper clicked');">Paper</a>
                                     <a class="dropdown-item" onclick="alert('Scissors clicked');">Scissors</a>
@@ -1303,7 +1303,7 @@
                                             <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
                                         </div>
                                     </div>
-                                    <div class="carousel-item" style="">
+                                    <div class="carousel-item">
                                         <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: First slide"><title>Placeholder</title>
                                             <rect width="100%" height="100%" fill="#33AAFF"></rect>
                                             </svg><h3 x="27%" y="12%" fill="#555" dy=".3em" style="font-size:25px;">Second slide </h3>
@@ -1314,7 +1314,7 @@
                                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                                         </div>
                                     </div>
-                                    <div class="carousel-item" style="">
+                                    <div class="carousel-item">
                                         <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: First slide"><title>Placeholder</title>
                                             <rect width="100%" height="100%" fill="#20AD1E"></rect>
                                             </svg><h3 x="31%" y="12%" fill="#555" dy=".3em" style="font-size:25px;">Third slide</h3>
@@ -1335,7 +1335,7 @@
                                     <span class="sr-only">Next</span>
                                 </a>
                             </div>
-                            <style style="">
+                            <style>
                                 .carousel .carousel-item{
                                     height: 210px;
                                 }
@@ -1369,7 +1369,7 @@
 							<div class="spinner-grow text-success" role="status">
 								<span class="sr-only">Loading...</span>
 							</div>
-							<button class="btn btn-primary" type="button" disabled="" id="spinner-loading" style="display: none;">
+							<button class="btn btn-primary" type="button" disabled="" id="spinner-loading" style="display: none">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
                                 </button>
@@ -1388,7 +1388,7 @@
 					<div class="doc-space line">
 						<div class="html-left mb-3">
 							<div id="list-example" class="list-group">
-								<a class="list-group-item list-group-item-action" href="#list-item-1">Item 1</a> <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a> <a class="list-group-item list-group-item-action" href="#list-item-3">Item 3</a> <a class="list-group-item list-group-item-action active" href="#list-item-4">Item 4</a>
+								<a class="list-group-item list-group-item-action active" href="#list-item-1">Item 1</a> <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a> <a class="list-group-item list-group-item-action" href="#list-item-3">Item 3</a> <a class="list-group-item list-group-item-action" href="#list-item-4">Item 4</a>
 							</div>
 							<div data-spy="scroll" data-target="#list-example" data-offset="0" class="scrollspy-example">
 								<h4 id="list-item-1">Item 1</h4>
@@ -1465,7 +1465,7 @@
 											<strong class="mr-auto">Bootstrap</strong>
 											<small class="text-muted">11 mins ago</small>
 											<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-												<span aria-hidden="true">×</span>
+												<span aria-hidden="true">Ã—</span>
 											</button>
 										</div>
 										<div class="toast-body">
@@ -1491,13 +1491,13 @@
     <div class="footer-bg">        <div class="footer-content overflow">            <div>Powered by EPAM System</div>            <ul class="footer-menu">				<li><a href="support.html" title="Tip title">About</a></li>                <li>|</li>                <li><a href="">Report a bug</a></li>            </ul>        </div>    </div>
 </footer>
 
-<script style="">
+<script>
     function showLoading()
     {
       $('#spinner-loading').delay(500).show(0).delay(2000).hide(0);
     }
 </script>
-<script style="">
+<script>
  function show_toast(locator) {
    $(locator).toast('show');
 }
@@ -1522,38 +1522,38 @@ $('#toastEventsTest').on('show.bs.toast', function () {
 });
 </script>
 
-<script style="">
+<script>
     setTimeout(function() {
 		$('.invisible')[0].classList.remove("invisible");
 		$('#ghost-button')[0].classList.add("invisible");
 	}, 3000);
 </script>
 
-<script type="text/javascript" style="">
+<script type="text/javascript">
     $('#multi-dropdown').multiselect();
 </script>
 
-<script language="JavaScript" style="">
+<script language="JavaScript">
     UUI.Vertical_Menu.init({"open":true});
 </script>
 
-<script style="">
+<script>
     $('.selectpicker').selectpicker();
 </script>
 
-<script style="">
+<script>
 $(function(){
   $('[data-toggle="tooltip"]').tooltip();
   $('[data-toggle="popover"]').popover()
 })
 </script>
 
-<script style="">
+<script>
 		includeSideBar();
 		activateTopElement(5,3);
 </script>
 
-<script style="">
+<script>
 function progress_element() {
 	return $("#progressbar .progress-bar");
 } 
@@ -1586,7 +1586,7 @@ function change_progress(changeTo) {
 }
 </script>
 
-<script style="">
+<script>
 function range_element() {
 	return $("#default-range")[0];
 } 
@@ -1615,7 +1615,7 @@ function change_range(changeTo) {
 }
 </script>
 
-<script style="">
+<script>
     function show_val(element) {
 		const locator = "#" + element.getAttribute("id") + "-value";
 		$(locator)[0].value = element.value;

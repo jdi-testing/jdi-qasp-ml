@@ -10,7 +10,7 @@ import logging
 from time import sleep
 from collections import Counter
 
-from .common import TQDM_BAR_FORMAT, get_all_elements, maximize_window, screenshot
+from .common import TQDM_BAR_FORMAT, get_all_elements, maximize_window, screenshot, build_elements_dataset
 from .config import logger
 
 logger.info("dataset package is loaded...")
@@ -38,7 +38,7 @@ def get_parents_list(tree_dict:dict, element_id:str, paternts_list:list=[]) -> l
         return get_parents_list(tree_dict, element_id=parent_id, paternts_list=paternts_list)
 
 
-def get_children_features(df:pd.DataFrame):
+def build_children_features(df:pd.DataFrame):
     from collections import Counter
     
     logger.info('select all leafs (nodes which are not parents)')
@@ -65,11 +65,12 @@ def get_children_features(df:pd.DataFrame):
     children_widths_dict = dict(stats_df[['parent_id', 'sum_children_widths']].values)
     df['sum_children_widths'] = df.element_id.map(children_widths_dict).fillna(0.0)
 
-    logger.info('Sum of children widths')
+    logger.info('Sum of children hights')
     children_heights_dict = dict(stats_df[['parent_id', 'sum_children_heights']].values)
     df['sum_children_hights'] = df.element_id.map(children_heights_dict).fillna(0.0)
     
-    return  {'leafs':leafs_set, 'num_leafs':num_leafs_dict, 'num_children': num_children_dict }
+    #return  {'leafs':leafs_set, 'num_leafs':num_leafs_dict, 'num_children': num_children_dict }
+    return df
 
 def get_grey_image(file_path:str) -> np.ndarray:
     img = plt.imread(file_path)
@@ -115,6 +116,7 @@ def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray) ->
     labels_df.index = labels_df.idx
     df = df.merge(labels_df, how='left', left_index=True, right_index=True)
     df.label = df.label.fillna(-1.0)
+    df.drop(columns=['iou', 'idx'], inplace=True) # drop auxiliary columns
 
     return df
 
@@ -152,10 +154,15 @@ def build_parent_features(elements_df:pd.DataFrame) -> pd.DataFrame:
 
 def build_path_features(elements_df:pd.DataFrame) -> pd.DataFrame:
 
+    """
+        Main purpose of this brocedure is an ability to calculate 
+        number of followers for a node
+    """
+
     tree_dict = build_tree_dict(elements_df)
-    tag_name_dict = dict(zip(elements_df.element_id.values, elements_df.tag_name))
-    width_dict = dict(zip(elements_df.element_id.values, elements_df.width))
-    height_dict = dict(zip(elements_df.element_id.values, elements_df.height))
+    tag_name_dict = dict(zip(elements_df.element_id.values, elements_df.tag_name.values))
+    width_dict = dict(zip(elements_df.element_id.values, elements_df.width.values))
+    height_dict = dict(zip(elements_df.element_id.values, elements_df.height.values))
 
     # Build paths
     paths = []
@@ -225,6 +232,8 @@ class DatasetBuilder:
 
         self.options = Options()
         self.options.add_argument('--disable-gpu')  # Last I checked this was necessary.
+        self.options.add_argument('--skip-js-errors')
+        # self.options.add_argument("--start-maximized")
         if self.headless:
             self.options.add_argument('--headless')
 
@@ -257,26 +266,31 @@ class DatasetBuilder:
 
     def build_dataset(self):
 
-        elements_df = get_all_elements(driver=self.driver)
+        #elements_df = get_all_elements(driver=self.driver)
+        # At first we have to save screenshot
         logger.info(f'Save color screenshot to dataset/images/{self.dataset_name}.png')
         screenshot(self.driver, save_to_file=f'dataset/images/{self.dataset_name}.png')
-        logger.info(f'Save html to dataset/html/{self.dataset_name}.html')
 
+        # And HTML sorce
+        logger.info(f'Save html to dataset/html/{self.dataset_name}.html')
+        with open(f'dataset/html/{self.dataset_name}.html', 'wb') as f:
+            f.write(self.driver.page_source.encode())
+            f.flush()
+ 
+        # build_elements_dataset calls hover, which changes screenshot, sor it have to be called the very end
+        elements_df = build_elements_dataset(driver=self.driver)
         build_path_features(elements_df=elements_df)
 
         logger.info(f'Save parquet to dataset/df/{self.dataset_name}.parquet')
         elements_df.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
-
-        with open(f'dataset/html/{self.dataset_name}.html', 'wb') as f:
-            f.write(self.driver.page_source.encode())
-            f.flush()
 
         self.dataset = elements_df
         return self.dataset
 
 
     def build_features(self):
-        logger.info("build_features method is not implemented")
+        self.dataset = build_children_features(df=self.dataset)
+        
 
 
 

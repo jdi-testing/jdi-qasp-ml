@@ -427,6 +427,7 @@ def build_elements_dataset(driver=None):
         'parent_id': parent_id,
         'element_id': elements_id,
         'tag_name': tag_name,
+        'text': text,
         'x': [ e['x'] for e in rect],
         'y': [ e['y'] for e in rect],
         'width': [ e['width'] for e in rect],

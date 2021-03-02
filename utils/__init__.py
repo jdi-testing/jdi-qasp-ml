@@ -11,8 +11,8 @@ from .dataset import build_children_features, \
                      build_tree_dict, \
                      assign_labels, \
                      build_path_features, \
-                     build_parent_features, \
-                     DatasetBuilder
+                     DatasetBuilder, \
+                     JDITrainDataset
 
 from .config import logger
 

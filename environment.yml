@@ -28,4 +28,7 @@ dependencies:
     - imagecorruptions
     - selenium
     - sympy
+    - scikit-learn
+    - scipy
+
 prefix: D:\Anaconda3\envs\py37-torch

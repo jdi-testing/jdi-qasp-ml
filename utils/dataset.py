@@ -5,10 +5,13 @@ import selenium
 from selenium.webdriver.chrome.options import Options
 from .common import iou_xywh
 from tqdm.auto import tqdm, trange
-import os, sys
+import os, sys, re, gc
 import logging
 from time import sleep
 from collections import Counter
+from torch.utils.data import Dataset, DataLoader
+import matplotlib.pyplot as plt
+import glob
 
 from .common import TQDM_BAR_FORMAT, get_all_elements, maximize_window, screenshot, build_elements_dataset
 from .config import logger
@@ -119,37 +122,6 @@ def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray) ->
     df.drop(columns=['iou', 'idx'], inplace=True) # drop auxiliary columns
 
     return df
-
-
-def build_parent_features(elements_df:pd.DataFrame) -> pd.DataFrame:
-    
-    parents_set = set(elements_df.parent_id.values) # take all elements which have children
-
-    logger.info('Building "parent_width"')
-    parents_width_dict = dict(elements_df[elements_df.element_id.isin(parents_set)][['element_id', 'width']].values)
-    elements_df['parent_width'] = elements_df.parent_id.map(parents_width_dict).fillna(0.0)
-
-    logger.info('Building "parent_height"')
-    parents_height_dict = dict(elements_df[elements_df.element_id.isin(parents_set)][['element_id', 'height']].values)
-    elements_df['parent_height'] = elements_df.parent_id.map(parents_height_dict).fillna(0.0)
-
-    logger.info('Building "parent_tag_name"')
-    parents_tag_dict = dict(elements_df[elements_df.element_id.isin(parents_set)][['element_id', 'tag_name']].values)
-    elements_df['parent_tag_name'] = elements_df.parent_id.map(parents_tag_dict).fillna('html')
-
-    logger.info('Building "parent_is_hover"')
-    parents_is_hover_dict = dict(elements_df[elements_df.element_id.isin(parents_set)][['element_id', 'is_hover']].values)
-    elements_df['parent_is_hover'] = elements_df.parent_id.map(parents_is_hover_dict).fillna(False).astype(int)
-
-    logger.info('Building "parent_displayed"')
-    parents_displayed_dict = dict(elements_df[elements_df.element_id.isin(parents_set)][['element_id', 'displayed']].values)
-    elements_df['parent_displayed'] = elements_df.parent_id.map(parents_displayed_dict).fillna(False).astype(int)
-
-    elements_df.is_hover = elements_df.is_hover.astype(int)
-    elements_df.displayed = elements_df.displayed.astype(int)
-
-    return elements_df
-
 
 
 def build_path_features(elements_df:pd.DataFrame) -> pd.DataFrame:
@@ -290,10 +262,96 @@ class DatasetBuilder:
 
     def build_features(self):
         self.dataset = build_children_features(df=self.dataset)
+
+COLUMNS_TO_DROP = {
+    'parent_id',
+    'parent_id_parent',
+    'element_id', 
+    'base64png_before_hover', 
+    'base64png_after_hover', 
+    'base64png_before_hover_parent',
+    'base64png_after_hover_parent',
+    'x', 'y', 'x_parent', 'y_parent',
+    'element_id_parent',
+    'path', 
+    'path_parent',
+    'is_leaf_parent',
+    'label_parent',
+    'ds_name',
+    'hover_before',
+    'hover_after',
+    'hover_before_parent',
+    'hover_after_parent',
+    'attr_class',
+    'attr_class_parent',
+}
+
+class JDITrainDataset(Dataset):
+
+    def _find_dataset_names(self, path_mask='dataset/df/*.parquet'):
+        return  set([re.sub( '.*[/\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
+                    for fn in glob.glob(path_mask)])
+
+    def _gen_dataset_names(self):
+        dfs = self._find_dataset_names('dataset/df/*.parquet')
+        imgs = self._find_dataset_names('dataset/images/*.png')
+        anns = self._find_dataset_names('dataset/annotations/*.txt')
+
+        return (dfs.intersection(imgs)).intersection(anns)
+
+    def __init__(self, dataset_names:list=None):
+        super(JDITrainDataset, self).__init__()
+
+        ds_list=[]
+
+        if dataset_names is None:
+            logger.warn('Using all availabel data to generate dataset')
+            dataset_names = self._gen_dataset_names()
+
+        for ds_name in dataset_names:
+            logger.info(f'Dataset for {ds_name}')
+            df = pd.read_parquet(f'dataset/df/{ds_name}.parquet')
+            df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt', 
+                                   img=plt.imread(f'dataset/images/{ds_name}.png'))
+            df = build_children_features(df=df)
+            df = df.merge(df, left_on='parent_id', right_on='element_id', suffixes=('', '_parent'))
+
+            df['ds_name'] = ds_name
+            ds_list.append(df)
+
+        logger.info('Concatenate datasets')
+        self.dataset = pd.concat(ds_list)
         
+        logger.info(f'Drop redundunt columns: {COLUMNS_TO_DROP}')
+        self.dataset.drop(columns= set(self.dataset).intersection(COLUMNS_TO_DROP), inplace=True)
 
+        self.dataset.displayed = self.dataset.displayed.astype(int).fillna(0)
+        self.dataset.enabled = self.dataset.enabled.astype(int).fillna(0)
+        self.dataset.selected = self.dataset.selected.astype(int).fillna(0)
+        self.dataset.text = self.dataset.text.apply(lambda x: 0 if (x is None) else 1)
+        self.dataset.attr_id = self.dataset.attr_id.apply(lambda x: 0 if (x is None) else 1)
+        self.dataset.hover = self.dataset.hover.fillna(.0).astype(int).fillna(0)
+        self.dataset.attr_onmouseover = self.dataset.attr_onmouseover.apply(lambda x: 1 if x is not None else 0)
+        self.dataset.attr_onclick = self.dataset.attr_onclick.apply(lambda x: 1 if x is not None else 0)
+        self.dataset.attr_ondblclick = self.dataset.attr_ondblclick.apply(lambda x: 1 if x is not None else 0)
 
+        self.dataset.displayed_parent = self.dataset.displayed_parent.astype(int).fillna(0)
+        self.dataset.enabled_parent = self.dataset.enabled_parent.astype(int).fillna(0)
+        self.dataset.selected_parent = self.dataset.selected_parent.astype(int).fillna(0)
+        self.dataset.text_parent = self.dataset.text_parent.apply(lambda x: 0 if (x is None) else 1)
+        self.dataset.attr_id_parent = self.dataset.attr_id_parent.apply(lambda x: 0 if (x is None) else 1)
+        self.dataset.hover_parent = self.dataset.hover_parent.fillna(.0).astype(int).fillna(0)
+        self.dataset.attr_onmouseover_parent = self.dataset.attr_onmouseover_parent.apply(lambda x: 1 if x is not None else 0)
+        self.dataset.attr_onclick_parent = self.dataset.attr_onclick_parent.apply(lambda x: 1 if x is not None else 0)
+        self.dataset.attr_ondblclick_parent = self.dataset.attr_ondblclick_parent.apply(lambda x: 1 if x is not None else 0)
+       
 
+    def __len__(self):
+        return self.dataset.shape[0]
 
+    def __getitem__(self, idx):
+        return self.dataset.iloc[idx]
+
+        
 
 

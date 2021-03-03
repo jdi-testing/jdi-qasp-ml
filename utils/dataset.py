@@ -15,6 +15,11 @@ import glob
 
 from .common import TQDM_BAR_FORMAT, get_all_elements, maximize_window, screenshot, build_elements_dataset
 from .config import logger
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.preprocessing import OneHotEncoder
+from scipy.sparse import hstack
+import pickle
 
 logger.info("dataset package is loaded...")
 
@@ -286,7 +291,7 @@ COLUMNS_TO_DROP = {
     'attr_class_parent',
 }
 
-class JDITrainDataset(Dataset):
+class JDIDataset(Dataset):
 
     def _find_dataset_names(self, path_mask='dataset/df/*.parquet'):
         return  set([re.sub( '.*[/\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
@@ -300,7 +305,7 @@ class JDITrainDataset(Dataset):
         return (dfs.intersection(imgs)).intersection(anns)
 
     def __init__(self, dataset_names:list=None):
-        super(JDITrainDataset, self).__init__()
+        super(JDIDataset, self).__init__()
 
         ds_list=[]
 
@@ -311,8 +316,17 @@ class JDITrainDataset(Dataset):
         for ds_name in dataset_names:
             logger.info(f'Dataset for {ds_name}')
             df = pd.read_parquet(f'dataset/df/{ds_name}.parquet')
-            df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt', 
-                                   img=plt.imread(f'dataset/images/{ds_name}.png'))
+
+            logger.info('cleaning tag_name from dummy words')
+            df.tag_name = df.tag_name.apply(lambda x: x.replace('-example', ''))
+
+            # If exists file with labels, load it
+            if os.path.exists(f'dataset/annotations/{ds_name}.txt'):
+                df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt', 
+                                       img=plt.imread(f'dataset/images/{ds_name}.png'))
+            else:
+                df['label'] = 0.0
+
             df = build_children_features(df=df)
             df = df.merge(df, left_on='parent_id', right_on='element_id', suffixes=('', '_parent'))
 
@@ -344,7 +358,66 @@ class JDITrainDataset(Dataset):
         self.dataset.attr_onmouseover_parent = self.dataset.attr_onmouseover_parent.apply(lambda x: 1 if x is not None else 0)
         self.dataset.attr_onclick_parent = self.dataset.attr_onclick_parent.apply(lambda x: 1 if x is not None else 0)
         self.dataset.attr_ondblclick_parent = self.dataset.attr_ondblclick_parent.apply(lambda x: 1 if x is not None else 0)
-       
+
+        with open('dataset/classes.txt', 'r') as f:
+            classes_list = [ c.strip() for c in f.readlines()]
+
+        self.dataset['label_text'] = self.dataset.label.apply(lambda x: classes_list[int(x)] if x >=0 else 'n/a')
+
+        TAG_NAME_COUNT_VECTORIZER = 'model/tag_name_count_vectorizer.pkl'
+        if os.path.exists(TAG_NAME_COUNT_VECTORIZER):
+            logger.warn('Load existing count vectorizer for tag_names')
+            with open(TAG_NAME_COUNT_VECTORIZER,'rb') as f:
+                self.tag_name_count_vectorizer = pickle.load(f)
+        else:
+            logger.info('Create, fit, save CountVectorizer for tag_name')
+            self.tag_name_count_vectorizer = CountVectorizer()
+            self.tag_name_count_vectorizer.fit(self.dataset.tag_name)
+            with open(TAG_NAME_COUNT_VECTORIZER, 'wb') as f:
+                pickle.dump(self.tag_name_count_vectorizer, f)
+
+        self.tag_name_sm = self.tag_name_count_vectorizer.transform(self.dataset.tag_name)
+        self.tag_name_parent_sm = self.tag_name_count_vectorizer.transform(self.dataset.tag_name_parent)
+
+        # If don't have OHE for attr_type, create, fit and save the one
+        ATTR_TYPE_OHE = 'model/attr_type_ohe.pkl'
+        if os.path.exists(ATTR_TYPE_OHE):
+            logger.warning(f'Load existing attr_type OHE. You have to remove {ATTR_TYPE_OHE}, to fit it from scratch')
+            with open(ATTR_TYPE_OHE, 'rb') as f: 
+                self.attr_type_ohe = pickle.load(f)
+        else:
+            logger.warning('Create and fit OHE for attr_type, attr_type_patent')
+            self.attr_type_ohe = OneHotEncoder(handle_unknown='ignore')
+            self.attr_type_ohe.fit(np.expand_dims(self.dataset.attr_type.values, axis=1))
+            with open(ATTR_TYPE_OHE, 'wb') as f:
+                pickle.dump(self.attr_type_ohe, f)
+
+        self.attr_type_sm = self.attr_type_ohe.transform(np.expand_dims(self.dataset.attr_type.values, axis=1))
+        self.attr_type_parent_sm = self.attr_type_ohe.transform(np.expand_dims(self.dataset.attr_type_parent.values, axis=1))
+        
+        # if don't have OHE for attr_role, create, fit and save it
+        ATTR_ROLE_OHE = 'model/attr_role_ohe.pkl'
+        if os.path.exists(ATTR_ROLE_OHE):
+            logger.warning(f'Load existing attr_role OHE. You have to remove {ATTR_ROLE_OHE}, to fit it from scratch')
+            with open(ATTR_ROLE_OHE, 'rb') as f: 
+                self.attr_role_ohe = pickle.load(f)
+        else:
+            logger.warning('Create and fit OHE for attr_role, attr_role_patent')
+            self.attr_role_ohe = OneHotEncoder(handle_unknown='ignore')
+            self.attr_role_ohe.fit(np.expand_dims(self.dataset.attr_role.values, axis=1))
+            with open(ATTR_ROLE_OHE, 'wb') as f:
+                pickle.dump(self.attr_role_ohe, f)
+
+        self.attr_role_sm = self.attr_role_ohe.transform(np.expand_dims(self.dataset.attr_role.values, axis=1))
+        self.attr_role_parent_sm = self.attr_role_ohe.transform(np.expand_dims(self.dataset.attr_role_parent.values, axis=1))
+
+        self.sm = hstack([ self.attr_role_parent_sm, 
+                           self.attr_role_sm, 
+                           self.attr_type_parent_sm, 
+                           self.attr_type_sm, 
+                           self.tag_name_parent_sm, 
+                           self.tag_name_sm
+                         ])
 
     def __len__(self):
         return self.dataset.shape[0]

@@ -12,7 +12,7 @@ from .dataset import build_children_features, \
                      assign_labels, \
                      build_path_features, \
                      DatasetBuilder, \
-                     JDITrainDataset
+                     JDIDataset
 
 from .config import logger
 

@@ -304,7 +304,7 @@ class JDIDataset(Dataset):
 
         return (dfs.intersection(imgs)).intersection(anns)
 
-    def __init__(self, dataset_names:list=None):
+    def __init__(self, dataset_names:list=None, rebalance=True):
         super(JDIDataset, self).__init__()
 
         ds_list=[]
@@ -322,9 +322,11 @@ class JDIDataset(Dataset):
 
             # If exists file with labels, load it
             if os.path.exists(f'dataset/annotations/{ds_name}.txt'):
+                logger.warning(f'Load LABELS from dataset/annotations/{ds_name}.txt')
                 df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt', 
                                        img=plt.imread(f'dataset/images/{ds_name}.png'))
             else:
+                logger.warning(f'LABELS: not loaded')
                 df['label'] = 0.0
 
             df = build_children_features(df=df)
@@ -363,6 +365,9 @@ class JDIDataset(Dataset):
             classes_list = [ c.strip() for c in f.readlines()]
 
         self.dataset['label_text'] = self.dataset.label.apply(lambda x: classes_list[int(x)] if x >=0 else 'n/a')
+
+        if rebalance:
+            self.rebalance()
 
         TAG_NAME_COUNT_VECTORIZER = 'model/tag_name_count_vectorizer.pkl'
         if os.path.exists(TAG_NAME_COUNT_VECTORIZER):
@@ -411,19 +416,67 @@ class JDIDataset(Dataset):
         self.attr_role_sm = self.attr_role_ohe.transform(np.expand_dims(self.dataset.attr_role.values, axis=1))
         self.attr_role_parent_sm = self.attr_role_ohe.transform(np.expand_dims(self.dataset.attr_role_parent.values, axis=1))
 
-        self.sm = hstack([ self.attr_role_parent_sm, 
-                           self.attr_role_sm, 
-                           self.attr_type_parent_sm, 
-                           self.attr_type_sm, 
-                           self.tag_name_parent_sm, 
-                           self.tag_name_sm
-                         ])
+        self.sm = hstack([self.attr_role_parent_sm, 
+                          self.attr_role_sm, 
+                          self.attr_type_parent_sm, 
+                          self.attr_type_sm, 
+                          self.tag_name_parent_sm, 
+                          self.tag_name_sm
+                         ]).astype(np.float32)
+
+        LABEL_OHE = 'model/label_ohe.pkl'
+        if os.path.exists(LABEL_OHE):
+            logger.warning(f'Load existing label OHE from {LABEL_OHE}')
+            with open(LABEL_OHE, 'rb') as f:
+                self.label_ohe = pickle.load(f)
+        else:
+            self.label_ohe = OneHotEncoder(handle_unknown='ignore')
+            self.label_ohe.fit(np.expand_dims(self.dataset.groupby('label_text').size().index, -1))
+            logger.info(f'Categories: {self.label_ohe.categories_}')
+            logger.info(f'Saving LABEL OHE to {LABEL_OHE}')
+            with open(LABEL_OHE, 'wb') as f:
+                pickle.dump(self.label_ohe, f)
+        
+        self.labels_text = self.dataset[['label_text']]
+        self.labels = self.label_ohe.transform(self.labels_text.values)
+
+        encoded_columns_list = [
+            'tag_name', 
+            'tag_name_parent', 
+            'attr_role', 
+            'attr_role_parent', 
+            'attr_type', 
+            'attr_type_parent', 
+            'label', 
+            'label_text'
+        ]
+        logger.info(f'Drop encoded columns: [{encoded_columns_list}]')
+        self.dataset.drop(columns=encoded_columns_list, inplace=True)
+        self.data = hstack([self.dataset.values.astype(np.float32), self.sm])
+
+    def rebalance(self):
+        """
+            Make the dataset balanced
+        """
+        logger.info('Rebalance dataset')
+        class_counts = [ r for r in self.dataset.label_text.value_counts().sort_values(ascending=False).items()]
+        max_count = class_counts[0][1]
+
+        dfs = [self.dataset]
+        for cc in class_counts[1:]:
+            ratio = max_count//cc[1]
+            ratio = 10 if ratio >= 10 else ratio
+            for _ in range(ratio):
+                dfs.append(self.dataset[self.dataset.label_text == cc[0]])
+
+        self.dataset = pd.concat(dfs)
+        logger.info(f'Rebalanced dataset size: {self.dataset.shape[0]}')
 
     def __len__(self):
-        return self.dataset.shape[0]
+        return self.data.shape[0]
 
     def __getitem__(self, idx):
-        return self.dataset.iloc[idx]
+        return np.array(self.data.getrow(idx).todense()[0]).squeeze(), np.array(self.labels.getrow(idx).todense()[0]).squeeze()
 
         
 

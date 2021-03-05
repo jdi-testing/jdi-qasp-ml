@@ -30,5 +30,6 @@ dependencies:
     - sympy
     - scikit-learn
     - scipy
+    - seaborn
 
 prefix: D:\Anaconda3\envs\py37-torch

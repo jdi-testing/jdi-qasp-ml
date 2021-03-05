@@ -293,17 +293,6 @@ COLUMNS_TO_DROP = {
 
 class JDIDataset(Dataset):
 
-    def _find_dataset_names(self, path_mask='dataset/df/*.parquet'):
-        return  set([re.sub( '.*[/\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
-                    for fn in glob.glob(path_mask)])
-
-    def _gen_dataset_names(self):
-        dfs = self._find_dataset_names('dataset/df/*.parquet')
-        imgs = self._find_dataset_names('dataset/images/*.png')
-        anns = self._find_dataset_names('dataset/annotations/*.txt')
-
-        return (dfs.intersection(imgs)).intersection(anns)
-
     def __init__(self, dataset_names:list=None, rebalance=True):
         super(JDIDataset, self).__init__()
 
@@ -316,6 +305,7 @@ class JDIDataset(Dataset):
         for ds_name in dataset_names:
             logger.info(f'Dataset for {ds_name}')
             df = pd.read_parquet(f'dataset/df/{ds_name}.parquet')
+            logger.info(f"Dataset shape: {df.shape}")
 
             logger.info('cleaning tag_name from dummy words')
             df.tag_name = df.tag_name.apply(lambda x: x.replace('-example', ''))
@@ -327,47 +317,55 @@ class JDIDataset(Dataset):
                                        img=plt.imread(f'dataset/images/{ds_name}.png'))
             else:
                 logger.warning(f'LABELS: not loaded')
-                df['label'] = 0.0
+                df['label'] = -1.0
 
             df = build_children_features(df=df)
+
+            # WARNING: There is a tag <HTML> without parent. Let's fix this issue
+            df.parent_id = df.apply(lambda r: r.element_id if r.parent_id is None else r.parent_id, axis=1)
+
             df = df.merge(df, left_on='parent_id', right_on='element_id', suffixes=('', '_parent'))
+            logger.info(f"Dataset shape after merging with parents: {df.shape}")
 
             df['ds_name'] = ds_name
             ds_list.append(df)
 
         logger.info('Concatenate datasets')
         self.dataset = pd.concat(ds_list)
+        logger.info(f"Dataset shape after reading: {self.dataset.shape}")
         
-        logger.info(f'Drop redundunt columns: {COLUMNS_TO_DROP}')
-        self.dataset.drop(columns= set(self.dataset).intersection(COLUMNS_TO_DROP), inplace=True)
-
         self.dataset.displayed = self.dataset.displayed.astype(int).fillna(0)
         self.dataset.enabled = self.dataset.enabled.astype(int).fillna(0)
         self.dataset.selected = self.dataset.selected.astype(int).fillna(0)
         self.dataset.text = self.dataset.text.apply(lambda x: 0 if (x is None) else 1)
         self.dataset.attr_id = self.dataset.attr_id.apply(lambda x: 0 if (x is None) else 1)
-        self.dataset.hover = self.dataset.hover.fillna(.0).astype(int).fillna(0)
+        self.dataset.hover = self.dataset.hover.fillna(False).astype(int)
         self.dataset.attr_onmouseover = self.dataset.attr_onmouseover.apply(lambda x: 1 if x is not None else 0)
         self.dataset.attr_onclick = self.dataset.attr_onclick.apply(lambda x: 1 if x is not None else 0)
         self.dataset.attr_ondblclick = self.dataset.attr_ondblclick.apply(lambda x: 1 if x is not None else 0)
 
-        self.dataset.displayed_parent = self.dataset.displayed_parent.astype(int).fillna(0)
-        self.dataset.enabled_parent = self.dataset.enabled_parent.astype(int).fillna(0)
-        self.dataset.selected_parent = self.dataset.selected_parent.astype(int).fillna(0)
+        self.dataset.displayed_parent = self.dataset.displayed_parent.fillna(0).astype(int)
+        self.dataset.enabled_parent = self.dataset.enabled_parent.fillna(0).astype(int)
+        self.dataset.selected_parent = self.dataset.selected_parent.fillna(0).astype(int)
         self.dataset.text_parent = self.dataset.text_parent.apply(lambda x: 0 if (x is None) else 1)
         self.dataset.attr_id_parent = self.dataset.attr_id_parent.apply(lambda x: 0 if (x is None) else 1)
-        self.dataset.hover_parent = self.dataset.hover_parent.fillna(.0).astype(int).fillna(0)
+        self.dataset.hover_parent = self.dataset.hover_parent.fillna(.0).astype(int)
         self.dataset.attr_onmouseover_parent = self.dataset.attr_onmouseover_parent.apply(lambda x: 1 if x is not None else 0)
         self.dataset.attr_onclick_parent = self.dataset.attr_onclick_parent.apply(lambda x: 1 if x is not None else 0)
         self.dataset.attr_ondblclick_parent = self.dataset.attr_ondblclick_parent.apply(lambda x: 1 if x is not None else 0)
+        self.dataset.tag_name_parent = self.dataset.tag_name_parent.fillna('html')
 
         with open('dataset/classes.txt', 'r') as f:
-            classes_list = [ c.strip() for c in f.readlines()]
-
-        self.dataset['label_text'] = self.dataset.label.apply(lambda x: classes_list[int(x)] if x >=0 else 'n/a')
+            classes_list = [c.strip() for c in f.readlines()]
 
         if rebalance:
             self.rebalance()
+
+        self.dataset['label_text'] = self.dataset.label.apply(lambda x: classes_list[int(x)] if x >=0 else 'n/a')
+        self.dataset_copy_df = self.dataset.copy()
+
+        logger.info(f'Drop redundunt columns: {COLUMNS_TO_DROP}')
+        self.dataset.drop(columns= set(self.dataset).intersection(COLUMNS_TO_DROP), inplace=True)
 
         TAG_NAME_COUNT_VECTORIZER = 'model/tag_name_count_vectorizer.pkl'
         if os.path.exists(TAG_NAME_COUNT_VECTORIZER):
@@ -430,8 +428,8 @@ class JDIDataset(Dataset):
             with open(LABEL_OHE, 'rb') as f:
                 self.label_ohe = pickle.load(f)
         else:
-            self.label_ohe = OneHotEncoder(handle_unknown='ignore')
-            self.label_ohe.fit(np.expand_dims(self.dataset.groupby('label_text').size().index, -1))
+            self.label_ohe = OneHotEncoder(handle_unknown='error')
+            self.label_ohe.fit(np.expand_dims(np.array(classes_list), -1))
             logger.info(f'Categories: {self.label_ohe.categories_}')
             logger.info(f'Saving LABEL OHE to {LABEL_OHE}')
             with open(LABEL_OHE, 'wb') as f:
@@ -459,7 +457,7 @@ class JDIDataset(Dataset):
             Make the dataset balanced
         """
         logger.info('Rebalance dataset')
-        class_counts = [ r for r in self.dataset.label_text.value_counts().sort_values(ascending=False).items()]
+        class_counts = [ r for r in self.dataset.label.value_counts().sort_values(ascending=False).items()]
         max_count = class_counts[0][1]
 
         dfs = [self.dataset]
@@ -467,7 +465,7 @@ class JDIDataset(Dataset):
             ratio = max_count//cc[1]
             ratio = 10 if ratio >= 10 else ratio
             for _ in range(ratio):
-                dfs.append(self.dataset[self.dataset.label_text == cc[0]])
+                dfs.append(self.dataset[self.dataset.label == cc[0]].copy())
 
         self.dataset = pd.concat(dfs)
         logger.info(f'Rebalanced dataset size: {self.dataset.shape[0]}')
@@ -477,6 +475,17 @@ class JDIDataset(Dataset):
 
     def __getitem__(self, idx):
         return np.array(self.data.getrow(idx).todense()[0]).squeeze(), np.array(self.labels.getrow(idx).todense()[0]).squeeze()
+
+    def _find_dataset_names(self, path_mask='dataset/df/*.parquet'):
+        return  set([re.sub( '.*[/\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
+                    for fn in glob.glob(path_mask)])
+
+    def _gen_dataset_names(self):
+        dfs = self._find_dataset_names('dataset/df/*.parquet')
+        imgs = self._find_dataset_names('dataset/images/*.png')
+        anns = self._find_dataset_names('dataset/annotations/*.txt')
+
+        return (dfs.intersection(imgs)).intersection(anns)
 
         
 

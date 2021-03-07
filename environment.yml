@@ -31,5 +31,6 @@ dependencies:
     - scikit-learn
     - scipy
     - seaborn
+    - GPUtil
 
 prefix: D:\Anaconda3\envs\py37-torch

@@ -62,4 +62,4 @@ below
 
 To get predictions for an arbitrary web page you may use (or make a copy and use the copy)
 **DatasetBuilder-Presentation-POC.ipynb**. Just edit variables URL and DATASET_NAME. Then run all cells.
-If directory **dataset/annotations** does not contain annotations for a screenshot, only predictions (blue labels) will be shown on the image below. Otherwise true labels will be shown in addition.
+If directory **dataset/annotations** does not contain annotation file for the screenshot, only predictions (blue labels) will be shown on the image below. Otherwise true labels will be shown in addition.

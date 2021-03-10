@@ -210,6 +210,7 @@ class DatasetBuilder:
         self.options = Options()
         self.options.add_argument('--disable-gpu')  # Last I checked this was necessary.
         self.options.add_argument('--skip-js-errors')
+        self.options.set_capability("platformName", "windows")
         # self.options.add_argument("--start-maximized")
         if self.headless:
             self.options.add_argument('--headless')

@@ -51,7 +51,7 @@
 <link href="/inc/design2019/css/analytics.css?hash=f22c606332200d611653" rel="stylesheet">
 <link href="/inc/design2019/css/owl.carousel.min.css?hash=b2752a850d44f5003662" rel="stylesheet">
 <link href="/inc/design2019/css/owl.theme.default.min.css?hash=594b81805a98b267e47c" rel="stylesheet">
-<link href="/inc/design2019/css/style.css?hash=52859b5fc4028ae56eed" rel="stylesheet">
+<link href="/inc/design2019/css/style.css?hash=8f056fe81136ae0c66ed" rel="stylesheet">
 <link href="/inc/design2019/css/analytics-banners.css?hash=d1ab68035915c75524a6" rel="stylesheet">
 <link href="/inc/design2019/css/fonts.css?hash=f140a4ad49c241af4af9" rel="stylesheet">
 <link href="/inc/design2019/css/flex.css?hash=9aa2a4b07491df0803a4" rel="stylesheet">
@@ -77,7 +77,7 @@
 <script src="/inc/js/tablesorter.js?hash=24f2a13724a8883dd34b" type="text/javascript"></script>
 
 <script src="https://www.google.com/recaptcha/api.js?render=explicit" async=""></script>
-<script src="//cnb.cnews.ru/inc/api_1.js?1614894774" type="text/javascript" charset="utf-8"></script><style type="text/css">.cnb-zone .cnb-backdrop {display:block; position:fixed; z-index:99999; opacity:0.5; filter:alpha(opacity=50); top:0; right:0; left:0; bottom:0; background:#000; } 
+<script src="//cnb.cnews.ru/inc/api_1.js?1615334975" type="text/javascript" charset="utf-8"></script><style type="text/css">.cnb-zone .cnb-backdrop {display:block; position:fixed; z-index:99999; opacity:0.5; filter:alpha(opacity=50); top:0; right:0; left:0; bottom:0; background:#000; } 
                 .cnb-zone .cnb-popup {display: block;position: fixed;border: 0;background: #fff;left: 50%;z-index: 100000;border-radius: 10px;padding: 39px 0px 0px 0px;max-width: 100%;} 
                 .cnb-zone .cnb-popup {margin-left: 0 !important;left: 0;} 
                 .cnb-zone .cnb-container > iframe, .cnb-zone .cnb-container > video, .cnb-zone .cnb-container > div {vertical-align: middle;max-width: 100%;} 
@@ -114,11 +114,27 @@
     
     
         <!--cnews brand-->
-    <script type="text/javascript" src="//cnb.cnews.ru/rotator.php?zone=354"></script><img src="//cnb.cnews.ru/image_dummy.php?zone=354" class="cnb-dummy-counter"><div id="cnb_zone_354_1614894775226" class="cnb-zone cnb-zone-354 cnb-in"><a class="cnb-container cnb-html" href="https://cnb.cnews.ru/click.php?zone=354&amp;banner=8223" target="_blank"><img src="https://filearchive.cnews.ru/img/cnb/contents/2020/12/24/cnews_itsm_1280h200.jpg" class="g-banner" alt="">
-<img src="https://filearchive.cnews.ru/img/cnb/contents/2020/12/24/cnews_itsm_1280h200.jpg" class="g-banner-mob" alt="">
+    <script type="text/javascript" src="//cnb.cnews.ru/rotator.php?zone=354"></script><img src="//cnb.cnews.ru/image_dummy.php?zone=354" class="cnb-dummy-counter"><div id="cnb_zone_354_1615334979973" class="cnb-zone cnb-zone-354 cnb-in"><a class="cnb-container cnb-html" href="https://cnb.cnews.ru/click.php?zone=354&amp;banner=6957" target="_blank"><div class="non-commercial-cnb">
+<div id="market_switch"></div>
+<img src="https://filearchive.cnews.ru/img/market/2019/12/12/itsecuirtygbanner2.jpg" class="g-banner" alt="">
+<img src="https://filearchive.cnews.ru/img/market/2019/12/12/itsecuirtygbanner2.jpg" class="g-banner-home" alt="">
+<img src="https://filearchive.cnews.ru/img/market/2019/12/12/itsecuirtygbanner2small.jpg" class="g-banner-mob" alt="">
+
 <style>
 body {
-    background: #e4e4e4;
+    background: #7CA1FA;
+}
+
+.g-banner-home {
+    display: none;
+}
+
+.homepage .g-banner, .market-homepage .g-banner {
+    display: none;
+}
+
+.homepage .g-banner-home, .market-homepage .g-banner-home {
+    display: block;
 }
 
 .header_fixed {
@@ -135,7 +151,7 @@ body {
     display: none !important;
 }
 
-.header_fixed .cnb-zone-356 .cnb-container, .header_fixed .cnb-zone-354 .cnb-container,  .header_fixed .cnb-zone-359 .cnb-container {
+.header_fixed .cnb-zone-356 .cnb-container, .header_fixed .cnb-zone-354 .cnb-container, .header_fixed .cnb-zone-359 .cnb-container {
     top: -66px;
 }
 
@@ -151,8 +167,7 @@ section {
 
 .cnb-zone-356, .cnb-zone-354, .cnb-zone-359 {
     position: relative;
-    height: 200px;
-max-width: 1280px;
+    height: 250px;
 }
 
 .cnb-zone-356 .cnb-container, .cnb-zone-354 .cnb-container, .cnb-zone-359 .cnb-container {
@@ -172,10 +187,42 @@ max-width: 1280px;
 .g-banner-mob {
 	display: none;
 }
+
+@media (min-width: 1600px) {
+    .market_right {
+        display: block;
+    }
+
+.market_right {
+    position: absolute;
+    top: 600px;
+    left: 1300px;
+}
+
+.market_right:before {
+    content: "Выберите параметры и получите список лучших поставщиков";
+    color: white;
+    margin-bottom: 30px;
+    max-width: 280px;
+    font-size: 20px;
+    display: inline-block;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.4;
+}
+}
     
 @media (max-width: 1600px) {
+body {
+    background: #7F82F7;
+}
+
 .g-banner-mob {
    display: block;
+}
+
+.homepage .g-banner-home, .market-homepage .g-banner-home {
+    display: none;
 }
 
     .g-banner {
@@ -197,7 +244,8 @@ max-width: 1280px;
     height: 100%;
 }
 }
-</style><div class="cnb-overlay"></div></a><img src="https://cnb.cnews.ru/image.php?zone=354&amp;banner=8223" class="cnb-counter"></div>
+</style>
+</div><div class="cnb-overlay"></div></a><img src="https://cnb.cnews.ru/image.php?zone=354&amp;banner=6957" class="cnb-counter"></div>
     
     <div id="cnb-379"></div>
     
@@ -325,25 +373,14 @@ max-width: 1280px;
 	
 	
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?6267565feb22648556e+leftmenu" target="_blank">Виртуализация 360</a></li>
-	<!--li class="ln_item"><a class="ln_link" href="/redirect.php?9169125fe0bd3120bfa+leftmenu" target='_blank'>Облачные советы</a></li-->
-	<li class="ln_item"><a class="ln_link" href="/redirect.php?5643315fe0b5d76efd7+leftmenu" target="_blank">Xerox сейчас</a></li>
 	
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?9659585fcf54608b225+leftmenu" target="_blank">Бизнес-печать Epson</a></li>
 	
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?4877315f3cfd61321de+leftmenu" target="_blank">Veritas: забота о&nbsp;данных</a></li>
-	<!--li class="ln_item"><a class="ln_link" href="/redirect.php?2689755f9fb8ea1ca1d+leftmenu" target='_blank'>Тест-драйв с&nbsp;Huawei</a></li-->
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?9568075f9ad7f88b9e2+leftmenu" target="_blank">XaaS от HPE</a></li>
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?6627595f324a010bc41+leftmenu" target="_blank">Искусственный интеллект</a></li>
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?9925685f05cfc190a8c+leftmenu" target="_blank">SUSE: Открытое ПО</a></li>
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?4986045edf728d22874+leftmenu" target="_blank">Инновации в&nbsp;СХД</a></li>
-	<!--li class="ln_item"><a class="ln_link" href="/redirect.php?4950045e9f1190a3da1+leftmenu" target='_blank'>Oracle: кейсы</a></li-->
-
-	<!--li class="ln_item"><a class="ln_link" href="/redirect.php?7941505e5f7753214c3+leftmenu" target='_blank'>О чем думает бизнес</a></li-->
-	<!--li class="ln_item"><a class="ln_link" href="/redirect.php?8326295d5fa8253b7ce+leftmenu" target='_blank'>Интернет
-			вещей</a></li-->
-	<!--li class="ln_item"><a class="ln_link" href="/redirect.php?8342515b61869627bc0+leftmenu" target='_blank'>Умные
-			города</a></li-->
-
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?5798575a72bec6a773c+leftmenu" target="_blank">Корпоративная мобильность</a></li>
 
 	<li class="ln_item"><a class="ln_link" href="/redirect.php?94848957e12d21b5f3d+leftmenu" target="_blank">NetApp:
@@ -375,7 +412,7 @@ max-width: 1280px;
     </div>
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
         <div class="modal-content">
-            <script type="text/javascript" src="//cnb.cnews.ru/rotator.php?zone=104"></script><img src="//cnb.cnews.ru/image_dummy.php?zone=104" class="cnb-dummy-counter"><div id="cnb_zone_104_1614894775254" class="cnb-zone cnb-zone-104 cnb-in"><a class="cnb-container cnb-text" href="https://cnb.cnews.ru/click.php?zone=104&amp;banner=8447" target="_blank"><iframe src="https://www.cnews.ru/inc/static/banner/mp5141b/huawei%20banner.html" width="300" border="0" height="600" scrolling="no" style="border: 0; overflow: hidden"></iframe><div class="cnb-overlay"></div></a><img src="https://cnb.cnews.ru/image.php?zone=104&amp;banner=8447" class="cnb-counter"></div>
+            <script type="text/javascript" src="//cnb.cnews.ru/rotator.php?zone=104"></script><img src="//cnb.cnews.ru/image_dummy.php?zone=104" class="cnb-dummy-counter"><div id="cnb_zone_104_1615334980009" class="cnb-zone cnb-zone-104 cnb-in"><a class="cnb-container cnb-image" href="https://cnb.cnews.ru/click.php?zone=104&amp;banner=8457" target="_blank"><img src="https://filearchive.cnews.ru/img/cnb/contents/2021/02/16/300600_cnews.jpg"><div class="cnb-overlay"></div></a><img src="https://cnb.cnews.ru/image.php?zone=104&amp;banner=8457" class="cnb-counter"></div>
         </div>
     </div>
 </div>
@@ -409,52 +446,49 @@ max-width: 1280px;
         <section class="newstoplist d-flex flex-column d-desktops" id="ntl_mainpage">
                         
             <div class="newstoplist_main d-flex flex-column">
-                <a href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye" class="other-item-h">
-                    <img src="https://filearchive.cnews.ru/img/news/2021/03/04/kazino601_330x220.jpg" class="news_item_bg" alt="">
+                <a href="https://www.cnews.ru/news/top/2021-03-09_ugolovno_presleduemyj_osnovatel" class="other-item-h">
+                    <img src="https://filearchive.cnews.ru/img/news/2019/09/30/plat330.jpg" class="news_item_bg" alt="">
                 </a>
                 
-                <a href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye" class="ntl-content tizer-body">
+                <a href="https://www.cnews.ru/news/top/2021-03-09_ugolovno_presleduemyj_osnovatel" class="ntl-content tizer-body">
                     
                     <div class="black">
-                        Силовики в Крыму разгромили технологичные игорные клубы. Организаторам грозит 6 лет тюрьмы. Видео
-                                                    <span class="comment_count" id="news524833" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye">1</span>
+                        Арестованный основатель «Т-платформ» проиграл спор с ВЭБом на полтора миллиарда
+                                                    <span class="comment_count" id="news524961" data-comment="https://www.cnews.ru/news/top/2021-03-09_ugolovno_presleduemyj_osnovatel">1</span>
                                             </div>
                 </a>
             </div>
             <ul class="flex-grow-1">
                                                                 
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                    <a href="https://safe.cnews.ru/news/top/2021-03-04_rossiyane_izobreli_chudogadzhet" class="black">Россияне изобрели чудо-прибор для защиты от 5G и продают его дороже iPhone </a> <a href="https://safe.cnews.ru/news/top/2021-03-04_rossiyane_izobreli_chudogadzhet#cnComments" class="comment_count" id="top524827" data-comment="https://safe.cnews.ru/news/top/2021-03-04_rossiyane_izobreli_chudogadzhet">9</a>                    
+                    <a href="https://www.cnews.ru/articles/2021-03-03_zhenshchiny_goda_v_otrasli_it_2021spisok" class="black">Женщины года в отрасли ИТ 2021. Список CNews </a> <a href="https://www.cnews.ru/articles/2021-03-03_zhenshchiny_goda_v_otrasli_it_2021spisok#cnComments" class="comment_count" id="top524731" data-comment="https://www.cnews.ru/articles/2021-03-03_zhenshchiny_goda_v_otrasli_it_2021spisok"></a>                    
                 </li>
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                    <a href="https://events.cnews.ru/news/top/2021-03-04_onlajnkonferentsiya_cnews_ecommerce" class="red">ОНЛАЙН-конференция CNews «E-commerce 2021» состоится 23 марта </a> <a href="https://events.cnews.ru/news/top/2021-03-04_onlajnkonferentsiya_cnews_ecommerce#cnComments" class="comment_count" id="top524829" data-comment="https://events.cnews.ru/news/top/2021-03-04_onlajnkonferentsiya_cnews_ecommerce"></a>                    
+                    <a href="https://www.cnews.ru/news/top/2021-03-09_tsmc_i_apple_obedinilis_protiv" class="black">TSMC и Apple объединились против всех, чтобы поразить мир 2-нанометровыми чипами </a> <a href="https://www.cnews.ru/news/top/2021-03-09_tsmc_i_apple_obedinilis_protiv#cnComments" class="comment_count" id="top524953" data-comment="https://www.cnews.ru/news/top/2021-03-09_tsmc_i_apple_obedinilis_protiv"></a>                    
                 </li>
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                    <a href="https://www.cnews.ru/news/top/2021-03-04_whatsapp_zapustil_audio_i_videozvonki" class="black">В WhatsApp для Windows и макбуков появились аудио- и видеозвонки. Но без смартфона все равно не обойтись </a> <a href="https://www.cnews.ru/news/top/2021-03-04_whatsapp_zapustil_audio_i_videozvonki#cnComments" class="comment_count" id="top524817" data-comment="https://www.cnews.ru/news/top/2021-03-04_whatsapp_zapustil_audio_i_videozvonki">1</a>                    
+                    <a href="https://www.cnews.ru/news/top/2021-03-09_shtrafy_za_prodazhu_umnoj" class="black">Безнаказанная торговля смартфонами и ПК без российского ПО продлена до лета 2021 </a> <a href="https://www.cnews.ru/news/top/2021-03-09_shtrafy_za_prodazhu_umnoj#cnComments" class="comment_count" id="top524943" data-comment="https://www.cnews.ru/news/top/2021-03-09_shtrafy_za_prodazhu_umnoj"></a>                    
                 </li>
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                    <a href="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye" class="black">В России появятся продвинутые отечественные процессоры для смартфонов и интернета вещей </a> <a href="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye#cnComments" class="comment_count" id="top524807" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye">9</a>                    
+                    <a href="https://safe.cnews.ru/news/top/2021-03-09_vazhnoe_obnovlenie_windows_10" class="black">Важное обновление Windows 10 сломало резервное копирование </a> <a href="https://safe.cnews.ru/news/top/2021-03-09_vazhnoe_obnovlenie_windows_10#cnComments" class="comment_count" id="top524941" data-comment="https://safe.cnews.ru/news/top/2021-03-09_vazhnoe_obnovlenie_windows_10">1</a>                    
                 </li>
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                    <a href="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili" class="black">Выручка Mail.ru перевалила за 100 млрд руб. за счет соцсетей и игр </a> <a href="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili#cnComments" class="comment_count" id="top524785" data-comment="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili">4</a>                    
+                    <a href="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya" class="black">В Nokia массовые увольнения, которые она тщательно скрывает. На улицу выставлены больше 10 тыс. человек </a> <a href="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya#cnComments" class="comment_count" id="top524947" data-comment="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya">2</a>                    
                 </li>
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                    <a href="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye" class="black">Иностранные ИТ-компании в России обложат налогами, чтобы спасти их российских конкурентов </a> <a href="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye#cnComments" class="comment_count" id="top524779" data-comment="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye">9</a>                    
+                    <a href="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa" class="black">Глава российского офиса «Касперского» после 18 лет работы ушел в «Мой офис» </a> <a href="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa#cnComments" class="comment_count" id="top524937" data-comment="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa"></a>                    
                 </li>
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                    <a href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv" class="black">Знаменитый Linux-дистрибутив перейдет на добровольно-принудительную установку обновлений </a> <a href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv#cnComments" class="comment_count" id="top524767" data-comment="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv">1</a>                    
+                    <a href="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes" class="black">Red Hat ловко вынудила бизнес вдвое переплачивать за RHEL Server и техподдержку </a> <a href="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes#cnComments" class="comment_count" id="top524871" data-comment="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes">8</a>                    
                 </li>
-                                <li>
-                    
-                    <a href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym" class="black">На макбуках с чипом М1, который всем нравится, навсегда перестанет запускаться ПО для Intel </a> <a href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym#cnComments" class="comment_count" id="top524745" data-comment="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym"></a>                    
-                </li>
+                                
                 
             </ul>
         </section>
@@ -470,194 +504,197 @@ max-width: 1280px;
                 <div class="tabs_block active" id="tab-mark-main">
                     <div class="tabs_item">
                         <ul data-next-page-url="/main/more_news/top/12">
-                            <li class="newslist_top">
-                                <img class="news_item_bg ls-is-cached lazyloaded" data-src="https://filearchive.cnews.ru/img/news/2021/03/04/kazino601_330x220.jpg" alt="" src="https://filearchive.cnews.ru/img/news/2021/03/04/kazino601_330x220.jpg">
-                                <a class="ntl-overlay" href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye"></a>
+                            <li class="newslist_top" style="padding-top: 9px; padding-bottom: 9px;">
+                                <img class="news_item_bg lazyload" data-src="https://filearchive.cnews.ru/img/news/2019/09/30/plat330.jpg" alt="">
+                                <a class="ntl-overlay" href="https://www.cnews.ru/news/top/2021-03-09_ugolovno_presleduemyj_osnovatel"></a>
                                 <div class="nlt-content">
                                     <a class="category_label" href="">Новости</a>
-                                    <p class="black">Силовики в Крыму разгромили технологичные игорные клубы. Организаторам грозит 6 лет тюрьмы. Видео
+                                    <p class="black">Арестованный основатель «Т-платформ» проиграл спор с ВЭБом на полтора миллиарда
                                         
-                                        <span class="comment_count" id="news524833_2" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye">1</span>                                        
+                                        <span class="comment_count" id="news524961_2" data-comment="https://www.cnews.ru/news/top/2021-03-09_ugolovno_presleduemyj_osnovatel">1</span>                                        
                                     </p>
                                 </div>
+                            </li><li style="padding-top: 9px; padding-bottom: 9px;">
+                    
+                    <a href="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej" class="black">WhatsApp оставит без связи пользователей старых iPhone </a> <a href="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej#cnComments" class="comment_count" id="top524905" data-comment="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej"></a>                    
+                </li>
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/articles/2021-03-03_zhenshchiny_goda_v_otrasli_it_2021spisok" class="black">Женщины года в отрасли ИТ 2021. Список CNews
+                                    </a> <a href="https://www.cnews.ru/articles/2021-03-03_zhenshchiny_goda_v_otrasli_it_2021spisok#cnComments" class="comment_count" id="topm524731" data-comment="https://www.cnews.ru/articles/2021-03-03_zhenshchiny_goda_v_otrasli_it_2021spisok"></a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://safe.cnews.ru/news/top/2021-03-04_rossiyane_izobreli_chudogadzhet" class="black">Россияне изобрели чудо-прибор для защиты от 5G и продают его дороже iPhone
-                                    </a> <a href="https://safe.cnews.ru/news/top/2021-03-04_rossiyane_izobreli_chudogadzhet#cnComments" class="comment_count" id="topm524827" data-comment="https://safe.cnews.ru/news/top/2021-03-04_rossiyane_izobreli_chudogadzhet">9</a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_tsmc_i_apple_obedinilis_protiv" class="black">TSMC и Apple объединились против всех, чтобы поразить мир 2-нанометровыми чипами
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_tsmc_i_apple_obedinilis_protiv#cnComments" class="comment_count" id="topm524953" data-comment="https://www.cnews.ru/news/top/2021-03-09_tsmc_i_apple_obedinilis_protiv"></a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://events.cnews.ru/news/top/2021-03-04_onlajnkonferentsiya_cnews_ecommerce" class="red">ОНЛАЙН-конференция CNews «E-commerce 2021» состоится 23 марта
-                                    </a> <a href="https://events.cnews.ru/news/top/2021-03-04_onlajnkonferentsiya_cnews_ecommerce#cnComments" class="comment_count" id="topm524829" data-comment="https://events.cnews.ru/news/top/2021-03-04_onlajnkonferentsiya_cnews_ecommerce"></a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_shtrafy_za_prodazhu_umnoj" class="black">Безнаказанная торговля смартфонами и ПК без российского ПО продлена до лета 2021
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_shtrafy_za_prodazhu_umnoj#cnComments" class="comment_count" id="topm524943" data-comment="https://www.cnews.ru/news/top/2021-03-09_shtrafy_za_prodazhu_umnoj"></a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_whatsapp_zapustil_audio_i_videozvonki" class="black">В WhatsApp для Windows и макбуков появились аудио- и видеозвонки. Но без смартфона все равно не обойтись
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_whatsapp_zapustil_audio_i_videozvonki#cnComments" class="comment_count" id="topm524817" data-comment="https://www.cnews.ru/news/top/2021-03-04_whatsapp_zapustil_audio_i_videozvonki">1</a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://safe.cnews.ru/news/top/2021-03-09_vazhnoe_obnovlenie_windows_10" class="black">Важное обновление Windows 10 сломало резервное копирование
+                                    </a> <a href="https://safe.cnews.ru/news/top/2021-03-09_vazhnoe_obnovlenie_windows_10#cnComments" class="comment_count" id="topm524941" data-comment="https://safe.cnews.ru/news/top/2021-03-09_vazhnoe_obnovlenie_windows_10">1</a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye" class="black">В России появятся продвинутые отечественные процессоры для смартфонов и интернета вещей
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye#cnComments" class="comment_count" id="topm524807" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye">9</a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya" class="black">В Nokia массовые увольнения, которые она тщательно скрывает. На улицу выставлены больше 10 тыс. человек
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya#cnComments" class="comment_count" id="topm524947" data-comment="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya">2</a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili" class="black">Выручка Mail.ru перевалила за 100 млрд руб. за счет соцсетей и игр
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili#cnComments" class="comment_count" id="topm524785" data-comment="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili">4</a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa" class="black">Глава российского офиса «Касперского» после 18 лет работы ушел в «Мой офис»
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa#cnComments" class="comment_count" id="topm524937" data-comment="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa"></a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye" class="black">Иностранные ИТ-компании в России обложат налогами, чтобы спасти их российских конкурентов
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye#cnComments" class="comment_count" id="topm524779" data-comment="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye">9</a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes" class="black">Red Hat ловко вынудила бизнес вдвое переплачивать за RHEL Server и техподдержку
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes#cnComments" class="comment_count" id="topm524871" data-comment="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes">8</a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv" class="black">Знаменитый Linux-дистрибутив перейдет на добровольно-принудительную установку обновлений
-                                    </a> <a href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv#cnComments" class="comment_count" id="topm524767" data-comment="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv">1</a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej" class="black">WhatsApp оставит без связи пользователей старых iPhone
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej#cnComments" class="comment_count" id="topm524905" data-comment="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej"></a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym" class="black">На макбуках с чипом М1, который всем нравится, навсегда перестанет запускаться ПО для Intel
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym#cnComments" class="comment_count" id="topm524745" data-comment="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym"></a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya" class="red">ОНЛАЙН-конференция CNews «ИТ-стратегия 2021» состоится 16 марта
+                                    </a> <a href="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya#cnComments" class="comment_count" id="topm524919" data-comment="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya"></a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://mobile.cnews.ru/news/top/2021-03-02_rzhd_vnedryaet_mobilnoe_prilozhenie" class="black">РЖД внедряет мобильное приложение на ОС «Аврора» для работников, обеспечивающих эксплуатацию сетей связи
-                                    </a>                                 
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa" class="black">Акционер «Моего офиса» и сооснователь IBS создали ИТ-компанию для работы на «сложном и конкурентном» рынке
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa#cnComments" class="comment_count" id="topm524899" data-comment="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa">1</a>                                
                             </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli" class="black">Россияне собрали миллионы рублей, чтобы спасти раздачи на Rutracker
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli#cnComments" class="comment_count" id="topm524405" data-comment="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli">5</a>                                
-                            </li>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo" class="black">«Росатом» для своего квантового компьютера купил на 4,5 миллиарда «железо» с Антильских островов
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo#cnComments" class="comment_count" id="topm524645" data-comment="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo">2</a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj" class="black">Россияне рискуют остаться без беспроводного интернета. Минцифры все отрицает
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj#cnComments" class="comment_count" id="topm524893" data-comment="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj">1</a>                                
                             </li>
                             
                             
                                                                                     
-                                                                                                                            <li>
+                                                                                                                            <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://mobile.cnews.ru/news/top/2021-03-02_rzhd_vnedryaet_mobilnoe_prilozhenie" class="black">РЖД внедряет мобильное приложение на ОС «Аврора» для работников, обеспечивающих эксплуатацию сетей связи</a>
-                
+                <a href="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya" class="red">ОНЛАЙН-конференция CNews «ИТ-стратегия 2021» состоится 16 марта</a>
+        <a class="comment_count" href="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya#cnComments" id="top524919" data-comment="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya"></a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli" class="black">Россияне собрали миллионы рублей, чтобы спасти раздачи на Rutracker</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli#cnComments" id="top524405" data-comment="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli">5</a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa" class="black">Акционер «Моего офиса» и сооснователь IBS создали ИТ-компанию для работы на «сложном и конкурентном» рынке</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa#cnComments" id="top524899" data-comment="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa">1</a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo" class="black">«Росатом» для своего квантового компьютера купил на 4,5 миллиарда «железо» с Антильских островов</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo#cnComments" id="top524645" data-comment="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo">2</a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj" class="black">Россияне рискуют остаться без беспроводного интернета. Минцифры все отрицает</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj#cnComments" id="top524893" data-comment="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj">1</a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
 <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-<a href="https://xeroxnow.cnews.ru/articles/2020-12-10_sozdanie_personalizirovannogo_opyta" data-advert="article-16997-2">Возможна ли настоящая персонализация общения на рынке B2B?</a>
-<a class="comment_count" href="https://xeroxnow.cnews.ru/articles/2020-12-10_sozdanie_personalizirovannogo_opyta#cnComments" id="toparticle16997" data-comment="https://xeroxnow.cnews.ru/articles/2020-12-10_sozdanie_personalizirovannogo_opyta"></a>
+<a href="https://www.cnews.ru/projects/2021/diasoft" data-advert="article---2">Почему вам надо прочитать книгу «Бизнес в условиях перемен»</a>
+<a class="comment_count" href="https://www.cnews.ru/projects/2021/diasoft#cnComments" id="toparticle-" data-comment="https://www.cnews.ru/projects/2021/diasoft"></a>
 </li>
-                                    <li>
+                                    <li style="padding-top: 9px; padding-bottom: 9px;">
 <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-<a href="https://xeroxnow.cnews.ru/articles/2020-12-10_razvitie_gibkoj_rabochej_sredy" data-advert="article-16995-2">Гибридная рабочая среда вызывает привыкание</a>
-<a class="comment_count" href="https://xeroxnow.cnews.ru/articles/2020-12-10_razvitie_gibkoj_rabochej_sredy#cnComments" id="toparticle16995" data-comment="https://xeroxnow.cnews.ru/articles/2020-12-10_razvitie_gibkoj_rabochej_sredy"></a>
+<a href="https://www.cnews.ru/projects/2020/ericsson" data-advert="article---2">Михаил Филимончик, Ericsson: Через пять лет на 5G перейдет треть всех абонентов в мире</a>
+<a class="comment_count" href="https://www.cnews.ru/projects/2020/ericsson#cnComments" id="toparticle-" data-comment="https://www.cnews.ru/projects/2020/ericsson"></a>
 </li>
-                                                                    <li>
+                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
                     
                 <a href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim" class="black">Microsoft бесплатно раздает ПО для автоматизации унылой работы без навыков программирования</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim#cnComments" id="top524655" data-comment="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim">8</a>        
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim#cnComments" id="top524655" data-comment="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim">9</a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh" class="black">Сборщики знаменитых Linux-дистрибутивов отказались выпускать пакеты с Telegram из-за хамства разработчиков мессенджера</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh#cnComments" id="top524603" data-comment="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh">2</a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-09_hozyaeva_zabrali_u_mts_prezidenta" class="black">Хозяева забрали у МТС президента</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-09_hozyaeva_zabrali_u_mts_prezidenta#cnComments" id="top524913" data-comment="https://www.cnews.ru/news/top/2021-03-09_hozyaeva_zabrali_u_mts_prezidenta"></a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe" class="black">Вышло масштабное обновление Chrome со множеством изменений. На старых ПК оно не работает</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe#cnComments" id="top524647" data-comment="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe"></a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati" class="black">В Минцифры назначают нового замминистра и создают три новых департамента</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati#cnComments" id="top524903" data-comment="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati">2</a>        
     </li>
 
-                                                                                                            <li>
+                                                                                                            <li style="padding-top: 9px; padding-bottom: 9px;">
             <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-                                                                            <a href="https://zoom.cnews.ru/publication/item/63759?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=top">ZOOM: Лучшие гаджеты в подарок на 8 марта</a><a class="comment_count" href="https://zoom.cnews.ru/publication/item/63759#comments" id="topzoom" data-comment="https://zoom.cnews.ru/publication/item/63759"></a>
+                                                                            <a href="https://zoom.cnews.ru/publication/item/63763?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=top">ZOOM: Всё про eSIM в России — где и как оформить сим-карту и какие устройства с ней работают</a><a class="comment_count" href="https://zoom.cnews.ru/publication/item/63763#comments" id="topzoom" data-comment="https://zoom.cnews.ru/publication/item/63763"></a>
         </li>
     
 
-                                    <li>
+                                    <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
     <a href="https://events.cnews.ru/articles/2021-02-24_kak_udalennaya_rabota_skazalas_na" class="" data-advert="article-1872162966-2">Как удаленная работа сказалась на эффективности бизнеса</a><a class="comment_count" href="https://events.cnews.ru/articles/2021-02-24_kak_udalennaya_rabota_skazalas_na#comments" id="toprand0" data-comment="https://events.cnews.ru/articles/2021-02-24_kak_udalennaya_rabota_skazalas_na" data-nocomment=""></a>
 </li>
-                                    <li>
+                                    <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost" class="" data-advert="article-17201-2">Алексей Малышев, «Сонет»: Отказоустойчивость ЦОД жизненно важна для бизнеса</a><a class="comment_count" href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost#comments" id="toprand1" data-comment="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost" data-nocomment=""></a>
+    <a href="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu" class="" data-advert="article-17245-2">Чек-лист: как выбрать идеальную систему электронного документооборота</a><a class="comment_count" href="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu#comments" id="toprand1" data-comment="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu" data-nocomment=""></a>
 
-</li> <li>
+</li> <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya" class="" data-advert="article-17229-2">Александр Бондаренко, R-Vision: Бинарная логика большинства систем мониторинга кибербезопасности безнадежно устарела</a><a class="comment_count" href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya#comments" id="toprand2" data-comment="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya" data-nocomment=""></a>
+    <a href="https://safe.cnews.ru/articles/2021-02-11_ritejl_pytaetsya_preodolet_posledstviya" class="" data-advert="article-17183-2">Ритейл пытается преодолеть последствия пандемии без угроз для ИБ</a><a class="comment_count" href="https://safe.cnews.ru/articles/2021-02-11_ritejl_pytaetsya_preodolet_posledstviya#comments" id="toprand2" data-comment="https://safe.cnews.ru/articles/2021-02-11_ritejl_pytaetsya_preodolet_posledstviya" data-nocomment=""></a>
 
-</li> <li>
+</li> <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://www.cnews.ru/projects/2021/sap" class="" data-advert="article---2">Роботы, блокчейн, ИИ — в Москве проходит выставка новейших технологий</a><a class="comment_count" href="https://www.cnews.ru/projects/2021/sap#comments" id="toprand3" data-comment="https://www.cnews.ru/projects/2021/sap" data-nocomment=""></a>
+    <a href="https://hitachi.cnews.ru/articles/2021-01-31_novoe_prochtenie_obnovlyaem_podhody" class="" data-advert="article-17143-2">Новое прочтение: обновляем подходы к финтеху</a><a class="comment_count" href="https://hitachi.cnews.ru/articles/2021-01-31_novoe_prochtenie_obnovlyaem_podhody#comments" id="toprand3" data-comment="https://hitachi.cnews.ru/articles/2021-01-31_novoe_prochtenie_obnovlyaem_podhody" data-nocomment=""></a>
 
-</li> <li>
+</li> <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://xeroxnow.cnews.ru/articles/2020-12-10_avtomatizatsiya_rabochih_protsessov" class="" data-advert="article-16993-2">Как освободить 2,5 часа в день для каждого сотрудника</a><a class="comment_count" href="https://xeroxnow.cnews.ru/articles/2020-12-10_avtomatizatsiya_rabochih_protsessov#comments" id="toprand4" data-comment="https://xeroxnow.cnews.ru/articles/2020-12-10_avtomatizatsiya_rabochih_protsessov" data-nocomment=""></a>
+    <a href="https://www.cnews.ru/projects/2021/sap" class="" data-advert="article---2">Роботы, блокчейн, ИИ — в Москве проходит выставка новейших технологий</a><a class="comment_count" href="https://www.cnews.ru/projects/2021/sap#comments" id="toprand4" data-comment="https://www.cnews.ru/projects/2021/sap" data-nocomment=""></a>
 
 </li>
-                                    <li>
+                                    <li style="padding-top: 9px; padding-bottom: 9px;">
 <div class="publication-position" data-type="top" title="Блок: Топ"></div>
 <a href="https://jet-wifi6.cnews.ru/articles/2020-12-11_wifi_6_bystree_vyshe_silnee" data-advert="article-2669-2">Первое сравнение вендоров Wi-Fi 6</a>
 <a class="comment_count" href="https://jet-wifi6.cnews.ru/articles/2020-12-11_wifi_6_bystree_vyshe_silnee#cnComments" id="toparticle2669" data-comment="https://jet-wifi6.cnews.ru/articles/2020-12-11_wifi_6_bystree_vyshe_silnee">7</a>
 </li>
-                                                                    <li>
+                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-03_v_rossii_poyavilas_dorozhnaya" class="black">Власти России пресекут «порочную практику» выпуска невостребованной отечественной электроники</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_v_rossii_poyavilas_dorozhnaya#cnComments" id="top524733" data-comment="https://www.cnews.ru/news/top/2021-03-03_v_rossii_poyavilas_dorozhnaya">10</a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya" class="black">В России запущена первая пользовательская сеть 5G. Она доступна лишь избранным</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya#cnComments" id="top524897" data-comment="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya"></a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-03_postsovetskij_sotovyj_operator" class="black">Постсоветский сотовый оператор уходит с Лондонской биржи</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_postsovetskij_sotovyj_operator#cnComments" id="top524693" data-comment="https://www.cnews.ru/news/top/2021-03-03_postsovetskij_sotovyj_operator"></a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_vlasti_radikalno_peresmotryat" class="black">Власти радикально пересмотрели бюджет и цели «Информационного общества»</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_vlasti_radikalno_peresmotryat#cnComments" id="top524889" data-comment="https://www.cnews.ru/news/top/2021-03-05_vlasti_radikalno_peresmotryat">1</a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://events.cnews.ru/news/top/2021-03-03_konferentsiya_cnews_ikt_v_gossektore" class="red">Конференция CNews «ИКТ в госсекторе 2021» состоится 8 апреля</a>
-        <a class="comment_count" href="https://events.cnews.ru/news/top/2021-03-03_konferentsiya_cnews_ikt_v_gossektore#cnComments" id="top524705" data-comment="https://events.cnews.ru/news/top/2021-03-03_konferentsiya_cnews_ikt_v_gossektore"></a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut" class="black">За «Билайном» пронаблюдают сестра экс-директора компании и основатель IBS</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut#cnComments" id="top524881" data-comment="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut"></a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://safe.cnews.ru/news/top/2021-03-03_moshenniki_oblyubovali_portal" class="black">Портал «Госуслуг» стал частью схемы обмана россиян</a>
-        <a class="comment_count" href="https://safe.cnews.ru/news/top/2021-03-03_moshenniki_oblyubovali_portal#cnComments" id="top524695" data-comment="https://safe.cnews.ru/news/top/2021-03-03_moshenniki_oblyubovali_portal">8</a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye" class="black">Власти заставят иностранные ИТ-компании платить налоги за каждого сотрудника-россиянина</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye#cnComments" id="top524865" data-comment="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye">14</a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora" class="black">МТС собирается купить оператора связи, принадлежавшего экс-министру связи Рейману</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora#cnComments" id="top524679" data-comment="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora"></a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_skandalnyj_amerikanskij" class="black">Скандальный американский фонд вложился в компанию экс-главы «Мегафона»</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_skandalnyj_amerikanskij#cnComments" id="top524851" data-comment="https://www.cnews.ru/news/top/2021-03-05_skandalnyj_amerikanskij"></a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-03_fsb_nachala_delo_protiv_odnogo" class="black">ФСБ начала дело против одного из последних независимых сотовых операторов России</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_fsb_nachala_delo_protiv_odnogo#cnComments" id="top524651" data-comment="https://www.cnews.ru/news/top/2021-03-03_fsb_nachala_delo_protiv_odnogo"></a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon" class="black">Выпущен первый с мире смартфон с памятью больше, чем у ноутбуков. Цена, видео</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon#cnComments" id="top524835" data-comment="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon">9</a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-03_u_mintsifry_budet_svoj_departament" class="black">У Минцифры будет свой департамент микроэлектроники</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_u_mintsifry_budet_svoj_departament#cnComments" id="top524653" data-comment="https://www.cnews.ru/news/top/2021-03-03_u_mintsifry_budet_svoj_departament">6</a>        
+                <a href="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj" class="black">Взломан российский  киберкриминальный форум. Данные хакерской элиты утекли в Сеть</a>
+        <a class="comment_count" href="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj#cnComments" id="top524847" data-comment="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj"></a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://safe.cnews.ru/news/top/2021-03-03_hakery_kradut_paroli_k_linuxsistemam" class="black">Хакеры крадут пароли к компьютерам на Linux, пользуясь «дырами» в приложениях Amazon, Lyft и Slack</a>
-        <a class="comment_count" href="https://safe.cnews.ru/news/top/2021-03-03_hakery_kradut_paroli_k_linuxsistemam#cnComments" id="top524649" data-comment="https://safe.cnews.ru/news/top/2021-03-03_hakery_kradut_paroli_k_linuxsistemam">2</a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-05_osnovatel_yota_vlozhilsya_v" class="black">Основатель Yota вложился в стартап экс-замминистра связи</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_osnovatel_yota_vlozhilsya_v#cnComments" id="top524867" data-comment="https://www.cnews.ru/news/top/2021-03-05_osnovatel_yota_vlozhilsya_v">3</a>        
     </li>
 
-                                                                                                <li>
+                                                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                     
-                <a href="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu" class="black">ВТБ внедряет российскую СУБД Tarantool</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu#cnComments" id="top524637" data-comment="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu"></a>        
+                <a href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye" class="black">Силовики в Крыму разгромили технологичные игорные клубы. Организаторам грозит 6 лет тюрьмы. Видео</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye#cnComments" id="top524833" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye">2</a>        
     </li>
 
                             
@@ -668,154 +705,154 @@ max-width: 1280px;
                 <div class="tabs_block" id="tab-mark-popular">
                     <div class="tabs_item">
                         <ul data-next-page-url="/main/more_news/popular/30">
-                                                                                            <li>
+                                                                                            <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj">Россияне рискуют остаться без беспроводного интернета. Минцифры все отрицает</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj#cnComments" id="pop524893" data-comment="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj">1</a>        
+    </li>
+
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye">Власти заставят иностранные ИТ-компании платить налоги за каждого сотрудника-россиянина</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye#cnComments" id="pop524865" data-comment="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye">14</a>        
+    </li>
+
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2021-03-03_zhenshchiny_goda_v_otrasli_it_2021spisok">Женщины года в отрасли ИТ 2021. Список CNews</a>
+                
+    </li>
+
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                 <a href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim">Microsoft бесплатно раздает ПО для автоматизации унылой работы без навыков программирования</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim#cnComments" id="pop524655" data-comment="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim">8</a>        
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim#cnComments" id="pop524655" data-comment="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim">9</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh">Сборщики знаменитых Linux-дистрибутивов отказались выпускать пакеты с Telegram из-за хамства разработчиков мессенджера</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh#cnComments" id="pop524603" data-comment="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh">2</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon">Выпущен первый с мире смартфон с памятью больше, чем у ноутбуков. Цена, видео</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon#cnComments" id="pop524835" data-comment="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon">9</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli">Россияне собрали миллионы рублей, чтобы спасти раздачи на Rutracker</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli#cnComments" id="pop524405" data-comment="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli">5</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa">Акционер «Моего офиса» и сооснователь IBS создали ИТ-компанию для работы на «сложном и конкурентном» рынке</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa#cnComments" id="pop524899" data-comment="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa">1</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo">«Росатом» для своего квантового компьютера купил на 4,5 миллиарда «железо» с Антильских островов</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo#cnComments" id="pop524645" data-comment="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo">2</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye">Силовики в Крыму разгромили технологичные игорные клубы. Организаторам грозит 6 лет тюрьмы. Видео</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye#cnComments" id="pop524833" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye">2</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-01_fotohosting_google_bezvozvratno">Google безвозвратно портит фотографии, хранящиеся в «высоком качестве»</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-01_fotohosting_google_bezvozvratno#cnComments" id="pop524527" data-comment="https://www.cnews.ru/news/top/2021-03-01_fotohosting_google_bezvozvratno">1</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2020-12-01_sozdana_bezopasnaya_i_universalnaya">Создана замена покойному Adobe Flash Player, которая лучше и безопаснее работает</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2020-12-01_sozdana_bezopasnaya_i_universalnaya#cnComments" id="pop519913" data-comment="https://www.cnews.ru/news/top/2020-12-01_sozdana_bezopasnaya_i_universalnaya">2</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-02_sozdan_akkumulyator_iz_nastoyashchih">Создан аккумулятор, способный работать без подзарядки сотни лет</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_sozdan_akkumulyator_iz_nastoyashchih#cnComments" id="pop524571" data-comment="https://www.cnews.ru/news/top/2021-03-02_sozdan_akkumulyator_iz_nastoyashchih">3</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj">Взломан российский  киберкриминальный форум. Данные хакерской элиты утекли в Сеть</a>
+        <a class="comment_count" href="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj#cnComments" id="pop524847" data-comment="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj"></a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-02-25_vebstudii_vsego_mira_pod">Веб-студии всего мира под угрозой закрытия. Microsoft запустила сервис создания сайтов, и он полностью бесплатный</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-02-25_vebstudii_vsego_mira_pod#cnComments" id="pop524397" data-comment="https://www.cnews.ru/news/top/2021-02-25_vebstudii_vsego_mira_pod">18</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya">В России запущена первая пользовательская сеть 5G. Она доступна лишь избранным</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya#cnComments" id="pop524897" data-comment="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya"></a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe">Вышло масштабное обновление Chrome со множеством изменений. На старых ПК оно не работает</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe#cnComments" id="pop524647" data-comment="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut">За «Билайном» пронаблюдают сестра экс-директора компании и основатель IBS</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut#cnComments" id="pop524881" data-comment="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut"></a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu">ВТБ внедряет российскую СУБД Tarantool</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu#cnComments" id="pop524637" data-comment="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati">В Минцифры назначают нового замминистра и создают три новых департамента</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati#cnComments" id="pop524903" data-comment="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati">2</a>        
     </li>
 
-                                                                <li>
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                 <a href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym">На макбуках с чипом М1, который всем нравится, навсегда перестанет запускаться ПО для Intel</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym#cnComments" id="pop524745" data-comment="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym"></a>        
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym#cnComments" id="pop524745" data-comment="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym">1</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora">МТС собирается купить оператора связи, принадлежавшего экс-министру связи Рейману</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora#cnComments" id="pop524679" data-comment="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye">В России появятся продвинутые отечественные процессоры для смартфонов и интернета вещей</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye#cnComments" id="pop524807" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_rossii_poyavyatsya_prodvinutye">16</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-02_intel_lishila_vse_prigodnye">Intel лишила гарантии все пригодные для «разгона» процессоры</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_intel_lishila_vse_prigodnye#cnComments" id="pop524619" data-comment="https://www.cnews.ru/news/top/2021-03-02_intel_lishila_vse_prigodnye"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv">Знаменитый Linux-дистрибутив перейдет на добровольно-принудительную установку обновлений</a>
+        <a class="comment_count" href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv#cnComments" id="pop524767" data-comment="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv">7</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-02_pavel_durov_mozhet_pojti_pod">Дуров пойдет под суд. Он должен инвесторам десятки миллионов долларов</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-02_pavel_durov_mozhet_pojti_pod#cnComments" id="pop524593" data-comment="https://www.cnews.ru/news/top/2021-03-02_pavel_durov_mozhet_pojti_pod">9</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/news/top/2021-02-20_whatsapp_navsegda_zapretit_millionam">WhatsApp навсегда запретит миллионам пользователей отправлять и получать сообщения</a>
+        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-02-20_whatsapp_navsegda_zapretit_millionam#cnComments" id="pop524223" data-comment="https://www.cnews.ru/news/top/2021-02-20_whatsapp_navsegda_zapretit_millionam">33</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-01_soft_s_pretenziej_na_zvanie">Власти исключат из Реестра отечественного ПО софт,  несовместимый с российским «железом»</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-01_soft_s_pretenziej_na_zvanie#cnComments" id="pop524505" data-comment="https://www.cnews.ru/news/top/2021-03-01_soft_s_pretenziej_na_zvanie">8</a>        
-    </li>
-
-                                                                <li>
-                <a href="https://www.cnews.ru/news/top/2021-03-01_vlasti_zapustyat_vserossijskuyu">Пенсии и соцпособия станут назначаться россиянам онлайн и без подачи заявлений</a>
-        <a class="comment_count" href="https://www.cnews.ru/news/top/2021-03-01_vlasti_zapustyat_vserossijskuyu#cnComments" id="pop524543" data-comment="https://www.cnews.ru/news/top/2021-03-01_vlasti_zapustyat_vserossijskuyu">18</a>        
-    </li>
-
-                                                                <li>
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                 <a href="https://www.cnews.ru/articles/2021-02-09_zamministra_ekonomicheskogo_razvitiya">Замминистра экономического развития Оксана Тарасенко в интервью CNews — о развитии искусственного интеллекта в России</a>
         <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-09_zamministra_ekonomicheskogo_razvitiya#cnComments" id="pop17175" data-comment="https://www.cnews.ru/articles/2021-02-09_zamministra_ekonomicheskogo_razvitiya">6</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2021-02-26_albert_boris_sovkombank">Альберт Борис, Совкомбанк: Будущее — за экосистемами, в которых нет барьеров между клиентами и партнерами</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-26_albert_boris_sovkombank#cnComments" id="pop17207" data-comment="https://www.cnews.ru/articles/2021-02-26_albert_boris_sovkombank"></a>        
-    </li>
-
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak">Цифровизация автотранспорта: как в России будут внедрять беспилотные машины, телематику и навигацию</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak#cnComments" id="pop17223" data-comment="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak">3</a>        
-    </li>
-
-                                                                <li>
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                 <a href="https://www.cnews.ru/articles/2021-02-02_vladimir_muravevitdirektor_alfastrahovanie">Владимир Муравьев, ИТ-директор «АльфаСтрахование» в интервью CNews: Мировой InsurTech пока находится на шаг впереди российского</a>
         <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-02_vladimir_muravevitdirektor_alfastrahovanie#cnComments" id="pop17161" data-comment="https://www.cnews.ru/articles/2021-02-02_vladimir_muravevitdirektor_alfastrahovanie"></a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2020-12-17_4_glavnyh_nauchnyh_otkrytiya_2020_goda">4 главных научных открытия 2020 года для отрасли ИКТ: выбор CNews</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2020-12-17_4_glavnyh_nauchnyh_otkrytiya_2020_goda#cnComments" id="pop17033" data-comment="https://www.cnews.ru/articles/2020-12-17_4_glavnyh_nauchnyh_otkrytiya_2020_goda">3</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2021-03-02_5g_nazvali_klyuchevoj_tehnologiej_dlya">5G назвали ключевой технологией для развития всего мира</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/2021-03-02_5g_nazvali_klyuchevoj_tehnologiej_dlya#cnComments" id="pop17237" data-comment="https://www.cnews.ru/articles/2021-03-02_5g_nazvali_klyuchevoj_tehnologiej_dlya">2</a>        
     </li>
 
-                                                                <li>
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                 <a href="https://www.cnews.ru/articles/servisnye_tsentry_hitrosti_i_ulovki">Сервисные центры: хитрости и уловки с "гарантией"</a>
         <a class="comment_count" href="https://www.cnews.ru/articles/servisnye_tsentry_hitrosti_i_ulovki#cnComments" id="pop3203" data-comment="https://www.cnews.ru/articles/servisnye_tsentry_hitrosti_i_ulovki">4</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2021-02-20_pochemu_imenno_itdepartament_dolzhen">Как ИТ-департаменты на самом деле влияют на цифровую трансформацию</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-20_pochemu_imenno_itdepartament_dolzhen#cnComments" id="pop17217" data-comment="https://www.cnews.ru/articles/2021-02-20_pochemu_imenno_itdepartament_dolzhen"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2020-12-17_4_glavnyh_nauchnyh_otkrytiya_2020_goda">4 главных научных открытия 2020 года для отрасли ИКТ: выбор CNews</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/2020-12-17_4_glavnyh_nauchnyh_otkrytiya_2020_goda#cnComments" id="pop17033" data-comment="https://www.cnews.ru/articles/2020-12-17_4_glavnyh_nauchnyh_otkrytiya_2020_goda">3</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2021-02-03_v_rossii_sozdaetsya_sobstvennaya_sistema">В России создается собственная система критически важных коммуникаций</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-03_v_rossii_sozdaetsya_sobstvennaya_sistema#cnComments" id="pop17157" data-comment="https://www.cnews.ru/articles/2021-02-03_v_rossii_sozdaetsya_sobstvennaya_sistema"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak">Цифровизация автотранспорта: как в России будут внедрять беспилотные машины, телематику и навигацию</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak#cnComments" id="pop17223" data-comment="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak">3</a>        
     </li>
 
-                                                                <li>
-                <a href="https://storage.cnews.ru/articles/2020-12-14_kak_iskusstvennyj_intellekt_preobrazuet">Как искусственный интеллект преобразует энергетический и нефтедобывающий сектора</a>
-        <a class="comment_count" href="https://storage.cnews.ru/articles/2020-12-14_kak_iskusstvennyj_intellekt_preobrazuet#cnComments" id="pop17019" data-comment="https://storage.cnews.ru/articles/2020-12-14_kak_iskusstvennyj_intellekt_preobrazuet"></a>        
-    </li>
-
-                                                                <li>
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
                 <a href="https://www.cnews.ru/articles/2021-02-09_rossijskaya_promyshlennost_poluchila">Российская промышленность получила новые отечественные программные решения</a>
         <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-09_rossijskaya_promyshlennost_poluchila#cnComments" id="pop17177" data-comment="https://www.cnews.ru/articles/2021-02-09_rossijskaya_promyshlennost_poluchila"></a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2021-03-01_kak_rossijskie_kompanii_teryayut_desyatki">Как российские компании теряют десятки миллионов из-за проблем с производительностью систем</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2021-03-01_kak_rossijskie_kompanii_teryayut_desyatki#cnComments" id="pop17235" data-comment="https://www.cnews.ru/articles/2021-03-01_kak_rossijskie_kompanii_teryayut_desyatki">1</a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2021-02-11_terminalnyj_dostup_kak_instrument">Терминальный доступ как инструмент для «мягкого» перехода государственных корпораций на импортозамещение</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-11_terminalnyj_dostup_kak_instrument#cnComments" id="pop17179" data-comment="https://www.cnews.ru/articles/2021-02-11_terminalnyj_dostup_kak_instrument">1</a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2021-02-03_iskusstvennyj_intellekt_i_5g_smogut">Искусственный интеллект и 5G смогут вывести спортивный бизнес из кризиса</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-03_iskusstvennyj_intellekt_i_5g_smogut#cnComments" id="pop17159" data-comment="https://www.cnews.ru/articles/2021-02-03_iskusstvennyj_intellekt_i_5g_smogut"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/kak_promsvyazbank_razvivaet_internetbank_dlya_yuridicheskih_lits">Как Промсвязьбанк развивает интернет-банк для юридических лиц</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/kak_promsvyazbank_razvivaet_internetbank_dlya_yuridicheskih_lits#cnComments" id="pop4247" data-comment="https://www.cnews.ru/articles/kak_promsvyazbank_razvivaet_internetbank_dlya_yuridicheskih_lits"></a>        
     </li>
 
-                                                                <li>
-                <a href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya">Александр Бондаренко, R-Vision: Бинарная логика большинства систем мониторинга кибербезопасности безнадежно устарела</a>
-        <a class="comment_count" href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya#cnComments" id="pop17229" data-comment="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost">Алексей Малышев, «Сонет»: Отказоустойчивость ЦОД жизненно важна для бизнеса</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost#cnComments" id="pop17201" data-comment="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost"></a>        
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2019-12-16_4_glavnyh_nauchnyh_otkrytiya_goda_dlya">4 главных научных открытия года для отрасли ИКТ: выбор CNews</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2019-12-16_4_glavnyh_nauchnyh_otkrytiya_goda_dlya#cnComments" id="pop16098" data-comment="https://www.cnews.ru/articles/2019-12-16_4_glavnyh_nauchnyh_otkrytiya_goda_dlya"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2020-02-26_zhenshchiny_goda_v_itotrasli_2020">Женщины года в отрасли ИТ 2020. Список CNews</a>
+                
     </li>
 
-                                                                <li>
-                <a href="https://www.cnews.ru/articles/2021-02-24_yurij_lebedevsoftline_rossijskij_rynok">Юрий Лебедев, Softline Education: Российский рынок виртуализации стремительно сокращает отставание от западного</a>
-        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-24_yurij_lebedevsoftline_rossijskij_rynok#cnComments" id="pop17095" data-comment="https://www.cnews.ru/articles/2021-02-24_yurij_lebedevsoftline_rossijskij_rynok"></a>        
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu">Чек-лист: как выбрать идеальную систему электронного документооборота</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu#cnComments" id="pop17245" data-comment="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu"></a>        
+    </li>
+
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://www.cnews.ru/articles/2021-02-26_albert_boris_sovkombank">Альберт Борис, Совкомбанк: Будущее — за экосистемами, в которых нет барьеров между клиентами и партнерами</a>
+        <a class="comment_count" href="https://www.cnews.ru/articles/2021-02-26_albert_boris_sovkombank#cnComments" id="pop17207" data-comment="https://www.cnews.ru/articles/2021-02-26_albert_boris_sovkombank"></a>        
+    </li>
+
+                                                                <li style="padding-top: 9px; padding-bottom: 9px;">
+                <a href="https://ejustice.cnews.ru/articles/2017-12-26_olga_solopova_elektronnoe_pravosudie_reshaet_problemu_poddelki">Электронное правосудие решает проблему подделки судебных актов</a>
+        <a class="comment_count" href="https://ejustice.cnews.ru/articles/2017-12-26_olga_solopova_elektronnoe_pravosudie_reshaet_problemu_poddelki#cnComments" id="pop9801" data-comment="https://ejustice.cnews.ru/articles/2017-12-26_olga_solopova_elektronnoe_pravosudie_reshaet_problemu_poddelki"></a>        
     </li>
 
                             
@@ -831,7 +868,7 @@ max-width: 1280px;
     <div class="right_side flex-shrink-0 flex-grow-0 d-flex flex-column">
             
             <div class="banner">
-            <script type="text/javascript" src="https://cnb.cnews.ru/rotator.php?zone=104"></script><img src="//cnb.cnews.ru/image_dummy.php?zone=104" class="cnb-dummy-counter"><div id="cnb_zone_104_1614894775684" class="cnb-zone cnb-zone-104 cnb-in"><a class="cnb-container cnb-text" href="https://cnb.cnews.ru/click.php?zone=104&amp;banner=8447" target="_blank"><iframe src="https://www.cnews.ru/inc/static/banner/mp5141b/huawei%20banner.html" width="300" border="0" height="600" scrolling="no" style="border: 0; overflow: hidden"></iframe><div class="cnb-overlay"></div></a><img src="https://cnb.cnews.ru/image.php?zone=104&amp;banner=8447" class="cnb-counter"></div>
+            <script type="text/javascript" src="https://cnb.cnews.ru/rotator.php?zone=104"></script><img src="//cnb.cnews.ru/image_dummy.php?zone=104" class="cnb-dummy-counter"><div id="cnb_zone_104_1615334980573" class="cnb-zone cnb-zone-104 cnb-in"><a class="cnb-container cnb-image" href="https://cnb.cnews.ru/click.php?zone=104&amp;banner=8457" target="_blank"><img src="https://filearchive.cnews.ru/img/cnb/contents/2021/02/16/300600_cnews.jpg"><div class="cnb-overlay"></div></a><img src="https://cnb.cnews.ru/image.php?zone=104&amp;banner=8457" class="cnb-counter"></div>
         </div>
     
         <script type="text/javascript" src="https://cnb.cnews.ru/rotator.php?zone=423"></script><img src="//cnb.cnews.ru/image_dummy.php?zone=423" class="cnb-dummy-counter">
@@ -939,47 +976,47 @@ max-width: 1280px;
         
                                                                                                                                                                         
                 
-        <div class="persons_main d-phones-hide flex-grow-1     banner_new_design " style="background-image: url(https://filearchive.cnews.ru/img/files/2021/02/24/asbig.jpg)">
-            <a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-02_vladimir_muravevitdirektor_alfastrahovanie"></a>
+        <div class="persons_main d-phones-hide flex-grow-1     banner_new_design " style="background-image: url(https://filearchive.cnews.ru/img/articles/2021/03/01/ktbig.jpg)">
+            <a class="mni-overlay" href="https://www.cnews.ru/projects/2021/kazakhtelecom"></a>
             <div class="pm-top">
-                <a class="category_label cl_person cl_person_3" style="background: #c50d0f" href="">Тема месяца</a>
-                <h3>Мировой InsurTech пока находится на шаг <br>впереди российского</h3>
-                <p class="pm-quote">Мы вынуждены признать, что мировой рынок страхования находится на шаг впереди российского — как с точки зрения сервисов, которые ИТ предлагает, так и с позиции удобств для пользователя. С другой стороны, есть продукты, которые на Западе очень хорошо развиваются, а у нас не идут из-за разницы менталитетов.
+                <a class="category_label cl_person cl_person_2" style="background: #de742d" href="">Персона месяца</a>
+                <h3>Запустить 5G можно через год, но без спроса на технологию это бессмысленно</h3>
+                <p class="pm-quote">Понятно, что мы строим сети 5G не для того, чтобы скачивать фильмы за две секунды. Мы устанавливаем партнерские отношения с компаниями, которые должны создавать продукты и услуги на базе 5G. Развитие этой технологии — созидательная эволюция. И мы должны перейти на новую ступень развития все вместе.
                 </p>            </div>
             <div class="pm-bottom">
-                <b>Владимир Муравьев</b>
-                <p>ИТ-директор, «АльфаСтрахование»</p>
+                <b>Ерулан Кусаинов</b>
+                <p>член совета директоров «Казахтелеком»</p>
             </div>
         </div>
         
         <div class="right_side d-flex flex-wrap flex-shrink-0 flex-grow-0 justify-content-between">
-                                        <div class="pr-item banner_new_design" style="background-image: url(https://filearchive.cnews.ru/img/articles/2021/03/01/ktsmall.jpg)" data-number="2">
-	<a class="mni-overlay" href="https://www.cnews.ru/projects/2021/kazakhtelecom"></a>
-	<a class="category_label cl_person cl_person_2" style="background: #de742d" href="https://www.cnews.ru/projects/2021/kazakhtelecom">Персона месяца</a>
-	<h3>Запустить 5G можно через год, но без спроса на технологию это бессмысленно</h3>
+                                        <div class="pr-item banner_new_design" style="background-image: url(https://filearchive.cnews.ru/img/files/2021/02/24/assmall.jpg)" data-number="3">
+	<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-02_vladimir_muravevitdirektor_alfastrahovanie"></a>
+	<a class="category_label cl_person cl_person_3" style="background: #610F68" href="https://www.cnews.ru/articles/2021-02-02_vladimir_muravevitdirektor_alfastrahovanie">Тема месяца</a>
+	<h3>Мировой InsurTech пока находится на шаг <br>впереди российского</h3>
 <div class="pr-bottom ">
-	<p>Ерулан Кусаинов</p>
-	<p>член совета директоров «Казахтелеком» </p>
-        <div style="display: none;"></div>
-</div>
-</div>
-                            <div class="pr-item banner_new_design diasoft-02-2021" style="background-image: url(https://filearchive.cnews.ru/img/files/2021/02/03/diasoftsmall.jpg)" data-number="4">
-	<a class="mni-overlay" href="https://www.cnews.ru/projects/2021/diasoft"></a>
-	<a class="category_label cl_person cl_person_4" style="background: #ec7a00" href="https://www.cnews.ru/projects/2021/diasoft">Книга месяца</a>
-	<h3>Почему вам надо прочитать книгу «Бизнес в условиях перемен»</h3>
-<div class="pr-bottom ">
-	<p>Александр Глазков</p>
-	<p>председатель совета директоров компании «Диасофт» </p>
+	<p>Владимир Муравьев</p>
+	<p>ИТ-директор, «АльфаСтрахование» </p>
         <div style="display: none;"></div>
 </div>
 </div>
                             <div class="pr-item banner_new_design ekonom-02-2021" style="background-image: url(https://filearchive.cnews.ru/img/files/2021/02/16/small.jpg)" data-number="1">
 	<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-09_zamministra_ekonomicheskogo_razvitiya"></a>
-	<a class="category_label cl_person cl_person_1" style="background: #d03c4b" href="https://www.cnews.ru/articles/2021-02-09_zamministra_ekonomicheskogo_razvitiya">ИТ в госсекторе</a>
+	<a class="category_label cl_person cl_person_1" style="background: #0F6816" href="https://www.cnews.ru/articles/2021-02-09_zamministra_ekonomicheskogo_razvitiya">ИТ в госсекторе</a>
 	<h3>О развитии искусственного интеллекта в России</h3>
 <div class="pr-bottom ">
 	<p>Оксана Тарасенко</p>
 	<p>заместитель министра экономического развития РФ </p>
+        <div style="display: none;"></div>
+</div>
+</div>
+                            <div class="pr-item banner_new_design" style="background-image: url(https://filearchive.cnews.ru/img/files/2021/03/05/ibmsmall.jpg)" data-number="4">
+	<a class="mni-overlay" href="https://www.cnews.ru/projects/2021/ibm_hybrids"></a>
+	<a class="category_label cl_person cl_person_4" style="background: #da1e28" href="https://www.cnews.ru/projects/2021/ibm_hybrids">Событие месяца</a>
+	<h3>Могут ли гибридные облака стать основой стратегии цифровизации в России</h3>
+<div class="pr-bottom ">
+	<p></p>
+	<p> IBM провела конференцию Cloud &amp; AI Forum</p>
         <div style="display: none;"></div>
 </div>
 </div>
@@ -996,55 +1033,55 @@ max-width: 1280px;
                 <div class="tabs_block active" id="tab-mark-main">
                     <div class="tabs_item">
                         <ul>
-                                                        <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili" class="black">Выручка Mail.ru перевалила за 100 млрд руб. за счет соцсетей и игр
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili#cnComments" class="comment_count" id="topm524785" data-comment="https://www.cnews.ru/news/top/2021-03-04_sotsseti_i_igry_obespechili"></a>                                
+                                                        <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya" class="black">В Nokia массовые увольнения, которые она тщательно скрывает. На улицу выставлены больше 10 тыс. человек
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya#cnComments" class="comment_count" id="topm524947" data-comment="https://www.cnews.ru/news/top/2021-03-09_v_nokia_idut_massovye_uvolneniya"></a>                                
                             </li>
-                                                                                    <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye" class="black">Иностранные ИТ-компании в России обложат налогами, чтобы спасти их российских конкурентов
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye#cnComments" class="comment_count" id="topm524779" data-comment="https://www.cnews.ru/news/top/2021-03-04_vlasti_zavalyat_inostrannye"></a>                                
+                                                                                    <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa" class="black">Глава российского офиса «Касперского» после 18 лет работы ушел в «Мой офис»
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa#cnComments" class="comment_count" id="topm524937" data-comment="https://www.cnews.ru/news/top/2021-03-09_glava_rossijskogo_ofisa"></a>                                
                             </li>
-                                                            <li>
+                                                            <li style="padding-top: 9px; padding-bottom: 9px;">
 <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-<a href="https://xeroxnow.cnews.ru/articles/2020-12-10_sozdanie_personalizirovannogo_opyta" data-advert="article-16997-2">Возможна ли настоящая персонализация общения на рынке B2B?</a>
-<a class="comment_count" href="https://xeroxnow.cnews.ru/articles/2020-12-10_sozdanie_personalizirovannogo_opyta#cnComments" id="toparticle16997" data-comment="https://xeroxnow.cnews.ru/articles/2020-12-10_sozdanie_personalizirovannogo_opyta"></a>
+<a href="https://www.cnews.ru/projects/2021/diasoft" data-advert="article---2">Почему вам надо прочитать книгу «Бизнес в условиях перемен»</a>
+<a class="comment_count" href="https://www.cnews.ru/projects/2021/diasoft#cnComments" id="toparticle-" data-comment="https://www.cnews.ru/projects/2021/diasoft"></a>
 </li>
-                                                                                    <li class="d-desktops-hide">
-                                <a href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv" class="black">Знаменитый Linux-дистрибутив перейдет на добровольно-принудительную установку обновлений
-                                    </a> <a href="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv#cnComments" class="comment_count" id="topm524767" data-comment="https://safe.cnews.ru/news/top/2021-03-04_izvestnyj_linuxdistributiv"></a>                                
+                                                                                    <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes" class="black">Red Hat ловко вынудила бизнес вдвое переплачивать за RHEL Server и техподдержку
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes#cnComments" class="comment_count" id="topm524871" data-comment="https://www.cnews.ru/news/top/2021-03-05_red_hat_lovko_vynuzhdaet_biznes"></a>                                
                             </li>
-                                                                                            <li>
+                                                                                            <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost" class="" data-advert="article-17201-2">Алексей Малышев, «Сонет»: Отказоустойчивость ЦОД жизненно важна для бизнеса</a><a class="comment_count" href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost#comments" id="toprand1" data-comment="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost" data-nocomment=""></a>
+    <a href="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu" class="" data-advert="article-17245-2">Чек-лист: как выбрать идеальную систему электронного документооборота</a><a class="comment_count" href="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu#comments" id="toprand1" data-comment="https://www.cnews.ru/articles/2021-03-09_cheklist_kak_vybrat_idealnuyu_sistemu" data-nocomment=""></a>
 
-</li> <li>
+</li> <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya" class="" data-advert="article-17229-2">Александр Бондаренко, R-Vision: Бинарная логика большинства систем мониторинга кибербезопасности безнадежно устарела</a><a class="comment_count" href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya#comments" id="toprand2" data-comment="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya" data-nocomment=""></a>
+    <a href="https://safe.cnews.ru/articles/2021-02-11_ritejl_pytaetsya_preodolet_posledstviya" class="" data-advert="article-17183-2">Ритейл пытается преодолеть последствия пандемии без угроз для ИБ</a><a class="comment_count" href="https://safe.cnews.ru/articles/2021-02-11_ritejl_pytaetsya_preodolet_posledstviya#comments" id="toprand2" data-comment="https://safe.cnews.ru/articles/2021-02-11_ritejl_pytaetsya_preodolet_posledstviya" data-nocomment=""></a>
 
-</li> <li>
+</li> <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://www.cnews.ru/projects/2021/sap" class="" data-advert="article---2">Роботы, блокчейн, ИИ — в Москве проходит выставка новейших технологий</a><a class="comment_count" href="https://www.cnews.ru/projects/2021/sap#comments" id="toprand3" data-comment="https://www.cnews.ru/projects/2021/sap" data-nocomment=""></a>
+    <a href="https://hitachi.cnews.ru/articles/2021-01-31_novoe_prochtenie_obnovlyaem_podhody" class="" data-advert="article-17143-2">Новое прочтение: обновляем подходы к финтеху</a><a class="comment_count" href="https://hitachi.cnews.ru/articles/2021-01-31_novoe_prochtenie_obnovlyaem_podhody#comments" id="toprand3" data-comment="https://hitachi.cnews.ru/articles/2021-01-31_novoe_prochtenie_obnovlyaem_podhody" data-nocomment=""></a>
 
-</li> <li>
+</li> <li style="padding-top: 9px; padding-bottom: 9px;">
     <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-    <a href="https://xeroxnow.cnews.ru/articles/2020-12-10_avtomatizatsiya_rabochih_protsessov" class="" data-advert="article-16993-2">Как освободить 2,5 часа в день для каждого сотрудника</a><a class="comment_count" href="https://xeroxnow.cnews.ru/articles/2020-12-10_avtomatizatsiya_rabochih_protsessov#comments" id="toprand4" data-comment="https://xeroxnow.cnews.ru/articles/2020-12-10_avtomatizatsiya_rabochih_protsessov" data-nocomment=""></a>
+    <a href="https://www.cnews.ru/projects/2021/sap" class="" data-advert="article---2">Роботы, блокчейн, ИИ — в Москве проходит выставка новейших технологий</a><a class="comment_count" href="https://www.cnews.ru/projects/2021/sap#comments" id="toprand4" data-comment="https://www.cnews.ru/projects/2021/sap" data-nocomment=""></a>
 
 </li>
-                                                                                    <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym" class="black">На макбуках с чипом М1, который всем нравится, навсегда перестанет запускаться ПО для Intel
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym#cnComments" class="comment_count" id="topm524745" data-comment="https://www.cnews.ru/news/top/2021-03-04_na_kompyuterah_apple_s_lyubimym"></a>                                
+                                                                                    <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej" class="black">WhatsApp оставит без связи пользователей старых iPhone
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej#cnComments" class="comment_count" id="topm524905" data-comment="https://www.cnews.ru/news/top/2021-03-09_whatsapp_ostavit_bez_svyazi_polzovatelej"></a>                                
                             </li>
-                                                                                    <li class="d-desktops-hide">
-                                <a href="https://mobile.cnews.ru/news/top/2021-03-02_rzhd_vnedryaet_mobilnoe_prilozhenie" class="black">РЖД внедряет мобильное приложение на ОС «Аврора» для работников, обеспечивающих эксплуатацию сетей связи
-                                    </a>                                 
+                                                                                    <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya" class="red">ОНЛАЙН-конференция CNews «ИТ-стратегия 2021» состоится 16 марта
+                                    </a> <a href="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya#cnComments" class="comment_count" id="topm524919" data-comment="https://events.cnews.ru/news/top/2021-03-09_onlajnkonferentsiya_cnews_itstrategiya"></a>                                
                             </li>
-                                                                                    <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli" class="black">Россияне собрали миллионы рублей, чтобы спасти раздачи на Rutracker
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli#cnComments" class="comment_count" id="topm524405" data-comment="https://www.cnews.ru/news/top/2021-02-26_rossiyane_vsej_stranoj_spasli"></a>                                
+                                                                                    <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa" class="black">Акционер «Моего офиса» и сооснователь IBS создали ИТ-компанию для работы на «сложном и конкурентном» рынке
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa#cnComments" class="comment_count" id="topm524899" data-comment="https://www.cnews.ru/news/top/2021-03-05_sovladelets_moego_ofisa"></a>                                
                             </li>
-                                                                                    <li class="d-desktops-hide">
-                                <a href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo" class="black">«Росатом» для своего квантового компьютера купил на 4,5 миллиарда «железо» с Антильских островов
-                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo#cnComments" class="comment_count" id="topm524645" data-comment="https://www.cnews.ru/news/top/2021-03-02_rosatom_dlya_sozdaniya_kvantovogo"></a>                                
+                                                                                    <li class="d-desktops-hide" style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj" class="black">Россияне рискуют остаться без беспроводного интернета. Минцифры все отрицает
+                                    </a> <a href="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj#cnComments" class="comment_count" id="topm524893" data-comment="https://www.cnews.ru/news/top/2021-03-05_rossiyane_okazalis_pod_ugrozoj"></a>                                
                             </li>
                                                         
                         </ul>
@@ -1064,64 +1101,64 @@ max-width: 1280px;
 
                         <ul style="display:none;" id="section_mobile_top_hidden">
                                                         
-                                                        <li>
+                                                        <li style="padding-top: 9px; padding-bottom: 9px;">
                                 <a href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim" class="black" target="_blank">Microsoft бесплатно раздает ПО для автоматизации унылой работы без навыков программирования</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim#cnComments" class="comment_count" id="topm524655" data-comment="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim">8</a>                                
+                                <a href="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim#cnComments" class="comment_count" id="topm524655" data-comment="https://www.cnews.ru/news/top/2021-03-03_microsoft_razdaet_vsem_zhelayushchim">9</a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh" class="black" target="_blank">Сборщики знаменитых Linux-дистрибутивов отказались выпускать пакеты с Telegram из-за хамства разработчиков мессенджера</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh#cnComments" class="comment_count" id="topm524603" data-comment="https://www.cnews.ru/news/top/2021-03-02_sborshchiki_po_dlya_znamenityh">2</a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_hozyaeva_zabrali_u_mts_prezidenta" class="black" target="_blank">Хозяева забрали у МТС президента</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_hozyaeva_zabrali_u_mts_prezidenta#cnComments" class="comment_count" id="topm524913" data-comment="https://www.cnews.ru/news/top/2021-03-09_hozyaeva_zabrali_u_mts_prezidenta"></a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe" class="black" target="_blank">Вышло масштабное обновление Chrome со множеством изменений. На старых ПК оно не работает</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe#cnComments" class="comment_count" id="topm524647" data-comment="https://www.cnews.ru/news/top/2021-03-03_google_vypustila_masshtabnoe"></a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati" class="black" target="_blank">В Минцифры назначают нового замминистра и создают три новых департамента</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati#cnComments" class="comment_count" id="topm524903" data-comment="https://www.cnews.ru/news/top/2021-03-09_posle_uprazdneniya_rospechati">2</a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_v_rossii_poyavilas_dorozhnaya" class="black" target="_blank">Власти России пресекут «порочную практику» выпуска невостребованной отечественной электроники</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_v_rossii_poyavilas_dorozhnaya#cnComments" class="comment_count" id="topm524733" data-comment="https://www.cnews.ru/news/top/2021-03-03_v_rossii_poyavilas_dorozhnaya">10</a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya" class="black" target="_blank">В России запущена первая пользовательская сеть 5G. Она доступна лишь избранным</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya#cnComments" class="comment_count" id="topm524897" data-comment="https://www.cnews.ru/news/top/2021-03-05_v_rossii_zapushchena_pervaya"></a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_postsovetskij_sotovyj_operator" class="black" target="_blank">Постсоветский сотовый оператор уходит с Лондонской биржи</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_postsovetskij_sotovyj_operator#cnComments" class="comment_count" id="topm524693" data-comment="https://www.cnews.ru/news/top/2021-03-03_postsovetskij_sotovyj_operator"></a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_vlasti_radikalno_peresmotryat" class="black" target="_blank">Власти радикально пересмотрели бюджет и цели «Информационного общества»</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_vlasti_radikalno_peresmotryat#cnComments" class="comment_count" id="topm524889" data-comment="https://www.cnews.ru/news/top/2021-03-05_vlasti_radikalno_peresmotryat">1</a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://events.cnews.ru/news/top/2021-03-03_konferentsiya_cnews_ikt_v_gossektore" class="red" target="_blank">Конференция CNews «ИКТ в госсекторе 2021» состоится 8 апреля</a>
-                                <a href="https://events.cnews.ru/news/top/2021-03-03_konferentsiya_cnews_ikt_v_gossektore#cnComments" class="comment_count" id="topm524705" data-comment="https://events.cnews.ru/news/top/2021-03-03_konferentsiya_cnews_ikt_v_gossektore"></a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut" class="black" target="_blank">За «Билайном» пронаблюдают сестра экс-директора компании и основатель IBS</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut#cnComments" class="comment_count" id="topm524881" data-comment="https://www.cnews.ru/news/top/2021-03-05_za_bilajnom_pronablyudayut"></a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://safe.cnews.ru/news/top/2021-03-03_moshenniki_oblyubovali_portal" class="black" target="_blank">Портал «Госуслуг» стал частью схемы обмана россиян</a>
-                                <a href="https://safe.cnews.ru/news/top/2021-03-03_moshenniki_oblyubovali_portal#cnComments" class="comment_count" id="topm524695" data-comment="https://safe.cnews.ru/news/top/2021-03-03_moshenniki_oblyubovali_portal">8</a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye" class="black" target="_blank">Власти заставят иностранные ИТ-компании платить налоги за каждого сотрудника-россиянина</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye#cnComments" class="comment_count" id="topm524865" data-comment="https://www.cnews.ru/news/top/2021-03-05_vlasti_obyazhut_inostrannye">14</a>                                
                             </li>
-                                                                        <li>
+                                                                        <li style="padding-top: 9px; padding-bottom: 9px;">
             <div class="publication-position" data-type="top" title="Блок: Топ"></div>
-                                                                            <a href="https://zoom.cnews.ru/publication/item/63759?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=top">ZOOM: Лучшие гаджеты в подарок на 8 марта</a><a class="comment_count" href="https://zoom.cnews.ru/publication/item/63759#comments" id="topzoom" data-comment="https://zoom.cnews.ru/publication/item/63759"></a>
+                                                                            <a href="https://zoom.cnews.ru/publication/item/63763?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=top">ZOOM: Всё про eSIM в России — где и как оформить сим-карту и какие устройства с ней работают</a><a class="comment_count" href="https://zoom.cnews.ru/publication/item/63763#comments" id="topzoom" data-comment="https://zoom.cnews.ru/publication/item/63763"></a>
         </li>
     
 
-                                <li>
+                                <li style="padding-top: 9px; padding-bottom: 9px;">
 <div class="publication-position" data-type="top" title="Блок: Топ"></div>
 <a href="https://jet-wifi6.cnews.ru/articles/2020-12-11_wifi_6_bystree_vyshe_silnee" data-advert="article-2669-2">Первое сравнение вендоров Wi-Fi 6</a>
 <a class="comment_count" href="https://jet-wifi6.cnews.ru/articles/2020-12-11_wifi_6_bystree_vyshe_silnee#cnComments" id="toparticle2669" data-comment="https://jet-wifi6.cnews.ru/articles/2020-12-11_wifi_6_bystree_vyshe_silnee"></a>
 </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora" class="black" target="_blank">МТС собирается купить оператора связи, принадлежавшего экс-министру связи Рейману</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora#cnComments" class="comment_count" id="topm524679" data-comment="https://www.cnews.ru/news/top/2021-03-03_mts_mozhet_kupit_operatora"></a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_skandalnyj_amerikanskij" class="black" target="_blank">Скандальный американский фонд вложился в компанию экс-главы «Мегафона»</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_skandalnyj_amerikanskij#cnComments" class="comment_count" id="topm524851" data-comment="https://www.cnews.ru/news/top/2021-03-05_skandalnyj_amerikanskij"></a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_fsb_nachala_delo_protiv_odnogo" class="black" target="_blank">ФСБ начала дело против одного из последних независимых сотовых операторов России</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_fsb_nachala_delo_protiv_odnogo#cnComments" class="comment_count" id="topm524651" data-comment="https://www.cnews.ru/news/top/2021-03-03_fsb_nachala_delo_protiv_odnogo"></a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon" class="black" target="_blank">Выпущен первый с мире смартфон с памятью больше, чем у ноутбуков. Цена, видео</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon#cnComments" class="comment_count" id="topm524835" data-comment="https://www.cnews.ru/news/top/2021-03-05_sozdan_pervyj_s_mire_smartfon">9</a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_u_mintsifry_budet_svoj_departament" class="black" target="_blank">У Минцифры будет свой департамент микроэлектроники</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-03_u_mintsifry_budet_svoj_departament#cnComments" class="comment_count" id="topm524653" data-comment="https://www.cnews.ru/news/top/2021-03-03_u_mintsifry_budet_svoj_departament">6</a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj" class="black" target="_blank">Взломан российский  киберкриминальный форум. Данные хакерской элиты утекли в Сеть</a>
+                                <a href="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj#cnComments" class="comment_count" id="topm524847" data-comment="https://safe.cnews.ru/news/top/2021-03-05_vzloman_rossijskij_kiberkriminalnyj"></a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://safe.cnews.ru/news/top/2021-03-03_hakery_kradut_paroli_k_linuxsistemam" class="black" target="_blank">Хакеры крадут пароли к компьютерам на Linux, пользуясь «дырами» в приложениях Amazon, Lyft и Slack</a>
-                                <a href="https://safe.cnews.ru/news/top/2021-03-03_hakery_kradut_paroli_k_linuxsistemam#cnComments" class="comment_count" id="topm524649" data-comment="https://safe.cnews.ru/news/top/2021-03-03_hakery_kradut_paroli_k_linuxsistemam">2</a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_osnovatel_yota_vlozhilsya_v" class="black" target="_blank">Основатель Yota вложился в стартап экс-замминистра связи</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-05_osnovatel_yota_vlozhilsya_v#cnComments" class="comment_count" id="topm524867" data-comment="https://www.cnews.ru/news/top/2021-03-05_osnovatel_yota_vlozhilsya_v">3</a>                                
                             </li>
-                                                                                    <li>
-                                <a href="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu" class="black" target="_blank">ВТБ внедряет российскую СУБД Tarantool</a>
-                                <a href="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu#cnComments" class="comment_count" id="topm524637" data-comment="https://www.cnews.ru/news/top/2021-03-02_vtb_perejdet_na_rossijskuyu"></a>                                
+                                                                                    <li style="padding-top: 9px; padding-bottom: 9px;">
+                                <a href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye" class="black" target="_blank">Силовики в Крыму разгромили технологичные игорные клубы. Организаторам грозит 6 лет тюрьмы. Видео</a>
+                                <a href="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye#cnComments" class="comment_count" id="topm524833" data-comment="https://www.cnews.ru/news/top/2021-03-04_v_krymu_nakryli_tehnologichnye">2</a>                                
                             </li>
                                                         
                         </ul>
@@ -1153,88 +1190,10 @@ max-width: 1280px;
 										<p class="mnic-heading">Альберт Борис, Совкомбанк: Будущее — за экосистемами, в которых нет барьеров между клиентами и партнерами</p>
 									</div>
 				<div class="mnic-counters">
-											<span class="views_count" id="show-article-17207" data-show-id="17207" data-show-type="article"></span>
+											<span class="views_count" id="show-article-17207" data-show-id="17207" data-show-type="article">1519</span>
 										<span class="comment_count" id="article17207_a" data-comment="https://www.cnews.ru/articles/2021-02-26_albert_boris_sovkombank"></span>				</div>
 			</div>
 												
-								
-					<div class="mainnews_item d-flex flex-column">
-									
-								<a class="mni-overlay" href="https://events.cnews.ru/events/ikt_v_finansovom_sektore_2020_2020-09-29.shtml"></a>
-				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/cnews/2019/09/16/bank800380.jpg" alt="" src="https://filearchive.cnews.ru/img/cnews/2019/09/16/bank800380.jpg">
-				<div class="mni-content">
-					<a class="category_label cl_events" href="">КОНФЕРЕНЦИЯ</a>
-					<p class="mnic-heading">ИКТ в финансовом секторе 2021</p>
-					<span class="mnic-date">09 Марта 2021</span>
-					<span class="mnic-location">Москва</span>
-				</div>
-			</div>
-												
-								
-					<div class="mainnews_item d-flex flex-column item_nopreview">
-									
-								<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-18_optimiziruj_eto_kak_obyat_neobyatnoe" data-advert="article-17215-2"></a>
-								<div class="mni-content">
-											<a class="category_label cl_corp" href="https://www.cnews.ru/articles/2021-02-18_optimiziruj_eto_kak_obyat_neobyatnoe" style="background-color: ">Интеграция</a>
-										<p class="mnic-heading">Оптимизируй это! Как объять необъятное с помощью солвера</p>
-					<p class="mnic-desc">Интерес к теме оптимизации растет в профессиональном сообществе с каждым годом все сильнее. У каждого предприятия есть ресурсы, мощности...</p>				</div>
-				<div class="mnic-counters">
-											<span class="views_count" id="show-article-17215" data-show-id="17215" data-show-type="article"></span>
-										<span class="comment_count" id="article17215_a" data-comment="https://www.cnews.ru/articles/2021-02-18_optimiziruj_eto_kak_obyat_neobyatnoe"></span>				</div>
-			</div>
-																						
-								
-					<div class="mainnews_item d-flex flex-column ">
-									
-								<a class="mni-overlay" href="https://www.cnews.ru/projects/2020/ericsson" data-advert="article---2"></a>
-				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/files/2021/01/25/ericsson1000.jpg" alt="" src="https://filearchive.cnews.ru/img/files/2021/01/25/ericsson1000.jpg">				<div class="mni-content">
-											<a class="category_label cl_telecom" href="https://www.cnews.ru/projects/2020/ericsson" style="background-color: ">Телеком</a>
-										<p class="mnic-heading">Михаил Филимончик, Ericsson: Через пять лет на 5G перейдет треть всех абонентов в мире</p>
-									</div>
-				<div class="mnic-counters">
-										<span class="comment_count" id="article-_a" data-comment="https://www.cnews.ru/projects/2020/ericsson"></span>				</div>
-			</div>
-												<p class="news_line_divider" style="display:block;"></p>
-					
-								
-					<div class="mainnews_item d-flex flex-column ">
-									
-								<a class="mni-overlay" href="https://www.cnews.ru/reviews/oblachnye_servisy_2021/interviews/sergej_zinkevich_krok" data-advert="article-2777-2"></a>
-				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/files/2021/03/04/croc600.jpg" alt="" src="https://filearchive.cnews.ru/img/files/2021/03/04/croc600.jpg">				<div class="mni-content">
-											<a class="category_label cl_cloud" href="https://www.cnews.ru/reviews/oblachnye_servisy_2021/interviews/sergej_zinkevich_krok" style="background-color: ">Облака</a>
-										<p class="mnic-heading">Сергей Зинкевич, КРОК:  Российский бизнес все чаще переносит в облака не отдельные сервисы, а всю инфраструктуру</p>
-									</div>
-				<div class="mnic-counters">
-											<span class="views_count" id="show-reviews_interviews-2777" data-show-id="2777" data-show-type="reviews_interviews"></span>
-										<span class="comment_count" id="article2777_a" data-comment="https://www.cnews.ru/reviews/oblachnye_servisy_2021/interviews/sergej_zinkevich_krok"></span>				</div>
-			</div>
-												
-								
-					<div class="mainnews_item d-flex flex-column item_nopreview">
-									
-								<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-03_kak_iskusstvennyj_intellekt_pomozhet" data-advert="article-17147-2"></a>
-								<div class="mni-content">
-											<a class="category_label cl_gov" href="https://www.cnews.ru/articles/2021-02-03_kak_iskusstvennyj_intellekt_pomozhet" style="background-color: ">ИТ в госсекторе</a>
-										<p class="mnic-heading">Как искусственный интеллект поможет российским спасателям, экологам и таможенникам</p>
-					<p class="mnic-desc">Федеральный проект «Искусственный интеллект» нацпрограммы «Цифровая экономика» предполагает внедрение ИИ в повседневную деятельность...</p>				</div>
-				<div class="mnic-counters">
-											<span class="views_count" id="show-article-17147" data-show-id="17147" data-show-type="article"></span>
-										<span class="comment_count" id="article17147_a" data-comment="https://www.cnews.ru/articles/2021-02-03_kak_iskusstvennyj_intellekt_pomozhet"></span>				</div>
-			</div>
-												
-								
-					<div class="mainnews_item d-flex flex-column ">
-									
-								<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-03-01_kak_rossijskie_kompanii_teryayut_desyatki" data-advert="article-17235-2"></a>
-				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/articles/2021/03/01/monitore600_300x200.jpg" alt="" src="https://filearchive.cnews.ru/img/articles/2021/03/01/monitore600_300x200.jpg">				<div class="mni-content">
-											<a class="category_label cl_biz" href="https://www.cnews.ru/articles/2021-03-01_kak_rossijskie_kompanii_teryayut_desyatki" style="background-color: ">Бизнес</a>
-										<p class="mnic-heading">Как российские компании теряют десятки миллионов из-за проблем с производительностью систем</p>
-									</div>
-				<div class="mnic-counters">
-											<span class="views_count" id="show-article-17235" data-show-id="17235" data-show-type="article"></span>
-										<span class="comment_count" id="article17235_a" data-comment="https://www.cnews.ru/articles/2021-03-01_kak_rossijskie_kompanii_teryayut_desyatki">1</span>				</div>
-			</div>
-																						
 								
 					<div class="mainnews_item d-flex flex-column">
 									
@@ -1247,21 +1206,73 @@ max-width: 1280px;
 					<span class="mnic-location">Москва</span>
 				</div>
 			</div>
+												
+								
+					<div class="mainnews_item d-flex flex-column item_nopreview">
+									
+								<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-03-02_5g_nazvali_klyuchevoj_tehnologiej_dlya" data-advert="article-17237-2"></a>
+								<div class="mni-content">
+											<a class="category_label cl_telecom" href="https://www.cnews.ru/articles/2021-03-02_5g_nazvali_klyuchevoj_tehnologiej_dlya" style="background-color: ">Телеком</a>
+										<p class="mnic-heading">5G назвали ключевой технологией для развития всего мира</p>
+					<p class="mnic-desc">Восстановление экономики, устойчивое развитие, преодоление бедности, экологических, медицинских и общеобразовательных проблем особенно...</p>				</div>
+				<div class="mnic-counters">
+											<span class="views_count" id="show-article-17237" data-show-id="17237" data-show-type="article"></span>
+										<span class="comment_count" id="article17237_a" data-comment="https://www.cnews.ru/articles/2021-03-02_5g_nazvali_klyuchevoj_tehnologiej_dlya">2</span>				</div>
+			</div>
+																						
+								
+					<div class="mainnews_item d-flex flex-column ">
+									
+								<a class="mni-overlay" href="https://www.cnews.ru/reviews/oblachnye_servisy_2021/interviews/sergej_zinkevich_krok" data-advert="article-2777-2"></a>
+				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/files/2021/03/04/croc600.jpg" alt="" src="https://filearchive.cnews.ru/img/files/2021/03/04/croc600.jpg">				<div class="mni-content">
+											<a class="category_label cl_cloud" href="https://www.cnews.ru/reviews/oblachnye_servisy_2021/interviews/sergej_zinkevich_krok" style="background-color: ">Облака</a>
+										<p class="mnic-heading">Сергей Зинкевич, КРОК:  Российский бизнес все чаще переносит в облака не отдельные сервисы, а всю инфраструктуру</p>
+									</div>
+				<div class="mnic-counters">
+											<span class="views_count" id="show-reviews_interviews-2777" data-show-id="2777" data-show-type="reviews_interviews"></span>
+										<span class="comment_count" id="article2777_a" data-comment="https://www.cnews.ru/reviews/oblachnye_servisy_2021/interviews/sergej_zinkevich_krok"></span>				</div>
+			</div>
 												<p class="news_line_divider" style="display:block;"></p>
 					
 								
 					<div class="mainnews_item d-flex flex-column ">
 									
-								<a class="mni-overlay" href="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020" data-advert="article---2"></a>
-				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/files/2021/03/03/komtek1000.jpg" alt="" src="https://filearchive.cnews.ru/img/files/2021/03/03/komtek1000.jpg">				<div class="mni-content">
-											<a class="category_label cl_Обзор" href="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020" style="background-color: ">Обзор</a>
-										<p class="mnic-heading">ИТ в здравоохранении 2020</p>
+								<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost" data-advert="article-17201-2"></a>
+				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/articles/2021/02/15/malyshev600_300x200.jpg" alt="" src="https://filearchive.cnews.ru/img/articles/2021/02/15/malyshev600_300x200.jpg">				<div class="mni-content">
+											<a class="category_label cl_инфраструктура" href="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost" style="background-color: #CD89F1">инфраструктура</a>
+										<p class="mnic-heading">Алексей Малышев, «Сонет»: Отказоустойчивость ЦОД жизненно важна для бизнеса</p>
 									</div>
 				<div class="mnic-counters">
-											<span class="views_count" id="show-reviews-597" data-show-id="597" data-show-type="reviews"></span>
-										<span class="comment_count" id="article-_a" data-comment="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020"></span>				</div>
+											<span class="views_count" id="show-article-17201" data-show-id="17201" data-show-type="article"></span>
+										<span class="comment_count" id="article17201_a" data-comment="https://www.cnews.ru/articles/2021-02-15_aleksej_malyshevsonet_otkazoustojchivost"></span>				</div>
 			</div>
 												
+								
+					<div class="mainnews_item d-flex flex-column item_nopreview">
+									
+								<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-03_kak_iskusstvennyj_intellekt_pomozhet" data-advert="article-17147-2"></a>
+								<div class="mni-content">
+											<a class="category_label cl_gov" href="https://www.cnews.ru/articles/2021-02-03_kak_iskusstvennyj_intellekt_pomozhet" style="background-color: ">ИТ в госсекторе</a>
+										<p class="mnic-heading">Как искусственный интеллект поможет российским спасателям, экологам и таможенникам</p>
+					<p class="mnic-desc">Федеральный проект «Искусственный интеллект» нацпрограммы «Цифровая экономика» предполагает внедрение ИИ в повседневную деятельность...</p>				</div>
+				<div class="mnic-counters">
+											<span class="views_count" id="show-article-17147" data-show-id="17147" data-show-type="article">1513</span>
+										<span class="comment_count" id="article17147_a" data-comment="https://www.cnews.ru/articles/2021-02-03_kak_iskusstvennyj_intellekt_pomozhet"></span>				</div>
+			</div>
+												
+								
+					<div class="mainnews_item d-flex flex-column ">
+									
+								<a class="mni-overlay" href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya" data-advert="article-17229-2"></a>
+				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/articles/2021/02/26/bondarenko600_300x200.jpg" alt="" src="https://filearchive.cnews.ru/img/articles/2021/02/26/bondarenko600_300x200.jpg">				<div class="mni-content">
+											<a class="category_label cl_safe" href="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya" style="background-color: ">Безопасность</a>
+										<p class="mnic-heading">Александр Бондаренко, R-Vision: Бинарная логика большинства систем мониторинга кибербезопасности безнадежно устарела</p>
+									</div>
+				<div class="mnic-counters">
+											<span class="views_count" id="show-article-17229" data-show-id="17229" data-show-type="article"></span>
+										<span class="comment_count" id="article17229_a" data-comment="https://safe.cnews.ru/articles/2021-03-01_aleksandr_bondarenkorvision_binarnaya"></span>				</div>
+			</div>
+																						
 								
 					<div class="mainnews_item d-flex flex-column">
 									
@@ -1274,18 +1285,45 @@ max-width: 1280px;
 					<span class="mnic-location">Москва</span>
 				</div>
 			</div>
+												<p class="news_line_divider" style="display:block;"></p>
+					
+								
+					<div class="mainnews_item d-flex flex-column ">
+									
+								<a class="mni-overlay" href="https://www.cnews.ru/reviews/cnews_trendy_2021/cases/god_na_udalenke_vkssistemy_stali" data-advert="article-577-2"></a>
+				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/files/2021/03/05/poly600.jpg" alt="" src="https://filearchive.cnews.ru/img/files/2021/03/05/poly600.jpg">				<div class="mni-content">
+											<a class="category_label cl_ит-тренды" href="https://www.cnews.ru/reviews/cnews_trendy_2021/cases/god_na_udalenke_vkssistemy_stali" style="background-color: #22278B">ит-тренды</a>
+										<p class="mnic-heading">Год на удаленке: ВКС-системы стали ключевым элементом любого бизнеса</p>
+									</div>
+				<div class="mnic-counters">
+											<span class="views_count" id="show-reviews_cases-577" data-show-id="577" data-show-type="reviews_cases"></span>
+										<span class="comment_count" id="article577_a" data-comment="https://www.cnews.ru/reviews/cnews_trendy_2021/cases/god_na_udalenke_vkssistemy_stali"></span>				</div>
+			</div>
+												
+								
+					<div class="mainnews_item d-flex flex-column">
+									
+								<a class="mni-overlay" href="https://events.cnews.ru/events/e_commerce_2020.shtml"></a>
+				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/forum/2020/03/23/383.jpg" alt="" src="https://filearchive.cnews.ru/img/forum/2020/03/23/383.jpg">
+				<div class="mni-content">
+					<a class="category_label cl_events" href="">КОНФЕРЕНЦИЯ</a>
+					<p class="mnic-heading">E-commerce 2021</p>
+					<span class="mnic-date">23 Марта 2021</span>
+					<span class="mnic-location">Москва</span>
+				</div>
+			</div>
 												
 								
 					<div class="mainnews_item d-flex flex-column item_nopreview">
 									
-								<a class="mni-overlay" href="https://www.cnews.ru/articles/2020-12-14_kakie_vkssistemy_naibolee_populyarny" data-advert="article-17017-2"></a>
+								<a class="mni-overlay" href="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak" data-advert="article-17223-2"></a>
 								<div class="mni-content">
-											<a class="category_label cl_corp" href="https://www.cnews.ru/articles/2020-12-14_kakie_vkssistemy_naibolee_populyarny" style="background-color: ">Интеграция</a>
-										<p class="mnic-heading">Какие ВКС-системы наиболее популярны на российском рынке</p>
-					<p class="mnic-desc">Глобальные тенденции делают онлайн-коммуникации жизненно необходимыми для бизнеса. Поэтому сейчас самое время опробовать Cisco Webex, воспользовавшись...</p>				</div>
+											<a class="category_label cl_gov" href="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak" style="background-color: ">ИТ в госсекторе</a>
+										<p class="mnic-heading">Цифровизация автотранспорта: как в России будут внедрять беспилотные машины, телематику и навигацию</p>
+					<p class="mnic-desc">Мировой рынок «Автонет» к 2035 г. составит $12,7 трлн, российский — $1,17 трлн. Соответствующие прогнозы содержатся в дорожной карте, подготовленной...</p>				</div>
 				<div class="mnic-counters">
-											<span class="views_count" id="show-article-17017" data-show-id="17017" data-show-type="article"></span>
-										<span class="comment_count" id="article17017_a" data-comment="https://www.cnews.ru/articles/2020-12-14_kakie_vkssistemy_naibolee_populyarny"></span>				</div>
+											<span class="views_count" id="show-article-17223" data-show-id="17223" data-show-type="article">2312</span>
+										<span class="comment_count" id="article17223_a" data-comment="https://www.cnews.ru/articles/2021-02-26_tsifrovizatsiya_avtotransporta_kak">3</span>				</div>
 			</div>
 																						
 								
@@ -1343,12 +1381,12 @@ max-width: 1280px;
 								
 					<div class="mainnews_item d-flex flex-column">
 									
-								<a class="mni-overlay" href="https://events.cnews.ru/events/e_commerce_2020.shtml"></a>
-				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/forum/2020/03/23/383.jpg" alt="" src="https://filearchive.cnews.ru/img/forum/2020/03/23/383.jpg">
+								<a class="mni-overlay" href="https://events.cnews.ru/events/importozameschenie_v_it_2021.shtml"></a>
+				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/cnews/2019/09/16/importozameshchenie800380.jpg" alt="" src="https://filearchive.cnews.ru/img/cnews/2019/09/16/importozameshchenie800380.jpg">
 				<div class="mni-content">
 					<a class="category_label cl_events" href="">КОНФЕРЕНЦИЯ</a>
-					<p class="mnic-heading">E-commerce 2021</p>
-					<span class="mnic-date">23 Марта 2021</span>
+					<p class="mnic-heading">Импортозамещение в ИТ 2021</p>
+					<span class="mnic-date">25 Марта 2021</span>
 					<span class="mnic-location">Москва</span>
 				</div>
 			</div>
@@ -1410,14 +1448,14 @@ max-width: 1280px;
 								
 					<div class="mainnews_item d-flex flex-column ">
 									
-								<a class="mni-overlay" href="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020/articles/proekt_sozdaniya_egisz_gotovitsya" data-advert="article-1915-2"></a>
-				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/files/2021/03/03/depositphotos348869452s2019crop600315.jpg" alt="" src="https://filearchive.cnews.ru/img/files/2021/03/03/depositphotos348869452s2019crop600315.jpg">				<div class="mni-content">
-											<a class="category_label cl_ит в здравоохранении" href="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020/articles/proekt_sozdaniya_egisz_gotovitsya" style="background-color: #710000">ит в здравоохранении</a>
-										<p class="mnic-heading">Государство замыкает здравоохранение в единый контур</p>
+								<a class="mni-overlay" href="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020" data-advert="article---2"></a>
+				<img class="news_item_bg lazyloaded" data-src="https://filearchive.cnews.ru/img/files/2021/03/03/komtek1000.jpg" alt="" src="https://filearchive.cnews.ru/img/files/2021/03/03/komtek1000.jpg">				<div class="mni-content">
+											<a class="category_label cl_Обзор" href="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020" style="background-color: ">Обзор</a>
+										<p class="mnic-heading">ИТ в здравоохранении 2020</p>
 									</div>
 				<div class="mnic-counters">
-											<span class="views_count" id="show-reviews_articles-1915" data-show-id="1915" data-show-type="reviews_articles"></span>
-										<span class="comment_count" id="article1915_a" data-comment="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020/articles/proekt_sozdaniya_egisz_gotovitsya">1</span>				</div>
+											<span class="views_count" id="show-reviews-597" data-show-id="597" data-show-type="reviews"></span>
+										<span class="comment_count" id="article-_a" data-comment="https://www.cnews.ru/reviews/it_v_zdravoohranenii_2020"></span>				</div>
 			</div>
 												
 								
@@ -1579,7 +1617,7 @@ max-width: 1280px;
 								</div>
 							</span>
 							</span>
-                                                Ядер CPU<br><span class="cnm-filter-info">штук</span>
+                                                Ядер CPU<br><span class="cnm-filter-info">шт.</span>
                     </div>
                     <div class="cnm-slider-block cnm-slider-block-int  flex-column flex-shrink-0 flex-grow-0">
                         <div class="cnm-sr-inputs-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"><div class="ui-slider-range ui-corner-all ui-widget-header" style="left: 0%; width: 100%;"></div><span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default" style="left: 0%;"></span><span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default" style="left: 100%;"></span><div class="ui-slider-range ui-corner-all ui-widget-header" style="left: 0%; width: 100%;"></div></div>
@@ -1700,7 +1738,7 @@ max-width: 1280px;
 								</div>
 							</span>
 							</span>
-                                                IP-адреса<br><span class="cnm-filter-info">штук</span>
+                                                IP-адреса<br><span class="cnm-filter-info">шт.</span>
                     </div>
                     <div class="cnm-slider-block cnm-slider-block-int  flex-column flex-shrink-0 flex-grow-0">
                         <div class="cnm-sr-inputs-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"><div class="ui-slider-range ui-corner-all ui-widget-header" style="left: 0%; width: 100%;"></div><span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default" style="left: 0%;"></span><span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default" style="left: 100%;"></span><div class="ui-slider-range ui-corner-all ui-widget-header" style="left: 0%; width: 100%;"></div></div>
@@ -2037,12 +2075,12 @@ max-width: 1280px;
             <td style="width: 30px;"></td>
             <td>Поставщик</td>
             <td>Тариф</td>
-                            <td data-char="1"><div>Ядер CPU</div><span>штук</span></td>
+                            <td data-char="1"><div>Ядер CPU</div><span>шт.</span></td>
                             <td data-char="2"><div>RAM</div><span>Гб</span></td>
                             <td data-char="39"><div>SSD</div><span>Гб</span></td>
                             <td data-char="40"><div>SAS</div><span>Гб</span></td>
                             <td data-char="41"><div>SATA</div><span>Гб</span></td>
-                            <td data-char="4"><div>IP-адреса</div><span>штук</span></td>
+                            <td data-char="4"><div>IP-адреса</div><span>шт.</span></td>
                             <td data-char="5"><div>Канал связи</div><span>Мбит/с</span></td>
                             <td data-char="7"><div>ОС</div><span></span></td>
             <!--            <td class="td-sort-link"><div>Цена</div><span>руб.</span></td> -->
@@ -2067,7 +2105,7 @@ max-width: 1280px;
                     <td data-char="41">0</td>
                     <td data-char="4">1</td>
                     <td data-char="5">100</td>
-                    <td data-char="7">* <span class="cnm-tooltip-link">(?)<span class="cnm-tooltip-content">linux <br> windows</span></span></td>
+                    <td data-char="7">* <span class="cnm-tooltip-link">(?)<span class="cnm-tooltip-content">Linux <br> Windows</span></span></td>
         
         <td data-char="price" style="text-align:center;">
             1 884                            <a href="https://vcloud.softline.ru/" class="cnm-buy-btn" target="_blank"></a>
@@ -2113,7 +2151,7 @@ max-width: 1280px;
                     <td data-char="41">0</td>
                     <td data-char="4">1</td>
                     <td data-char="5">100</td>
-                    <td data-char="7">linux</td>
+                    <td data-char="7">Linux</td>
         
         <td data-char="price" style="text-align:center;">
             2 539                            <a href="https://sbercloud.ru/ru/advanced" class="cnm-buy-btn" target="_blank"></a>
@@ -2246,7 +2284,7 @@ max-width: 1280px;
                     <td data-char="41">0</td>
                     <td data-char="4">1</td>
                     <td data-char="5">100</td>
-                    <td data-char="7">* <span class="cnm-tooltip-link">(?)<span class="cnm-tooltip-content">linux <br> windows</span></span></td>
+                    <td data-char="7">* <span class="cnm-tooltip-link">(?)<span class="cnm-tooltip-content">Linux <br> Windows</span></span></td>
         
         <td data-char="price" style="text-align:center;">
             1 884                            <a href="https://vcloud.softline.ru/" class="cnm-buy-btn" target="_blank"></a>
@@ -2460,7 +2498,7 @@ max-width: 1280px;
                     <td data-char="41">0</td>
                     <td data-char="4">1</td>
                     <td data-char="5">100</td>
-                    <td data-char="7">linux</td>
+                    <td data-char="7">Linux</td>
         
         <td data-char="price" style="text-align:center;">
             2 539                            <a href="https://sbercloud.ru/ru/advanced" class="cnm-buy-btn" target="_blank"></a>
@@ -2469,7 +2507,7 @@ max-width: 1280px;
     </tr> 
     </tbody>
 </table>
-<button type="button" class="btn cnm-btn-search-page read_more_btn" data-page="1" data-result="31" data-search="1091">Показать еще</button>    </div>
+<button type="button" class="btn cnm-btn-search-page read_more_btn" data-page="1" data-result="31" data-search="243">Показать еще</button>    </div>
 </div>
 </div>
     </div>
@@ -2494,154 +2532,154 @@ max-width: 1280px;
                                                             <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">18:37</time>
+                        <time class="">18:53</time>
                     </div>
-                    <a href="https://safe.cnews.ru/news/line/2021-03-04_rvision_vypustila_novuyu_versiyu" class="ani-postname black">R-Vision выпустила новую версию платформы реагирования на инциденты ИБ R-Vision IRP</a>
+                    <a href="https://safe.cnews.ru/news/line/2021-03-09_check_point_predstavila_harmony_dlya" class="ani-postname black">Check Point представила Harmony для обеспечения безопасности удаленной работы</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">17:27</time>
+                        <time class="">18:26</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_kak_bankam_dobitsya_tehnologicheskoj" class="ani-postname black">Как банкам добиться технологической независимости? Haulmont приглашает обсудить на конференции CNews «ИКТ в финансовом секторе...</a>
+                    <a href="https://mobile.cnews.ru/news/line/2021-03-09_fstek_rossii_vnov_podtverzhdaet" class="ani-postname black">ФСТЭК России вновь подтверждает безопасность мобильной ОС «Аврора»</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">17:22</time>
+                        <time class="">18:17</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_azbuka_vkusa_zapustila" class="ani-postname black">«Азбука вкуса» запустила систему электронных чаевых в своих магазинах</a>
+                    <a href="https://safe.cnews.ru/news/line/2021-03-09_ibm_ustranila_uyazvimost_v" class="ani-postname black">IBM устранила уязвимость в QRadar SIEM, обнаруженную Positive Technologies</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">17:15</time>
+                        <time class="">18:12</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_gaskar_group_vnedrila_v_svoi_razrabotki" class="ani-postname black">Gaskar Group внедрила в свои разработки технологии компьютерного зрения Visionlabs</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_mkb_ustanovil_ustrojstva" class="ani-postname black">МКБ установил устройства самоинкассации в сети магазинов «Технопарк»</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">17:10</time>
+                        <time class="">17:02</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_sistema_sinhronizatsii_john" class="ani-postname black">Система синхронизации John Deere заработала на кормоуборочных комбайнах и тракторах</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_tehnoserv_moderniziroval" class="ani-postname black">«Техносерв» модернизировал систему коммуникаций компании «Мирогрупп ресурсы»</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">16:06</time>
+                        <time class="">15:44</time>
                     </div>
-                    <a href="https://safe.cnews.ru/news/line/2021-03-04_laboratoriya_kasperskogo" class="ani-postname black">«Лаборатория Касперского»: одна доза вакцины от Covid-19 продается в даркнете в среднем за $500</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_softline_modernizirovala_sistemu" class="ani-postname black">Softline модернизировала систему защиты персональных данных в Нефтекумской районной больнице Ставропольского края</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
                         <time class="">15:31</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_china_mobile_i_huawei_vypustili_reshenie" class="ani-postname black">China Mobile и Huawei выпустили решение 5G New Calling</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_na_zavode_bosch_v_drezdene_vypushcheny" class="ani-postname black">На заводе Bosch в Дрездене выпущены первые кремниевые пластины для полупроводников</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">15:30</time>
+                        <time class="">12:46</time>
                     </div>
-                    <a href="https://safe.cnews.ru/news/line/2021-03-04_kolichestvo_atak_shifrovalshchikov" class="ani-postname black">Количество атак шифровальщиков выросло за год более чем на 150%</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_v_kompanii_moj_ofis_naznachen" class="ani-postname black">В компании «Мой офис» назначен коммерческий директор</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">15:29</time>
+                        <time class="">12:42</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_skillbox_i_vysshaya_shkola_menedzhmenta" class="ani-postname black">Skillbox и Высшая школа менеджмента СПбГУ запустят программу MBA</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_mailru_tsifrovye_tehnologii" class="ani-postname black">«Mail.ru цифровые технологии» и «Индасофт» объявили о сотрудничестве в области цифровизации промышленности</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">15:26</time>
+                        <time class="">12:34</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_minekonomrazvitiya_predlozhilo" class="ani-postname black">Минэкономразвития предложило информировать самозанятых граждан о мерах поддержки через портал госуслуг</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_mts_obespechila_avtovaz" class="ani-postname black">МТС обеспечила «АвтоВАЗ» отказоустойчивым доступом в Сеть</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">15:12</time>
+                        <time class="">12:00</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_severstal_avtomatizirovala" class="ani-postname black">«Северсталь» автоматизировала процесс адаптации работников производства с помощью мобильного приложения</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_klientam_virtualnogo_tsoda" class="ani-postname black">Клиентам виртуального ЦОДа «Ростелекома» стала доступна криптография по ГОСТу</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">15:00</time>
+                        <time class="">11:54</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_platforma_dlya_biznesa_monite" class="ani-postname black">Платформа для бизнеса Monite привлекла 1,1 млн евро инвестиций</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-05_v_finansovoj_sfere_agile_ispolzuet" class="ani-postname black">В финансовой сфере Agile использует 91% банковских организаций</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">14:38</time>
+                        <time class="">11:51</time>
                     </div>
-                    <a href="https://safe.cnews.ru/news/line/2021-03-04_cisco_rasskazala_o_klyuchevyh" class="ani-postname black">Cisco рассказала о ключевых киберугрозах 2020 года</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_miran_pristupila_k_stroitelstvu" class="ani-postname black">«Миран» приступила к строительству новой очереди дата-центра в Санкт-Петербурге</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">14:35</time>
+                        <time class="">11:45</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_sistema_raspoznavaniya_dokumentov" class="ani-postname black">Система распознавания документов Smart ID Engine внесена в реестр российского ПО</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_treolan_stala_ofitsialnym_distribyutorom" class="ani-postname black">Treolan стала официальным дистрибьютором биометрических решений ZKTeco</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">13:55</time>
+                        <time class="">11:40</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_v_oez_tehnopolis_moskva" class="ani-postname black">В ОЭЗ «Технополис «Москва» запущено производство комплектующих для космической и военной техники</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_medlaboratorii_arhangelska" class="ani-postname black">Медлаборатории Архангельска обрабатывают 96% заявок на исследования в электронном виде</a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">13:51</time>
+                        <time class="">11:31</time>
                     </div>
-                    <a href="https://safe.cnews.ru/news/line/2021-03-04_gosudarstvennyj_strahovoj" class="ani-postname black">Государственный страховой фонд Сингапура внедрил Solar appScreener</a>
-                </div>
-                                                                <div class="allnews_item ">
-                    <div class="ani-date">
-                        <time class="">Вчера</time>
-                        <time class="">13:33</time>
-                    </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_amd_predstavila_videokartu" class="ani-postname black">AMD представила видеокарту AMD Radeon RX 6700 XT</a>
-                </div>
-                                                                <div class="allnews_item ">
-                    <div class="ani-date">
-                        <time class="">Вчера</time>
-                        <time class="">13:29</time>
-                    </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_vyshla_novaya_versiya_zecurion_dlp" class="ani-postname black">Вышла новая версия Zecurion DLP 11</a>
-                </div>
-                                                                <div class="allnews_item ">
-                    <div class="ani-date">
-                        <time class="">Вчера</time>
-                        <time class="">13:10</time>
-                    </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_issledovanie_izza_covid19" class="ani-postname black">Исследование: из-за COVID-19 компании признали ИТ стратегическим активом и перестали на нем экономить</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_rosatom_i_nokia_proveli_ispytaniya" class="ani-postname black">«Росатом» и Nokia провели испытания выделенной беспроводной сети Private LTE/5G на ЧМЗ</a>
                 </div>
                                                                 <div class="allnews_item">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">13:08</time>
+                        <time class="">11:02</time>
                     </div>
-                    <a href="https://zoom.cnews.ru/b/post/tehnoblog/75889" class="ani-postname">ZOOM.CNews: Что умеет самый мощный и самый новый дрон?
+                    <a href="https://zoom.cnews.ru/b/post/tehnoblog/75897" class="ani-postname">ZOOM.CNews: Как будет работать межпланетный интернет?
                     </a>
                 </div>
                                                                 <div class="allnews_item ">
                     <div class="ani-date">
                         <time class="">Вчера</time>
-                        <time class="">13:03</time>
+                        <time class="">10:15</time>
                     </div>
-                    <a href="https://www.cnews.ru/news/line/2021-03-04_flekssoft_predstavit_innovatsionnuyu" class="ani-postname black">«ФлексСофт» представит «Инновационную on-line платформу для построения цифрового банкинга» на конференции CNews «ИКТ в...</a>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_yumoney_vozobnovil_rabotu" class="ani-postname black">«Юmoney» возобновил работу с 45 иностранными компаниями</a>
+                </div>
+                                                                <div class="allnews_item ">
+                    <div class="ani-date">
+                        <time class="">Вчера</time>
+                        <time class="">10:15</time>
+                    </div>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_v_bilajne_naznachen_regionalnyj" class="ani-postname black">В «Билайне» назначен региональный директор Восточного региона</a>
+                </div>
+                                                                <div class="allnews_item ">
+                    <div class="ani-date">
+                        <time class="">Вчера</time>
+                        <time class="">10:12</time>
+                    </div>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_korus_konsalting_podderzhivaet" class="ani-postname black">«Корус консалтинг» поддерживает СУБД на базе Oracle Enterprise 3PL-оператора «ЛогЛаб»</a>
+                </div>
+                                                                <div class="allnews_item ">
+                    <div class="ani-date">
+                        <time class="">Вчера</time>
+                        <time class="">10:10</time>
+                    </div>
+                    <a href="https://www.cnews.ru/news/line/2021-03-09_huawei_predstavila_na_rossijskom" class="ani-postname black">Huawei представила на российском рынке ноутбук Matebook D 16. Цена. Фото</a>
                 </div>
                     
     </div>
-                        <a class="read_more_btn" id="allnews_more" href="/main/more_lenta/2021-03-04%2013%3A03%3A13">
+                        <a class="read_more_btn" id="allnews_more" href="/main/more_lenta/2021-03-09%2010%3A10%3A56">
                 Больше новостей
             </a>
             
@@ -2676,7 +2714,7 @@ max-width: 1280px;
 		</ul>
 	</div>
 	<div class="container jscroll-click"><div class="jscroll-inner">
-		<div class="zoom_news d-flex flex-row justify-content-between flex-wrap"><a href="https://zoom.cnews.ru/publication/item/63759?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/759/63759_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/759/63759_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Лучшие гаджеты в подарок на 8 марта: выбор ZOOM</h3></div><div class="publication-counters"><span class="comment_count" id="publication63759" data-comment="https://zoom.cnews.ru/publication/item/63759#cnComments"></span></div></a><a href="https://zoom.cnews.ru/rnd/article/item/keramicheskie_vkrapleniya_v_meteoritah_namekayut_formirovanie?utm_source=cnews&amp;utm_medium=rnd&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="//filearchive.cnews.ru/img//rnd/2021/03/02/9822.jpg" alt="" src="//filearchive.cnews.ru/img//rnd/2021/03/02/9822.jpg"><span class="category_label cl_rnd" href="#">Наука</span></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Керамические вкрапления в метеоритах намекают: формирование Солнечной системы шло не так, как думают</h3></div><div class="publication-counters"><span class="views_count" id="show-rnd-3645" data-show-id="3645" data-show-type="zoom_rnd_article"></span><span class="comment_count" id="rnd3645" data-comment="https://zoom.cnews.ru/rnd/article/item/keramicheskie_vkrapleniya_v_meteoritah_namekayut_formirovanie#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63757?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/757/63757_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/757/63757_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Обзор линейки цветных МФУ для дома «Фабрика печати» Epson: просто добавь чернил</h3></div><div class="publication-counters"><span class="comment_count" id="publication63757" data-comment="https://zoom.cnews.ru/publication/item/63757#cnComments"></span></div></a><a href="https://zoom.cnews.ru/rnd/article/item/uchenye_predlozhili_raspoznavat_emotsii_s_pomoshchyu_radiovoln?utm_source=cnews&amp;utm_medium=rnd&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="//filearchive.cnews.ru/img//rnd/2021/02/26/171.jpg" alt="" src="//filearchive.cnews.ru/img//rnd/2021/02/26/171.jpg"><span class="category_label cl_rnd" href="#">Наука</span></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Ученые предложили распознавать эмоции с помощью радиоволн</h3></div><div class="publication-counters"><span class="views_count" id="show-rnd-3643" data-show-id="3643" data-show-type="zoom_rnd_article"></span><span class="comment_count" id="rnd3643" data-comment="https://zoom.cnews.ru/rnd/article/item/uchenye_predlozhili_raspoznavat_emotsii_s_pomoshchyu_radiovoln#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63755?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/755/63755_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/755/63755_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Выбираем лучшие умные часы до 10 000 рублей</h3></div><div class="publication-counters"><span class="comment_count" id="publication63755" data-comment="https://zoom.cnews.ru/publication/item/63755#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63753?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/753/63753_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/753/63753_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Лучшие менеджеры паролей для ПК и смартфонов: выбор ZOOM</h3></div><div class="publication-counters"><span class="views_count" id="show-publication-63753" data-show-id="63753" data-show-type="zoom_article"></span><span class="comment_count" id="publication63753" data-comment="https://zoom.cnews.ru/publication/item/63753#cnComments"></span></div></a><a href="https://zoom.cnews.ru/b/post/tehnoblog/75889?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column technoblog-item" target="_blank"><div class="other-item-top"><img class="zi-img lazyload" data-src="https://filearchive.cnews.ru/mrtest/images/blog/889/75889_IMG_485X300.jpg" alt=""><span class="category_label cl_zoom_blog" href="#">Техноблог</span></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Что умеет самый мощный и самый новый дрон?</h3></div><div class="publication-counters"><span class="comment_count" id="blog75889" data-comment="https://zoom.cnews.ru/b/post/tehnoblog/75889#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63745?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyload" data-src="https://filearchive.cnews.ru/mrtest/images/publication/745/63745_IMG_300X200.jpg" alt=""></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Обзор пылесоса Roidmi X30 Pro: для влажной уборки и стерилизации без проводов</h3></div><div class="publication-counters"><span class="comment_count" id="publication63745" data-comment="https://zoom.cnews.ru/publication/item/63745#cnComments"></span></div></a></div><a href="/main/more_zoom/2021-02-26%2000%3A00%3A00/1" class="read_more_btn">Показать еще</a>
+		<div class="zoom_news d-flex flex-row justify-content-between flex-wrap"><a href="https://zoom.cnews.ru/publication/item/63763?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/763/63763_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/763/63763_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Всё про eSIM в России: где и как оформить сим-карту и какие устройства с ней работают</h3></div><div class="publication-counters"><span class="views_count" id="show-publication-63763" data-show-id="63763" data-show-type="zoom_article"></span><span class="comment_count" id="publication63763" data-comment="https://zoom.cnews.ru/publication/item/63763#cnComments"></span></div></a><a href="https://zoom.cnews.ru/rnd/article/item/pri_pomoshchi_keramicheskih_chernil_3dpechat_kostej_vozmozhna_pryamo?utm_source=cnews&amp;utm_medium=rnd&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="//filearchive.cnews.ru/img//rnd/2021/03/08/884.jpg" alt="" src="//filearchive.cnews.ru/img//rnd/2021/03/08/884.jpg"><span class="category_label cl_rnd" href="#">Наука</span></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">При помощи керамических чернил 3D-печать костей возможна прямо в теле человека</h3></div><div class="publication-counters"><span class="views_count" id="show-rnd-3649" data-show-id="3649" data-show-type="zoom_rnd_article"></span><span class="comment_count" id="rnd3649" data-comment="https://zoom.cnews.ru/rnd/article/item/pri_pomoshchi_keramicheskih_chernil_3dpechat_kostej_vozmozhna_pryamo#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63761?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/761/63761_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/761/63761_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Согреваемся правильно: 7 мифов об обогревателях для дома</h3></div><div class="publication-counters"><span class="views_count" id="show-publication-63761" data-show-id="63761" data-show-type="zoom_article"></span><span class="comment_count" id="publication63761" data-comment="https://zoom.cnews.ru/publication/item/63761#cnComments"></span></div></a><a href="https://zoom.cnews.ru/rnd/article/item/kak_3dpechat_prolozhit_put_k_kolonizatsii_luny?utm_source=cnews&amp;utm_medium=rnd&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="//filearchive.cnews.ru/img//rnd/2021/03/05/910.jpg" alt="" src="//filearchive.cnews.ru/img//rnd/2021/03/05/910.jpg"><span class="category_label cl_rnd" href="#">Наука</span></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Как 3D-печать проложит путь к колонизации Луны?</h3></div><div class="publication-counters"><span class="views_count" id="show-rnd-3647" data-show-id="3647" data-show-type="zoom_rnd_article"></span><span class="comment_count" id="rnd3647" data-comment="https://zoom.cnews.ru/rnd/article/item/kak_3dpechat_prolozhit_put_k_kolonizatsii_luny#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63759?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/759/63759_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/759/63759_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Лучшие гаджеты в подарок на 8 марта: выбор ZOOM</h3></div><div class="publication-counters"><span class="comment_count" id="publication63759" data-comment="https://zoom.cnews.ru/publication/item/63759#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63757?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/757/63757_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/757/63757_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Обзор линейки цветных МФУ для дома «Фабрика печати» Epson: просто добавь чернил</h3></div><div class="publication-counters"><span class="comment_count" id="publication63757" data-comment="https://zoom.cnews.ru/publication/item/63757#cnComments"></span></div></a><a href="https://zoom.cnews.ru/b/post/tehnoblog/75897?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column technoblog-item" target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/blog/897/75897_IMG_485X300.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/blog/897/75897_IMG_485X300.jpg"><span class="category_label cl_zoom_blog" href="#">Техноблог</span></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Как будет работать межпланетный интернет?</h3></div><div class="publication-counters"><span class="comment_count" id="blog75897" data-comment="https://zoom.cnews.ru/b/post/tehnoblog/75897#cnComments"></span></div></a><a href="https://zoom.cnews.ru/publication/item/63755?utm_source=cnews&amp;utm_medium=zoom&amp;utm_campaign=tech" class="item-other zoom_item flex-grow-0 item-other d-flex flex-column " target="_blank"><div class="other-item-top"><img class="zi-img lazyloaded" data-src="https://filearchive.cnews.ru/mrtest/images/publication/755/63755_IMG_300X200.jpg" alt="" src="https://filearchive.cnews.ru/mrtest/images/publication/755/63755_IMG_300X200.jpg"></div><div class="other-item-text flex-shrink-0"><h3 class="zi-postname">Выбираем лучшие умные часы до 10 000 рублей</h3></div><div class="publication-counters"><span class="comment_count" id="publication63755" data-comment="https://zoom.cnews.ru/publication/item/63755#cnComments"></span></div></a></div><a href="/main/more_zoom/2021-03-02%2000%3A00%3A00/1" class="read_more_btn">Показать еще</a>
 	</div></div>
 </section>
 
@@ -2690,13 +2728,6 @@ max-width: 1280px;
             </a>
         </div>
         	<div class="events_list">
-					<div class="event_item">
-				<div class="ei-date">
-					<span class="eid-day">09</span>
-					<span class="eid-month">Марта<br>2021</span>
-				</div>
-				<a href="https://events.cnews.ru/events/ikt_v_finansovom_sektore_2020_2020-09-29.shtml" class="eid-name" target="_blank">ИКТ в финансовом секторе 2021</a>
-			</div>
 					<div class="event_item">
 				<div class="ei-date">
 					<span class="eid-day">16</span>
@@ -2746,6 +2777,13 @@ max-width: 1280px;
 				</div>
 				<a href="https://events.cnews.ru/events/ikt_v_gossektore_2021.shtml" class="eid-name" target="_blank">ИКТ в госсекторе 2021</a>
 			</div>
+					<div class="event_item">
+				<div class="ei-date">
+					<span class="eid-day">13</span>
+					<span class="eid-month">Апреля<br>2021</span>
+				</div>
+				<a href="https://events.cnews.ru/events/elektronnyi_dokumentooborot_2021.shtml" class="eid-name" target="_blank">Электронный документооборот 2021</a>
+			</div>
 		
 	</div>
 	
@@ -2768,7 +2806,7 @@ max-width: 1280px;
 							<a href="https://club.cnews.ru/blogs/entry/innovatsii_v_informatsionnyh_sistemah_i_tehnologiyah" class="cp-name" target="_blank">Дмитрий Степанов</a>
 							
 							<div class="cp-stats">
-								<span class="cp-views">5</span>
+								<span class="cp-views">10</span>
 															</div>
 						</div>
 					</div>
@@ -2783,7 +2821,7 @@ max-width: 1280px;
 							<a href="https://club.cnews.ru/blogs/entry/import_luchshie_praktiki_obezlichivaniya_personalnyh_dannyh_7b39" class="cp-name" target="_blank">Сергей Борисов</a>
 							
 							<div class="cp-stats">
-								<span class="cp-views">7</span>
+								<span class="cp-views">12</span>
 															</div>
 						</div>
 					</div>
@@ -2798,7 +2836,7 @@ max-width: 1280px;
 							<a href="https://club.cnews.ru/blogs/entry/po_simulyator_uzi" class="cp-name" target="_blank">Юрий Колесниченко</a>
 							
 							<div class="cp-stats">
-								<span class="cp-views">77</span>
+								<span class="cp-views">82</span>
 															</div>
 						</div>
 					</div>
@@ -2813,7 +2851,7 @@ max-width: 1280px;
 							<a href="https://club.cnews.ru/blogs/entry/platezhnyj_servis_skrepka_voshel_v_shortlist_premii_laquosdelano_v_rossiiraquo" class="cp-name" target="_blank">Алексей Удовиченко</a>
 							
 							<div class="cp-stats">
-								<span class="cp-views">82</span>
+								<span class="cp-views">85</span>
 															</div>
 						</div>
 					</div>
@@ -2828,7 +2866,7 @@ max-width: 1280px;
 							<a href="https://club.cnews.ru/blogs/entry/osvoenie_kompyuternogo_pisma_detmi" class="cp-name" target="_blank">Ильин В.Д.</a>
 							
 							<div class="cp-stats">
-								<span class="cp-views">119</span>
+								<span class="cp-views">121</span>
 															</div>
 						</div>
 					</div>
@@ -2843,7 +2881,7 @@ max-width: 1280px;
 							<a href="https://club.cnews.ru/blogs/entry/versiya_1_3_modeli_cmmi_quotushla_v_proshloequot" class="cp-name" target="_blank">Кондаков Александр Александрович</a>
 							
 							<div class="cp-stats">
-								<span class="cp-views">118</span>
+								<span class="cp-views">121</span>
 															</div>
 						</div>
 					</div>
@@ -3067,4 +3105,4 @@ max-width: 1280px;
 
 
 
-<style>.grecaptcha-badge {display:none !important}.selection-popup {position:fixed; padding:2px 5px; color:#000; background:#e4e4e4; border: 1px solid #ccc; border-radius:2px;}</style><div id="lightboxOverlay" tabindex="-1" class="lightboxOverlay" style="display: none;"></div><div id="lightbox" tabindex="-1" class="lightbox" style="display: none;"><div class="lb-outerContainer"><div class="lb-container"><img class="lb-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt=""><div class="lb-nav"><a class="lb-prev" aria-label="Previous image" href=""></a><a class="lb-next" aria-label="Next image" href=""></a></div><div class="lb-loader"><a class="lb-cancel"></a></div></div></div><div class="lb-dataContainer"><div class="lb-data"><div class="lb-details"><span class="lb-caption"></span><span class="lb-number"></span></div><div class="lb-closeContainer"><a class="lb-close"></a></div></div></div></div><div role="log" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></div><script type="text/javascript" src="https://www.google.com/recaptcha/api.js?render=6LcZ_OAUAAAAAKe0Fxf3eCAopXbM7NSVVkYJSA8u"></script><div><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; position: fixed; visibility: hidden; display: block; transition: right 0.3s ease 0s; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LcZ_OAUAAAAAKe0Fxf3eCAopXbM7NSVVkYJSA8u&amp;co=aHR0cHM6Ly93d3cuY25ld3MucnU6NDQz&amp;hl=en&amp;v=jxFQ7RQ9s9HTGKeWcoa6UQdD&amp;size=invisible&amp;cb=38ib5836su43" width="256" height="60" role="presentation" name="a-w25hls42ksai" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;"></iframe></div></body></html>
+<style>.grecaptcha-badge {display:none !important}.selection-popup {position:fixed; padding:2px 5px; color:#000; background:#e4e4e4; border: 1px solid #ccc; border-radius:2px;}</style><div id="lightboxOverlay" tabindex="-1" class="lightboxOverlay" style="display: none;"></div><div id="lightbox" tabindex="-1" class="lightbox" style="display: none;"><div class="lb-outerContainer"><div class="lb-container"><img class="lb-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt=""><div class="lb-nav"><a class="lb-prev" aria-label="Previous image" href=""></a><a class="lb-next" aria-label="Next image" href=""></a></div><div class="lb-loader"><a class="lb-cancel"></a></div></div></div><div class="lb-dataContainer"><div class="lb-data"><div class="lb-details"><span class="lb-caption"></span><span class="lb-number"></span></div><div class="lb-closeContainer"><a class="lb-close"></a></div></div></div></div><div role="log" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></div><script type="text/javascript" src="https://www.google.com/recaptcha/api.js?render=6LcZ_OAUAAAAAKe0Fxf3eCAopXbM7NSVVkYJSA8u"></script><div><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; position: fixed; visibility: hidden; display: block; transition: right 0.3s ease 0s; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LcZ_OAUAAAAAKe0Fxf3eCAopXbM7NSVVkYJSA8u&amp;co=aHR0cHM6Ly93d3cuY25ld3MucnU6NDQz&amp;hl=en&amp;v=jxFQ7RQ9s9HTGKeWcoa6UQdD&amp;size=invisible&amp;cb=ntwhcybzc97" width="256" height="60" role="presentation" name="a-xus59hfxq3r7" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;"></iframe></div></body></html>

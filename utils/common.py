@@ -274,7 +274,7 @@ def get_all_elements(driver=None):
     """
     
     elements_all = driver.find_elements_by_xpath('//*')
-    print(f'Number of discovered elements: {len(elements_all)}')
+    logger.info(f'Number of discovered elements: {len(elements_all)}')
     
     columns = [
         'parent_id',

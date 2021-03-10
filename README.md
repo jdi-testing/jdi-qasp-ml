@@ -54,15 +54,12 @@ directory. Otherwise:
 
 # Validate model
 
-run notebook *Model-Evaluate.ipynb*. Run all cells. Take a look at confusion matrix and at screenshot of validating page 
+Run notebook *Model-Evaluate.ipynb*. Run all cells. Take a look at confusion matrix for the screenshot of validating page 
 below
 
 
+# Predicting
 
-
-
-
-
- 
-
-
+To get predictions for an arbitrary web page you may use (or make a copy and use the copy)
+**DatasetBuilder-Presentation-POC.ipynb**. Just edit variables URL and DATASET_NAME. Then run all cells.
+If directory **dataset/annotations** does not contain annotations for a screenshot, only predictions (blue labels) will be shown on the image below. Otherwise true labels will be shown in addition.

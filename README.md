@@ -34,13 +34,13 @@ It has that tree structure:
 ````
 **classes.txt** - list of classes of elements. Do not change it. Order of classes is important.<br>
 
-To add a new screenshot to the dataset (and its dom tree) you have to open **DatasetBuilder-Presentation-POC.ipynb**.
-Change script variables (cell [2]):<br> 
+To add a new screenshot to the dataset (and its dom tree) you have to open **DatasetBuilder-Presentation-POC.ipynb**.<br>
+Change script variables (cell[2]):<br> 
  - URL - your site address<br>
  - DATASET_NAME - unique alias of a dataset<br>
 If your need extra steps to get to the target web page (login and navigate to some specific page), you may modify cell[3] method *setUp*
 
-After all these modifications are done, the dom tree of the web page will be stored as parquet file in **dataset/df**, screenshot in **dataset/images**, html text of the page in **dataset/html.
+After all these modifications are done, the dom tree of the web page will be stored as parquet file in **dataset/df**, screenshot in **dataset/images**, html text of the page in **dataset/html**.
 
 To modify/amend the dataset run script **annotate-labelImg.bat** in the repository root directory _and press **\<Enter\>**_. Then edit annotations for the screenshot
 
@@ -62,4 +62,4 @@ below
 
 To get predictions for an arbitrary web page you may use (or make a copy and use the copy)
 **DatasetBuilder-Presentation-POC.ipynb**. Just edit variables URL and DATASET_NAME. Then run all cells.
-If directory **dataset/annotations** does not contain annotation file for the screenshot, only predictions (blue labels) will be shown on the image below. Otherwise true labels (in red)will be shown in addition.
+If directory **dataset/annotations** does not contain annotation file for the screenshot, only predictions (blue labels) will be shown on the image below. Otherwise true labels (in red) will be shown as well.

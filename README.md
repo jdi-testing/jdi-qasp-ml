@@ -8,6 +8,7 @@ Plans:
  - Split dataset to train/test by adding prefix to aliases
  - experiment with removing **is_hover** procedure and its features
  - check ability to train one class models in addition to existing multiclass model
+ - What about disabled/hidden elements? Should we detect them or not? 
 
 
 # Install environment to train / test model

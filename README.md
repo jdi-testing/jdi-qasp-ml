@@ -1,6 +1,12 @@
 # JDI-QASP-ml v.0.1
 
-EPM-QAsp
+Plans:
+ - Move to pytorch-1.8.0
+ - Extract more features
+ - Add more data
+ - Split dataset to train/test by adding prefix to aliases
+ - experiment with removing **is_hover** procedure and its features
+
 
 # Install environment to train / test model
 

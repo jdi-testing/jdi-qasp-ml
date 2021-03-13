@@ -4,9 +4,10 @@ Plans:
  - Move to pytorch-1.8.0
  - Extract more features
  - Add more data
+ - Do we have to change number of classes? 
  - Split dataset to train/test by adding prefix to aliases
  - experiment with removing **is_hover** procedure and its features
- - check ability to train one class models in addition to existing multiclass model 
+ - check ability to train one class models in addition to existing multiclass model
 
 
 # Install environment to train / test model

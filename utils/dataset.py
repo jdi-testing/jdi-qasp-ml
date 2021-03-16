@@ -1,8 +1,11 @@
 import numba
 import pandas as pd
 import numpy as np
+
 import selenium
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
+
 from .common import iou_xywh
 from tqdm.auto import tqdm, trange
 import os, sys, re, gc
@@ -22,6 +25,22 @@ from scipy.sparse import hstack
 import pickle
 
 logger.info("dataset package is loaded...")
+
+
+GET_ALL_ATTRIBUTES_JS ="""
+    var items = {}; 
+    for (index = 0; index < arguments[0].attributes.length; ++index) { 
+        items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value 
+    }; 
+    return items;
+"""
+
+def get_all_attributes(driver, web_element):
+    try:
+        attr_dict = driver.execute_script(GET_ALL_ATTRIBUTES_JS, web_element)
+        return attr_dict
+    except:
+        return dict()
 
 def build_tree_dict(df:pd.DataFrame) -> dict:
     """
@@ -239,8 +258,16 @@ class DatasetBuilder:
         logger.info(f'getting url: {self.url}')
         self.driver.get(self.url)
         sleep(3.0)
+        html_e = driver.find_element_by_tag_name('html')
+        sleep(3.0)
+        html_e.send_keys(Keys.CONTROL, Keys.END)
+        sleep(3.0)
+        html_e.send_keys(Keys.CONTROL, Keys.END)
+        sleep(3.0)        
         maximize_window(driver=self.driver)
         sleep(9.0)
+        html_e.send_keys(Keys.CONTROL, Keys.END)
+        sleep(3.0)        
 
     def build_dataset(self):
 

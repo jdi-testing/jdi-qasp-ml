@@ -8,8 +8,8 @@ dependencies:
   - pip
   - conda
   - pyyaml
-  - pytorch=1.7.1
-  - cudatoolkit=10.1
+  - pytorch=1.8.0
+  - cudatoolkit=11.1
   - matplotlib
   - imgaug
   - tqdm
@@ -32,5 +32,10 @@ dependencies:
     - scipy
     - seaborn
     - GPUtil
+    - pandas_profiling
+    - lxml
+    - html5lib
+    # - pivottablejs
+    # - pdqc
 
 prefix: D:\Anaconda3\envs\py37-torch

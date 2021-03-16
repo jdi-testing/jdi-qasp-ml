@@ -11,7 +11,6 @@ class JDIModel(torch.nn.Module):
         self.batchNorm2 = torch.nn.LayerNorm(normalized_shape=[self.hidden1.out_features])
         self.leaky_relu2 = torch.nn.LeakyReLU(inplace=True)
         self.hidden2 = torch.nn.Linear(in_features=self.hidden1.out_features, out_features=OUT_FEATURES, bias=True)
-        #self.out_layer = torch.nn.Softmax(dim=1)
         
     def forward(self, x):
         x = self.input_layer(x)
@@ -20,7 +19,7 @@ class JDIModel(torch.nn.Module):
         x = self.hidden1(x)
         x = self.batchNorm2(x)
         x = self.leaky_relu2(x)
-        x = self.hidden2(x)
-        #x = self.out_layer(x)
+        x = self.hidden2(x) # logits
+
         return x
         

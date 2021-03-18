@@ -27,21 +27,6 @@ import pickle
 logger.info("dataset package is loaded...")
 
 
-GET_ALL_ATTRIBUTES_JS ="""
-    var items = {}; 
-    for (index = 0; index < arguments[0].attributes.length; ++index) { 
-        items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value 
-    }; 
-    return items;
-"""
-
-def get_all_attributes(driver, web_element):
-    try:
-        attr_dict = driver.execute_script(GET_ALL_ATTRIBUTES_JS, web_element)
-        return attr_dict
-    except:
-        return dict()
-
 def build_tree_dict(df:pd.DataFrame) -> dict:
     """
         Builds tree dict for
@@ -185,13 +170,13 @@ class DatasetBuilder:
     """
         Build dataset from a specific url
     """
-
+    
     headless = True
 
     def __init__(self, url:str, dataset_name:str = 'dummy', headless=True):
 
         if dataset_name == 'dummy':
-            logger.warn('The default dataset name "dummy" will be used')
+            logger.warning('The default dataset name "dummy" will be used')
         else:
             logger.info(f'Dataset name: {dataset_name}')
 
@@ -220,7 +205,7 @@ class DatasetBuilder:
         self.driver.close()
 
     def __enter__(self):
-
+        import selenium
         from selenium.webdriver.chrome.options import Options
 
         if self.driver is not None:
@@ -243,11 +228,28 @@ class DatasetBuilder:
 
         logger.info('Chrome web driver is created')
         self.setUp(self.driver)
+        scr = f'dataset/images/{self.dataset_name}.png'
+        logger.info(f'save scrinshot: {scr}')
+        self.driver.save_screenshot(scr)
         self.build_dataset()
-        self.build_features()
-
+    
         return self
        
+    def full_page(self, driver):
+        logger.info('Getting full page')
+        sleep(3.0)
+        html_e = driver.find_element_by_tag_name('html')
+        sleep(3.0)
+        html_e.send_keys(Keys.CONTROL, Keys.END)
+        sleep(3.0)
+        html_e.send_keys(Keys.CONTROL, Keys.END)
+        sleep(3.0)
+
+        maximize_window(driver=self.driver, extend_pix=0)
+
+        sleep(9.0)
+        html_e.send_keys(Keys.CONTROL, Keys.END)
+        sleep(3.0)
 
     def setUp(self, driver):
         """
@@ -258,23 +260,23 @@ class DatasetBuilder:
         logger.info(f'getting url: {self.url}')
         self.driver.get(self.url)
         sleep(3.0)
-        html_e = driver.find_element_by_tag_name('html')
+        
+        driver.find_element_by_id("user-icon").click()
+        driver.find_element_by_id("name").send_keys(LOGIN)
+        driver.find_element_by_id("password").send_keys(PASSWORD)
+        driver.find_element_by_id("login-button").click()
         sleep(3.0)
-        html_e.send_keys(Keys.CONTROL, Keys.END)
-        sleep(3.0)
-        html_e.send_keys(Keys.CONTROL, Keys.END)
-        sleep(3.0)        
-        maximize_window(driver=self.driver)
-        sleep(9.0)
-        html_e.send_keys(Keys.CONTROL, Keys.END)
-        sleep(3.0)        
+        maximize_window(driver=self.driver, extend_pix=0)
+        
+        #self.full_page(driver)
 
     def build_dataset(self):
-
-        #elements_df = get_all_elements(driver=self.driver)
-        # At first we have to save screenshot
-        logger.info(f'Save color screenshot to dataset/images/{self.dataset_name}.png')
-        screenshot(self.driver, save_to_file=f'dataset/images/{self.dataset_name}.png')
+        
+        logger.info('Collect features using JS script')
+        with open('js/build-dataset.js', 'r') as f:
+            build_dataset_js = f.read()
+                          
+        self.dataset = pd.DataFrame(self.driver.execute_script(build_dataset_js))
 
         # And HTML sorce
         logger.info(f'Save html to dataset/html/{self.dataset_name}.html')
@@ -283,18 +285,15 @@ class DatasetBuilder:
             f.flush()
  
         # build_elements_dataset calls hover, which changes screenshot, sor it have to be called the very end
-        elements_df = build_elements_dataset(driver=self.driver)
-        build_path_features(elements_df=elements_df)
+        #elements_df = build_elements_dataset(driver=self.driver)
+        #build_path_features(elements_df=elements_df)
+
+        build_children_features(self.dataset)
 
         logger.info(f'Save parquet to dataset/df/{self.dataset_name}.parquet')
-        elements_df.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
+        self.dataset.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
 
-        self.dataset = elements_df
         return self.dataset
-
-
-    def build_features(self):
-        self.dataset = build_children_features(df=self.dataset)
 
 COLUMNS_TO_DROP = {
     'parent_id',
@@ -322,6 +321,10 @@ COLUMNS_TO_DROP = {
 class JDIDataset(Dataset):
 
     def __init__(self, dataset_names:list=None, rebalance=True):
+        """
+           dataset_names: list of dataset aliases 
+        """
+
         super(JDIDataset, self).__init__()
 
         ds_list=[]

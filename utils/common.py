@@ -75,9 +75,9 @@ def draw_boxes(box_a, box_b):
 
 
 # Maximize window
-def maximize_window(driver=None):
+def maximize_window(driver=None, extend_pix=0):
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll' + X )
-    driver.set_window_size(width=S('Width'), height=S('Height')+1000)
+    driver.set_window_size(width=S('Width'), height=S('Height')+extend_pix)
     driver.find_element_by_tag_name('body')
     logger.info('Window maximized')
 
@@ -350,6 +350,30 @@ def get_all_elements(driver=None):
     return e_df
 
 
+GET_ALL_ATTRIBUTES_JS ="""
+    var items = {}; 
+    for (index = 0; index < arguments[0].attributes.length; ++index) { 
+        items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value 
+    }; 
+    return items;
+"""
+
+def get_all_attributes(driver, web_element):
+    try:
+        attr_dict = driver.execute_script(GET_ALL_ATTRIBUTES_JS, web_element)
+        return attr_dict
+    except:
+        return dict()
+
+
+# def build_elements_dataset(driver=None):
+#     elements_list = driver.find_elements_by_xpath('//*')
+#     print(f'Number of discovered elements: {len(elements_list)}')
+#     attributes = [ get_all_attributes(driver=driver, web_element=e) for e in tqdm(elements_list)]
+
+#     return pd.DataFrame()
+
+
 def build_elements_dataset(driver=None):
 
     """
@@ -358,7 +382,7 @@ def build_elements_dataset(driver=None):
     """
 
     elements_list = driver.find_elements_by_xpath('//*')
-    print(f'Number of discovered elements: {len(elements_list)}')
+    logger.info(f'Number of discovered elements: {len(elements_list)}')
     
     logger.info('collect features: text')
     text = [ e.text for e in elements_list]
@@ -385,43 +409,44 @@ def build_elements_dataset(driver=None):
     logger.info('collect features: selected')
     selected =  [ e.is_selected() for e in elements_list]
 
-    logger.info('collect features: attr_class')
-    attr_class = [ e.get_attribute('class') for e in elements_list]
+    # logger.info('collect features: attr_class')
+    # attr_class = [ e.get_attribute('class') for e in elements_list]
 
-    logger.info('collect features: attr_id')
-    attr_id = [ e.get_attribute('id') for e in elements_list]
+    # logger.info('collect features: attr_id')
+    # attr_id = [ e.get_attribute('id') for e in elements_list]
 
-    logger.info('collect features: attr_role')
-    attr_role = [ e.get_attribute('role') for e in elements_list]
+    # logger.info('collect features: attr_role')
+    # attr_role = [ e.get_attribute('role') for e in elements_list]
 
-    logger.info('collect features: attr_type')
-    attr_type = [ e.get_attribute('type') for e in elements_list]
+    # logger.info('collect features: attr_type')
+    # attr_type = [ e.get_attribute('type') for e in elements_list]
 
-    logger.info('collect features: attr_onmouseover')
-    attr_onmouseover = [ e.get_attribute('onmouseover') for e in elements_list]
+    # logger.info('collect features: attr_onmouseover')
+    # attr_onmouseover = [ e.get_attribute('onmouseover') for e in elements_list]
 
-    logger.info('collect features: attr_onclick')
-    attr_onclick = [ e.get_attribute('onclick') for e in elements_list]
+    # logger.info('collect features: attr_onclick')
+    # attr_onclick = [ e.get_attribute('onclick') for e in elements_list]
 
-    logger.info('collect features: attr_ondblclick')
-    attr_ondblclick = [ e.get_attribute('ondblclick') for e in elements_list]
+    # logger.info('collect features: attr_ondblclick')
+    # attr_ondblclick = [ e.get_attribute('ondblclick') for e in elements_list]
 
-    hover_list = []
-    hover_before_list = []
-    hover_after_list = []
+    attributes_list = [ get_all_attributes(driver=driver, web_element=e) for e in tqdm(elements_list, desc='Collecting attributes')]
 
-    # hover have to be called as the latest
-    for e in tqdm(elements_list, desc='Mouse hover checking'):
-        try:
-            hover, hover_before, hover_after = is_hover(e=e, driver=driver)
-            hover_list.append(hover)
-            hover_before_list.append(hover_before)
-            hover_after_list.append(hover_after) 
-        except Exception as ex:
-            logger.error(f"Suppressed error: {ex}, {e.tag_name} , {e.rect}")
-            hover_list.append(False)
-            hover_before_list.append(None)
-            hover_after_list.append(None)
+    # hover_list = []
+    # hover_before_list = []
+    # hover_after_list = []
+    # # hover have to be called as the latest
+    # for e in tqdm(elements_list, desc='Mouse hover checking'):
+    #     try:
+    #         hover, hover_before, hover_after = is_hover(e=e, driver=driver)
+    #         hover_list.append(hover)
+    #         hover_before_list.append(hover_before)
+    #         hover_after_list.append(hover_after) 
+    #     except Exception as ex:
+    #         logger.error(f"Suppressed error: {ex}, {e.tag_name} , {e.rect}")
+    #         hover_list.append(False)
+    #         hover_before_list.append(None)
+    #         hover_after_list.append(None)
 
     return  pd.DataFrame({
         'parent_id': parent_id,
@@ -435,16 +460,17 @@ def build_elements_dataset(driver=None):
         'displayed': displayed,
         'enabled': enabled,
         'selected': selected,
-        'attr_class': attr_class,
-        'attr_id': attr_id,
-        'attr_role': attr_role,
-        'attr_type': attr_type,
-        'attr_onmouseover': attr_onmouseover,
-        'attr_onclick': attr_onclick,
-        'attr_ondblclick': attr_ondblclick,
-        'hover': hover_list,
-        'hover_before': hover_before_list,
-        'hover_after': hover_after_list
+        'attributes': attributes_list
+        # 'attr_class': attr_class,
+        # 'attr_id': attr_id,
+        # 'attr_role': attr_role,
+        # 'attr_type': attr_type,
+        # 'attr_onmouseover': attr_onmouseover,
+        # 'attr_onclick': attr_onclick,
+        # 'attr_ondblclick': attr_ondblclick,
+        # 'hover': hover_list,
+        # 'hover_before': hover_before_list,
+        # 'hover_after': hover_after_list
     })
 
 

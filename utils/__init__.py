@@ -7,6 +7,7 @@ from .common import get_all_elements, \
                     maximize_window
 
 from .model import JDIModel
+
 from .dataset import build_children_features, \
                      get_parents_list, \
                      build_tree_dict, \

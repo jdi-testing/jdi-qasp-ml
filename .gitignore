@@ -4,6 +4,6 @@ tmp/*
 .ipynb_checkpoints/*
 *.pyc
 *.log
-
+flask-temp-storage/*
 
 

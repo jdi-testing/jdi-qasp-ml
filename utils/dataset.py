@@ -90,7 +90,7 @@ def get_grey_image(file_path:str) -> np.ndarray:
     return img
 
 
-def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray) -> pd.DataFrame:
+def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray, dummy_value=-1.0) -> pd.DataFrame:
 
     """
         mark up dataset: assign labels
@@ -127,7 +127,7 @@ def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray) ->
     labels_df = pd.DataFrame(data=labels)
     labels_df.index = labels_df.idx
     df = df.merge(labels_df, how='left', left_index=True, right_index=True)
-    df.label = df.label.fillna(-1.0)
+    df.label = df.label.fillna(dummy_value)
     df.drop(columns=['iou', 'idx'], inplace=True) # drop auxiliary columns
 
     return df
@@ -276,7 +276,8 @@ class DatasetBuilder:
         with open('js/build-dataset.js', 'r') as f:
             build_dataset_js = f.read()
                           
-        self.dataset = pd.DataFrame(self.driver.execute_script(build_dataset_js))
+        self.dataset_json = self.driver.execute_script(build_dataset_js)
+        self.dataset = pd.DataFrame(self.dataset_json)
 
         # And HTML sorce
         logger.info(f'Save html to dataset/html/{self.dataset_name}.html')
@@ -285,10 +286,10 @@ class DatasetBuilder:
             f.flush()
  
         # build_elements_dataset calls hover, which changes screenshot, sor it have to be called the very end
-        #elements_df = build_elements_dataset(driver=self.driver)
-        #build_path_features(elements_df=elements_df)
+        # elements_df = build_elements_dataset(driver=self.driver)
+        # build_path_features(elements_df=elements_df)
 
-        build_children_features(self.dataset)
+        # build_children_features(self.dataset) # will be called at backend
 
         logger.info(f'Save parquet to dataset/df/{self.dataset_name}.parquet')
         self.dataset.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
@@ -319,205 +320,294 @@ COLUMNS_TO_DROP = {
 }
 
 class JDIDataset(Dataset):
-
-    def __init__(self, dataset_names:list=None, rebalance=True):
-        """
-           dataset_names: list of dataset aliases 
-        """
-
+    
+    def __init__(self, dataset_names:list=None, rebalance=False):
         super(JDIDataset, self).__init__()
-
-        ds_list=[]
-
+        self.rebalanced = rebalance
+               
+        with open('dataset/classes.txt', 'r') as f:
+            self.classes_dict = { class_name.strip():i for i, class_name in enumerate(f.readlines()) }
+            self.classes_reverse_dict = { v:k for k, v in self.classes_dict.items()}
+        self.dummy_class_value = self.classes_dict['n/a']
+            
         if dataset_names is None:
-            logger.warn('Using all availabel data to generate dataset')
+            logger.warning('Using all available data to generate dataset')
             dataset_names = self._gen_dataset_names()
-
+            
+        logger.info(f"List of dataset_names:{dataset_names}")
+        
+        ds_list=[] # list of datasets to join
+        
         for ds_name in dataset_names:
             logger.info(f'Dataset for {ds_name}')
             df = pd.read_parquet(f'dataset/df/{ds_name}.parquet')
             logger.info(f"Dataset shape: {df.shape}")
 
-            logger.info('cleaning tag_name from dummy words')
-            df.tag_name = df.tag_name.apply(lambda x: x.replace('-example', ''))
+            logger.info('cleaning tag_name from dummy/auxiliary words')
+            df.tag_name = df.tag_name.apply(lambda x: x.lower().replace('-example', ''))
+            df = build_children_features(df=df)
 
-            # If exists file with labels, load it
+            #----------------------------------------------------------------------------------------------
+            # Merge children with parents
+            # WARNING: There is a tag <HTML> without parent. Let's fix this issue
+            df.parent_id = df.apply(lambda r: r.element_id if r.parent_id is None else r.parent_id, axis=1)            
+            df = df.merge(df, left_on='parent_id', right_on='element_id', suffixes=('', '_parent'))
+            logger.info(f"Dataset shape after merging with parents: {df.shape}")
+            #----------------------------------------------------------------------------------------------
+            
+            # If annotation file exists, lets load it and assign labels
             if os.path.exists(f'dataset/annotations/{ds_name}.txt'):
                 logger.warning(f'Load LABELS from dataset/annotations/{ds_name}.txt')
                 df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt', 
-                                       img=plt.imread(f'dataset/images/{ds_name}.png'))
+                                       img=plt.imread(f'dataset/images/{ds_name}.png'),
+                                       dummy_value = self.dummy_class_value
+                                  )
             else:
-                logger.warning(f'LABELS: not loaded')
-                df['label'] = -1.0
-
-            df = build_children_features(df=df)
-
-            # WARNING: There is a tag <HTML> without parent. Let's fix this issue
-            df.parent_id = df.apply(lambda r: r.element_id if r.parent_id is None else r.parent_id, axis=1)
-
-            df = df.merge(df, left_on='parent_id', right_on='element_id', suffixes=('', '_parent'))
-            logger.info(f"Dataset shape after merging with parents: {df.shape}")
-
+                logger.warning(f'assign dummy values [n/a] for labels if there is no annotations')
+                df['label'] = self.dummy_class_value
+            
             df['ds_name'] = ds_name
-            ds_list.append(df)
-
+            ds_list.append(df)            
+                
         logger.info('Concatenate datasets')
         self.dataset = pd.concat(ds_list)
         logger.info(f"Dataset shape after reading: {self.dataset.shape}")
         
-        self.dataset.displayed = self.dataset.displayed.astype(int).fillna(0)
-        self.dataset.enabled = self.dataset.enabled.astype(int).fillna(0)
-        self.dataset.selected = self.dataset.selected.astype(int).fillna(0)
-        self.dataset.text = self.dataset.text.apply(lambda x: 0 if (x is None) else 1)
-        self.dataset.attr_id = self.dataset.attr_id.apply(lambda x: 0 if (x is None) else 1)
-        self.dataset.hover = self.dataset.hover.fillna(False).astype(int)
-        self.dataset.attr_onmouseover = self.dataset.attr_onmouseover.apply(lambda x: 1 if x is not None else 0)
-        self.dataset.attr_onclick = self.dataset.attr_onclick.apply(lambda x: 1 if x is not None else 0)
-        self.dataset.attr_ondblclick = self.dataset.attr_ondblclick.apply(lambda x: 1 if x is not None else 0)
-
-        self.dataset.displayed_parent = self.dataset.displayed_parent.fillna(0).astype(int)
-        self.dataset.enabled_parent = self.dataset.enabled_parent.fillna(0).astype(int)
-        self.dataset.selected_parent = self.dataset.selected_parent.fillna(0).astype(int)
-        self.dataset.text_parent = self.dataset.text_parent.apply(lambda x: 0 if (x is None) else 1)
-        self.dataset.attr_id_parent = self.dataset.attr_id_parent.apply(lambda x: 0 if (x is None) else 1)
-        self.dataset.hover_parent = self.dataset.hover_parent.fillna(.0).astype(int)
-        self.dataset.attr_onmouseover_parent = self.dataset.attr_onmouseover_parent.apply(lambda x: 1 if x is not None else 0)
-        self.dataset.attr_onclick_parent = self.dataset.attr_onclick_parent.apply(lambda x: 1 if x is not None else 0)
-        self.dataset.attr_ondblclick_parent = self.dataset.attr_ondblclick_parent.apply(lambda x: 1 if x is not None else 0)
-        self.dataset.tag_name_parent = self.dataset.tag_name_parent.fillna('html')
-
-        with open('dataset/classes.txt', 'r') as f:
-            classes_list = [c.strip() for c in f.readlines()]
-
         if rebalance:
-            self.rebalance()
-
-        self.dataset['label_text'] = self.dataset.label.apply(lambda x: classes_list[int(x)] if x >=0 else 'n/a')
-        self.dataset_copy_df = self.dataset.copy()
-
-        logger.info(f'Drop redundunt columns: {COLUMNS_TO_DROP}')
-        self.dataset.drop(columns= set(self.dataset).intersection(COLUMNS_TO_DROP), inplace=True)
-
-        TAG_NAME_COUNT_VECTORIZER = 'model/tag_name_count_vectorizer.pkl'
-        if os.path.exists(TAG_NAME_COUNT_VECTORIZER):
-            logger.warn('Load existing count vectorizer for tag_names')
-            with open(TAG_NAME_COUNT_VECTORIZER,'rb') as f:
-                self.tag_name_count_vectorizer = pickle.load(f)
-        else:
-            logger.info('Create, fit, save CountVectorizer for tag_name')
-            self.tag_name_count_vectorizer = CountVectorizer()
-            self.tag_name_count_vectorizer.fit(self.dataset.tag_name)
-            with open(TAG_NAME_COUNT_VECTORIZER, 'wb') as f:
-                pickle.dump(self.tag_name_count_vectorizer, f)
-
-        self.tag_name_sm = self.tag_name_count_vectorizer.transform(self.dataset.tag_name)
-        self.tag_name_parent_sm = self.tag_name_count_vectorizer.transform(self.dataset.tag_name_parent)
-
-        # If don't have OHE for attr_type, create, fit and save the one
-        ATTR_TYPE_OHE = 'model/attr_type_ohe.pkl'
-        if os.path.exists(ATTR_TYPE_OHE):
-            logger.warning(f'Load existing attr_type OHE. You have to remove {ATTR_TYPE_OHE}, to fit it from scratch')
-            with open(ATTR_TYPE_OHE, 'rb') as f: 
-                self.attr_type_ohe = pickle.load(f)
-        else:
-            logger.warning('Create and fit OHE for attr_type, attr_type_patent')
-            self.attr_type_ohe = OneHotEncoder(handle_unknown='ignore')
-            self.attr_type_ohe.fit(np.expand_dims(self.dataset.attr_type.values, axis=1))
-            with open(ATTR_TYPE_OHE, 'wb') as f:
-                pickle.dump(self.attr_type_ohe, f)
-
-        self.attr_type_sm = self.attr_type_ohe.transform(np.expand_dims(self.dataset.attr_type.values, axis=1))
-        self.attr_type_parent_sm = self.attr_type_ohe.transform(np.expand_dims(self.dataset.attr_type_parent.values, axis=1))
+            self._oversample()
         
-        # if don't have OHE for attr_role, create, fit and save it
-        ATTR_ROLE_OHE = 'model/attr_role_ohe.pkl'
-        if os.path.exists(ATTR_ROLE_OHE):
-            logger.warning(f'Load existing attr_role OHE. You have to remove {ATTR_ROLE_OHE}, to fit it from scratch')
-            with open(ATTR_ROLE_OHE, 'rb') as f: 
-                self.attr_role_ohe = pickle.load(f)
-        else:
-            logger.warning('Create and fit OHE for attr_role, attr_role_patent')
-            self.attr_role_ohe = OneHotEncoder(handle_unknown='ignore')
-            self.attr_role_ohe.fit(np.expand_dims(self.dataset.attr_role.values, axis=1))
-            with open(ATTR_ROLE_OHE, 'wb') as f:
-                pickle.dump(self.attr_role_ohe, f)
+        ### add ohe_ columns to one hot encoding several attributes
+        for attr in ['role', 'type', 'ui']:
+            logger.info(f'Build OHE column for attribute {attr}')
+            self.dataset['ohe_' + attr] = self.dataset['attributes'].apply(lambda x: x.get(attr)).fillna("").str.lower()
+            
+        for attr in ['role', 'type', 'ui']:
+            logger.info(f'Build OHE column for attribute {attr}_parent')
+            self.dataset['ohe_' + attr+'_parent'] = self.dataset['attributes_parent'].apply(lambda x: x.get(attr)).fillna("").str.lower()
+            
+        logger.info('OHE tag_name')
+        self.tag_name_sm = self._ohe_column('tag_name')
+        logger.info(f'tag_name_sm.shape: {self.tag_name_sm.shape}')
 
-        self.attr_role_sm = self.attr_role_ohe.transform(np.expand_dims(self.dataset.attr_role.values, axis=1))
-        self.attr_role_parent_sm = self.attr_role_ohe.transform(np.expand_dims(self.dataset.attr_role_parent.values, axis=1))
+        logger.info('OHE tag_name_parent')
+        self.tag_name_parent_sm = self._ohe_column(colname='tag_name_parent', ohe_file_path='model/tag_name.pkl')
+        logger.info(f'tag_name_parent_sm.shape: {self.tag_name_parent_sm.shape}')
 
-        self.sm = hstack([self.attr_role_parent_sm, 
-                          self.attr_role_sm, 
-                          self.attr_type_parent_sm, 
-                          self.attr_type_sm, 
-                          self.tag_name_parent_sm, 
-                          self.tag_name_sm
-                         ]).astype(np.float32)
+        logger.info('OHE ohe_role')
+        self.ohe_role_sm = self._ohe_column('ohe_role')
+        logger.info(f'ohe_role_sm.shape: {self.ohe_role_sm.shape}')
 
-        LABEL_OHE = 'model/label_ohe.pkl'
-        if os.path.exists(LABEL_OHE):
-            logger.warning(f'Load existing label OHE from {LABEL_OHE}')
-            with open(LABEL_OHE, 'rb') as f:
-                self.label_ohe = pickle.load(f)
-        else:
-            self.label_ohe = OneHotEncoder(handle_unknown='error')
-            self.label_ohe.fit(np.expand_dims(np.array(classes_list), -1))
-            logger.info(f'Categories: {self.label_ohe.categories_}')
-            logger.info(f'Saving LABEL OHE to {LABEL_OHE}')
-            with open(LABEL_OHE, 'wb') as f:
-                pickle.dump(self.label_ohe, f)
+        logger.info('OHE ohe_role_parent')
+        self.ohe_role_parent_sm = self._ohe_column(colname='ohe_role_parent', ohe_file_path='model/ohe_role.pkl')
+        logger.info(f'ohe_role_parent_sm.shape: {self.ohe_role_parent_sm.shape}')
         
-        self.labels_text = self.dataset[['label_text']]
-        self.labels = self.label_ohe.transform(self.labels_text.values)
+        logger.info('OHE ohe_type')
+        self.ohe_type_sm = self._ohe_column('ohe_type')
+        logger.info(f'ohe_type_sm.shape: {self.ohe_type_sm.shape}')
 
-        encoded_columns_list = [
-            'tag_name', 
-            'tag_name_parent', 
-            'attr_role', 
-            'attr_role_parent', 
-            'attr_type', 
-            'attr_type_parent', 
-            'label', 
-            'label_text'
-        ]
-        logger.info(f'Drop encoded columns: [{encoded_columns_list}]')
-        self.dataset.drop(columns=encoded_columns_list, inplace=True)
-        self.data = hstack([self.dataset.values.astype(np.float32), self.sm])
+        logger.info('OHE ohe_type_parent')
+        self.ohe_type_parent_sm = self._ohe_column(colname='ohe_type_parent', ohe_file_path='model/ohe_type.pkl')
+        logger.info(f'ohe_type_parent_sm.shape: {self.ohe_type_parent_sm.shape}')
+        
+        logger.info('OHE ohe_ui')
+        self.ohe_ui_sm = self._ohe_column('ohe_ui')
+        logger.info(f'ohe_ui_sm.shape: {self.ohe_ui_sm.shape}')
 
-    def rebalance(self):
-        """
-            Make the dataset balanced
-        """
-        logger.info('Rebalance dataset')
+        logger.info('OHE ohe_ui_parent')
+        self.ohe_ui_parent_sm = self._ohe_column('ohe_ui_parent')
+        logger.info(f'ohe_ui_parent_sm.shape: {self.ohe_ui_parent_sm.shape}')
+        
+        ## extract all non null attributes names
+        self.dataset['attributes_text'] = self.dataset.attributes.apply(lambda x: " ".join([k for k in x.keys() if x[k] is not None ]))
+        logger.info('Fit CountVectorizer for column "attributes"')
+        self.attributes_sm = self._count_vectorizer_column('attributes_text')
+        logger.info(f'attributes_sm.shape: {self.attributes_sm.shape}')
+
+        ## extract all non null attributes names
+        self.dataset['attributes_parent_text'] = self.dataset.attributes_parent.apply(lambda x: " ".join([k for k in x.keys() if x[k] is not None ]))
+        logger.info('Fit CountVectorizer for column "attributes_parent"')
+        self.attributes_parent_sm = self._count_vectorizer_column(colname='attributes_parent_text', 
+                                                                  file_path='model/count_vectorizer_attributes_text.pkl')
+        logger.info(f'attributes_parent_sm.shape: {self.attributes_parent_sm.shape}')
+        
+        self._extract_features()
+        
+        self.labels = self.dataset.label.astype(int).map(self.classes_reverse_dict)
+        self.dataset.label = self.dataset.label.astype(int)
+        
+        self.data = hstack([
+                    self.attributes_sm, 
+                    self.tag_name_sm, 
+                    self.ohe_role_sm, 
+                    self.ohe_type_sm, 
+                    self.ohe_ui_sm,
+                    self.tag_name_parent_sm,
+                    self.ohe_type_parent_sm,
+                    self.ohe_role_parent_sm,
+                    self.ohe_ui_parent_sm,
+                    self.attributes_parent_sm,
+                    self.features_df.values
+                  ]).astype(np.float32)
+        
+        logger.info(f'OHE columns sparse matrix: {self.data.shape}')
+        
+    def __len__(self):
+        return self.data.shape[0]
+    
+    def __getitem__(self, idx):
+        return np.array(self.data.getrow(idx).todense()[0]).squeeze(), self.dataset.iloc[idx]['label']
+    
+
+    def _oversample(self):
+        logger.warning('Oversample data to balance the dataset, this will create duplicated rows in dataset')
+        
         class_counts = [ r for r in self.dataset.label.value_counts().sort_values(ascending=False).items()]
         max_count = class_counts[0][1]
 
         dfs = [self.dataset]
         for cc in class_counts[1:]:
             ratio = max_count//cc[1]
-            ratio = 10 if ratio >= 10 else ratio
+            ratio = 20 if ratio >= 20 else ratio
             for _ in range(ratio):
                 dfs.append(self.dataset[self.dataset.label == cc[0]].copy())
 
         self.dataset = pd.concat(dfs)
-        logger.info(f'Rebalanced dataset size: {self.dataset.shape[0]}')
+        logger.warning(f'Rebalanced dataset size: {self.dataset.shape[0]}')
+        
+                
+    def _ohe_column(self, colname, ohe_file_path=None):
+        """
+            load attr_ohe if exists model/attr_ohe.pkl
+            otherwise build the one
+        """
+        if ohe_file_path is None:
+            file_path = f'model/{colname}.pkl'
+        else:
+            file_path = ohe_file_path
+            
+        if os.path.exists(file_path):
+            logger.warning(f'loading existing OHE for column "{colname}" from {file_path}')
+            with open(file_path,'rb') as f: 
+                ohe = pickle.load(f)
+        else:
+            logger.warning(f'Create and fit OHE for column "{colname}"')
+            ohe = OneHotEncoder(handle_unknown='ignore')
+            ohe.fit(np.expand_dims(self.dataset[colname].values, axis=1))            
+            with open(file_path, 'wb') as f:
+                pickle.dump(ohe, f)
+                
+        sm = ohe.transform(np.expand_dims(self.dataset[colname].values, axis=1))        
+        return sm
 
-    def __len__(self):
-        return self.data.shape[0]
+        
+    def _count_vectorizer_column(self, colname, file_path=None):
+        """
+            load count_vercorizer for a column if a pkl file exists
+            otherwise create the one
+        """
+        if file_path is None:
+            file_path = f'model/count_vectorizer_{colname}.pkl'
+            
+        if os.path.exists(file_path):
+            logger.warning(f'loading existing count vectorizer for column "{colname}" from {file_path}')
+            with open(file_path,'rb') as f: 
+                vectorizer = pickle.load(f)
+            self.vocabulary = vectorizer.vocabulary_
+        else:
+            logger.warning(f'Create and fit count vectorizer for column "{colname}"')
+            vectorizer = CountVectorizer(vocabulary=self._build_vocabulary())
+            vectorizer.fit(self.dataset[colname].values)            
+            with open(file_path, 'wb') as f:
+                pickle.dump(vectorizer, f)
+                
+        sm = vectorizer.transform(self.dataset[colname].values)
+        return sm
 
-    def __getitem__(self, idx):
-        return np.array(self.data.getrow(idx).todense()[0]).squeeze(), np.array(self.labels.getrow(idx).todense()[0]).squeeze()
+    
+    def _build_vocabulary(self):
+        
+        """
+            Attempt to reduce number of features by removing rarely used attributes
+        """
+        
+        attributes_usage = Counter()
+        for attr_list in self.dataset.attributes.apply(lambda x: [field for field in x if x[field] is not None]).values:
+            attributes_usage.update(attr_list)
+            
+        attributes_usasge_df = pd.DataFrame( 
+            [[attribute, cnt] for attribute, cnt in attributes_usage.items()], 
+            columns=['attribute', 'cnt']
+        ).sort_values(by='cnt', ascending=False)
 
+        ## Lets cut off attributes which are rarely used
+        attributes_list_df = attributes_usasge_df[attributes_usasge_df.cnt>1].copy()
+        
+        attr_unique_values_map = { 
+                                    attr:self.dataset['attributes'].apply(lambda x: x.get(attr)).nunique() 
+                                         for attr in (attributes_list_df.attribute.values)
+                                 }
+        attributes_list_df['num_unique_values'] = attributes_list_df.attribute.map(attr_unique_values_map)
+        attributes_list_df['k'] = attributes_list_df.cnt/attributes_list_df.num_unique_values
+        
+        attributes_list_df = attributes_list_df[(attributes_list_df.k>2.0) & (attributes_list_df.num_unique_values>1)]\
+                                    .sort_values(by='cnt', ascending=False).copy()
+        
+        self.vocabulary = { w:i for i,w in enumerate(sorted(attributes_list_df.attribute.values))}
+        return self.vocabulary
+
+        
+    def _extract_features(self):
+        self.features_df = self.dataset[[
+            #'tag_name_parent',
+            #'tag_name',
+            'width', 
+            'height', 
+            'width_parent', 
+            'height_parent', 
+            'x', 
+            'x_parent', 
+            'y', 
+            'y_parent',
+            'is_leaf',
+            'is_leaf_parent',
+            'num_leafs',
+            #'num_leafs_parent',
+            'num_children',
+            'num_children_parent',
+            'sum_children_widths',
+            'sum_children_widths_parent',
+            'sum_children_hights',
+            'sum_children_hights_parent',
+            'displayed',
+            #'onmouseenter'
+        ]].copy()
+        
+        self.features_df.sum_children_hights = (self.features_df.sum_children_hights/self.features_df.num_children).fillna(-1)
+        self.features_df.sum_children_hights_parent = (self.features_df.sum_children_hights_parent/self.features_df.num_children_parent).fillna(-1)
+        self.features_df.sum_children_widths = (self.features_df.sum_children_widths/self.features_df.num_children).fillna(-1)
+        self.features_df.sum_children_widths_parent = (self.features_df.sum_children_widths_parent/self.features_df.num_children_parent).fillna(-1)
+
+        self.features_df.x = (self.features_df.x < 0).astype(int)
+        self.features_df.y = (self.features_df.y < 0).astype(int)
+        self.features_df.x_parent = (self.features_df.x_parent < 0).astype(int)
+        self.features_df.y_parent = (self.features_df.y_parent < 0).astype(int)
+        self.features_df['w'] = (self.features_df.width <= 2).astype(int)
+        self.features_df['w_parent'] = (self.features_df.width_parent <= 2).astype(int)
+        self.features_df['h'] = (self.features_df.height <= 2).astype(int)
+        self.features_df['h_parent'] = (self.features_df.height_parent <= 2).astype(int)
+        self.features_df.displayed = self.features_df.displayed.astype(int)
+        return self.features_df
+
+        
     def _find_dataset_names(self, path_mask='dataset/df/*.parquet'):
         return  set([re.sub( '.*[/\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
                     for fn in glob.glob(path_mask)])
 
+
     def _gen_dataset_names(self):
-        dfs = self._find_dataset_names('dataset/df/*.parquet')
-        imgs = self._find_dataset_names('dataset/images/*.png')
-        anns = self._find_dataset_names('dataset/annotations/*.txt')
+            dfs = self._find_dataset_names('dataset/df/*.parquet')
+            imgs = self._find_dataset_names('dataset/images/*.png')
+            anns = self._find_dataset_names('dataset/annotations/*.txt')
 
-        return (dfs.intersection(imgs)).intersection(anns)
-
+            return (dfs.intersection(imgs)).intersection(anns)
         
-
-

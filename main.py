@@ -4,10 +4,15 @@
 ############################################
 
 import os
-from flask import Flask, request, abort, jsonify, send_from_directory
+from flask import Flask, request, abort, jsonify, send_from_directory, json
+import datetime as dt
 
+import pandas as pd
+from utils import JDIDataset, JDIModel
 import torch
 import torch.nn as nn
+from tqdm.auto import trange
+from torch.utils.data import Dataset, DataLoader
 
 UPLOAD_DIRECTORY = "flask-temp-storage"
 JS_DIRECTORY = "js"
@@ -41,13 +46,10 @@ def get_file(path):
     """Download a file."""
     return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
 
-
-
 @api.route("/js/<path:path>")
 def get_js_script(path):
     """Download a file."""
     return send_from_directory(JS_DIRECTORY, path, as_attachment=False)
-
 
 @api.route("/files/<filename>", methods=["POST"])
 def post_file(filename):
@@ -63,5 +65,67 @@ def post_file(filename):
     # Return 201 CREATED
     return jsonify({'status': 'OK'})
 
+@api.route("/predict", methods=["POST"])
+def predict():
+    """Upload a file."""
+
+    # generate temporary filename
+    filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
+    with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
+        api.logger.info(f'saving {filename}')
+        fp.write(request.data)
+        fp.flush()
+    
+    filename = filename.replace('.json', '.parquet')
+    api.logger.info(f'saving {filename}')
+    pd.DataFrame(json.loads(request.data)).to_parquet(f'dataset/df/{filename}')
+
+    api.logger.info('Creating JDIDataset')
+    dataset = JDIDataset(dataset_names=[filename.split('.')[0]], rebalance=False)
+    dataloader=DataLoader(dataset, shuffle=False, batch_size=1)
+    device='cpu'
+    api.logger.info('Load model')
+    model = torch.load('model/model.pth').to(device=device)
+    model.eval()
+
+    api.logger.info('Predicting...')
+    results = []
+    with trange(len(dataloader)) as bar:
+        with torch.no_grad():
+            for x, y in dataloader:
+            
+                y_pred = torch.round(torch.nn.Softmax(dim=1)(model(x.to(device)).to('cpu'))).detach().numpy()
+                y_pred = y_pred[0].argmax()
+                y = y.item()           
+                
+                results.append({
+                    'y_true': y,
+                    'y_pred': y_pred,
+                    'y_true_label': dataset.classes_reverse_dict[y], 
+                    'y_pred_label': dataset.classes_reverse_dict[y_pred]
+                })
+                bar.update(1)
+
+    results_df = pd.DataFrame(results)
+    dataset.dataset['predicted_label'] = results_df.y_pred_label
+
+    results_df = dataset.dataset[dataset.dataset['predicted_label'] != 'n/a'][[
+                                        'element_id', 
+                                        'x', 
+                                        'y', 
+                                        'width', 
+                                        'height', 
+                                        'predicted_label'
+                                    ]].copy()
+                                    
+    if results_df.shape[0] == 0:
+        return jsonify([])
+    else:
+        return results_df.to_json(orient='records')
+
+    # Return 201 CREATED
+    #return jsonify({'status': 'OK', 'filename': filename})
+
+# Start Flask server
 if __name__ == "__main__":
     api.run(debug=True, port=5000)

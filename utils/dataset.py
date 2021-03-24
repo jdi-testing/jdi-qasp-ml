@@ -394,7 +394,7 @@ class JDIDataset(Dataset):
         logger.info(f'tag_name_parent_sm.shape: {self.tag_name_parent_sm.shape}')
 
         logger.info('OHE ohe_role')
-        self.ohe_role_sm = self._ohe_column('ohe_role')
+        self.ohe_role_sm = self._ohe_column(colname='ohe_role')
         logger.info(f'ohe_role_sm.shape: {self.ohe_role_sm.shape}')
 
         logger.info('OHE ohe_role_parent')
@@ -402,7 +402,7 @@ class JDIDataset(Dataset):
         logger.info(f'ohe_role_parent_sm.shape: {self.ohe_role_parent_sm.shape}')
         
         logger.info('OHE ohe_type')
-        self.ohe_type_sm = self._ohe_column('ohe_type')
+        self.ohe_type_sm = self._ohe_column(colname='ohe_type')
         logger.info(f'ohe_type_sm.shape: {self.ohe_type_sm.shape}')
 
         logger.info('OHE ohe_type_parent')
@@ -410,11 +410,11 @@ class JDIDataset(Dataset):
         logger.info(f'ohe_type_parent_sm.shape: {self.ohe_type_parent_sm.shape}')
         
         logger.info('OHE ohe_ui')
-        self.ohe_ui_sm = self._ohe_column('ohe_ui')
+        self.ohe_ui_sm = self._ohe_column(colname='ohe_ui')
         logger.info(f'ohe_ui_sm.shape: {self.ohe_ui_sm.shape}')
 
         logger.info('OHE ohe_ui_parent')
-        self.ohe_ui_parent_sm = self._ohe_column('ohe_ui_parent')
+        self.ohe_ui_parent_sm = self._ohe_column(colname='ohe_ui_parent', ohe_file_path='model/ohe_ui.pkl')
         logger.info(f'ohe_ui_parent_sm.shape: {self.ohe_ui_parent_sm.shape}')
         
         ## extract all non null attributes names

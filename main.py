@@ -3,7 +3,7 @@
 # this is a Flask-based backend
 ############################################
 
-import os
+import os, gc
 from flask import Flask, request, abort, jsonify, send_from_directory, json
 import datetime as dt
 
@@ -13,6 +13,7 @@ import torch
 import torch.nn as nn
 from tqdm.auto import trange
 from torch.utils.data import Dataset, DataLoader
+import logging
 
 UPLOAD_DIRECTORY = "flask-temp-storage"
 JS_DIRECTORY = "js"
@@ -20,6 +21,7 @@ JS_DIRECTORY = "js"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 api = Flask(__name__)
+api.logger.setLevel(logging.DEBUG)
 
 @api.route("/files")
 def list_files():
@@ -83,9 +85,11 @@ def predict():
     api.logger.info('Creating JDIDataset')
     dataset = JDIDataset(dataset_names=[filename.split('.')[0]], rebalance=False)
     dataloader=DataLoader(dataset, shuffle=False, batch_size=1)
+
     device='cpu'
-    api.logger.info('Load model')
-    model = torch.load('model/model.pth').to(device=device)
+
+    api.logger.info(f'Load model with hardcoded device: {device}')
+    model = torch.load('model/model.pth', map_location='cpu').to(device=device)
     model.eval()
 
     api.logger.info('Predicting...')
@@ -93,7 +97,8 @@ def predict():
     with trange(len(dataloader)) as bar:
         with torch.no_grad():
             for x, y in dataloader:
-            
+                x.to(device)
+                y.to(device)
                 y_pred = torch.round(torch.nn.Softmax(dim=1)(model(x.to(device)).to('cpu'))).detach().numpy()
                 y_pred = y_pred[0].argmax()
                 y = y.item()           
@@ -119,8 +124,11 @@ def predict():
                                     ]].copy()
                                     
     if results_df.shape[0] == 0:
+        gc.collect()
         return jsonify([])
     else:
+        del model
+        gc.collect()
         return results_df.to_json(orient='records')
 
     # Return 201 CREATED
@@ -128,4 +136,4 @@ def predict():
 
 # Start Flask server
 if __name__ == "__main__":
-    api.run(debug=True, port=5000)
+    api.run(debug=False, port=5000, host='0.0.0.0')

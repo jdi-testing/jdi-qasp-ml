@@ -1,14 +1,21 @@
 # JDI-QASP-ml v.0.1
 
 Plans:
- - Move to pytorch-1.8.0
- - Extract more features
- - Add more data
- - Do we have to change number of classes? 
- - Split dataset to train/test by adding prefix to aliases
- - experiment with removing **is_hover** procedure and its features
- - check ability to train one class models in addition to existing multiclass model
- - What about disabled/hidden elements? Should we detect them or not? 
+ - Move to pytorch-1.8.0 - Done
+ - Extract more features - In Progress
+ - Add more data - In Progress
+ - Do we have to change number of classes? - Canceled
+ - Split dataset to train/test by adding prefix to aliases - In Progress
+ - experiment with removing **is_hover** procedure and its features - Done
+ - check ability to train one class models in addition to existing multiclass model - Postponed for next Iteration
+ - What about disabled/hidden elements? Should we detect them or not? - Canceled
+
+ - Bugs/Improvements:
+   - Count num folloers - lost from previos version
+     build_path_fetures -> build_tree_features (num_followers, level, list of child tags)
+     
+   - "class" - extract features using CountVectorizer
+   - DatasetBuilder - filter out elements which coordinates are outside of screenshot field 
 
 
 # Install environment to train / test model

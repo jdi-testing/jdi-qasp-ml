@@ -4,6 +4,10 @@ Plans:
  - Move to pytorch-1.8.0 - Done
  - Extract more features - In Progress
  - Add more data - In Progress
+   - HTML 5: https://tutorial.techaltum.com/html5.html
+   - bootstrap: 
+   - angular:
+   - react:
  - Do we have to change number of classes? - Canceled
  - Split dataset to train/test by adding prefix to aliases - In Progress
  - experiment with removing **is_hover** procedure and its features - Done

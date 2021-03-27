@@ -138,6 +138,10 @@ def build_path_features(elements_df:pd.DataFrame) -> pd.DataFrame:
     """
         Main purpose of this brocedure is an ability to calculate 
         number of followers for a node
+        !!! Important
+        TODO: collect children tags
+        TODO: calculate level in backward direction
+
     """
 
     tree_dict = build_tree_dict(elements_df)
@@ -167,6 +171,7 @@ def build_path_features(elements_df:pd.DataFrame) -> pd.DataFrame:
 
 
 class DatasetBuilder:
+
     """
         Build dataset from a specific url
     """
@@ -296,28 +301,6 @@ class DatasetBuilder:
 
         return self.dataset
 
-COLUMNS_TO_DROP = {
-    'parent_id',
-    'parent_id_parent',
-    'element_id', 
-    'base64png_before_hover', 
-    'base64png_after_hover', 
-    'base64png_before_hover_parent',
-    'base64png_after_hover_parent',
-    'x', 'y', 'x_parent', 'y_parent',
-    'element_id_parent',
-    'path', 
-    'path_parent',
-    'is_leaf_parent',
-    'label_parent',
-    'ds_name',
-    'hover_before',
-    'hover_after',
-    'hover_before_parent',
-    'hover_after_parent',
-    'attr_class',
-    'attr_class_parent',
-}
 
 class JDIDataset(Dataset):
     

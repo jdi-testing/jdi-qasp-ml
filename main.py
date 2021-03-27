@@ -6,6 +6,7 @@
 import os, gc
 from flask import Flask, request, abort, jsonify, send_from_directory, json
 import datetime as dt
+import traceback
 
 import pandas as pd
 from utils import JDIDataset, JDIModel

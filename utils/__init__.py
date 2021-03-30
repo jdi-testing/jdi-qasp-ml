@@ -12,7 +12,7 @@ from .dataset import build_children_features, \
                      get_parents_list, \
                      build_tree_dict, \
                      assign_labels, \
-                     build_path_features, \
+                     build_tree_features, \
                      DatasetBuilder, \
                      JDIDataset, \
                      get_grey_image

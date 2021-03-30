@@ -11,7 +11,7 @@ from tqdm.auto import tqdm, trange
 import os, sys, re, gc
 import logging
 from time import sleep
-from collections import Counter
+from collections import Counter, defaultdict
 from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
 import glob
@@ -37,11 +37,14 @@ def build_tree_dict(df:pd.DataFrame) -> dict:
 
 
 @numba.jit(forceobj=True)
-def get_parents_list(tree_dict:dict, element_id:str, paternts_list:list=[]) -> list:
+def get_parents_list(tree_dict:dict, element_id:str, paternts_list:list=None) -> list:
     """
         returns ordered list of parent for a element
         starting from root which is the <html/> tag
     """
+    if paternts_list is None:
+        paternts_list = []
+    
     parent_id = tree_dict.get(element_id)
     if parent_id is None:
         return paternts_list
@@ -133,16 +136,10 @@ def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray, du
     return df
 
 
-def build_path_features(elements_df:pd.DataFrame) -> pd.DataFrame:
-
-    """
-        Main purpose of this brocedure is an ability to calculate 
-        number of followers for a node
-        !!! Important
-        TODO: collect children tags
-        TODO: calculate level in backward direction
-
-    """
+def build_tree_features(elements_df:pd.DataFrame) -> pd.DataFrame:
+    
+    def empty_string():
+        return ''
 
     tree_dict = build_tree_dict(elements_df)
     tag_name_dict = dict(zip(elements_df.element_id.values, elements_df.tag_name.values))
@@ -150,22 +147,20 @@ def build_path_features(elements_df:pd.DataFrame) -> pd.DataFrame:
     height_dict = dict(zip(elements_df.element_id.values, elements_df.height.values))
 
     # Build paths
-    paths = []
     followers_counter = Counter()
-
-    with trange(elements_df.shape[0]) as tbar:
-        tbar.set_description('Generating paths')
-        for i, r in elements_df.iterrows():
-            list_of_parents = []
-            path = []
-            get_parents_list(tree_dict=tree_dict, element_id= r.element_id, paternts_list=list_of_parents)
-            followers_counter.update(list_of_parents)
-            path = "/".join([ tag_name_dict[i]+':'+str(int(width_dict[i])) +':'+str(int(height_dict[i])) 
-                                    for i in get_parents_list(tree_dict=tree_dict, element_id=r.element_id, paternts_list=path)])
-            paths.append(path)
-            tbar.update(1)
+    level_dict = defaultdict(int)
+    children_tags_dict = defaultdict(empty_string)
     
-    elements_df['path'] = paths
+    with trange(elements_df.shape[0]) as tbar:
+        tbar.set_description('Build tree features')
+        for i, r in elements_df.iterrows(): 
+            list_of_parents = get_parents_list(tree_dict=tree_dict, element_id= r.element_id)
+            children_tags_dict[r.parent_id] += r.tag_name.lower()+' '
+            #print(list_of_parents)
+            followers_counter.update(list_of_parents)  # calculate number of followers
+            tbar.update(1)
+            
+    elements_df['children_tags'] = elements_df.element_id.map(children_tags_dict).fillna('')
     elements_df['num_followers'] = elements_df.element_id.map(followers_counter)
     return elements_df
 
@@ -327,8 +322,9 @@ class JDIDataset(Dataset):
             logger.info(f"Dataset shape: {df.shape}")
 
             logger.info('cleaning tag_name from dummy/auxiliary words')
-            df.tag_name = df.tag_name.apply(lambda x: x.lower().replace('-example', ''))
+            df.tag_name = df.tag_name.apply(lambda x: x.lower().replace('-example', '')) ### tag_name LOWER()
             df = build_children_features(df=df)
+            df = build_tree_features(df)
 
             #----------------------------------------------------------------------------------------------
             # Merge children with parents
@@ -341,16 +337,19 @@ class JDIDataset(Dataset):
             # If annotation file exists, lets load it and assign labels
             if os.path.exists(f'dataset/annotations/{ds_name}.txt'):
                 logger.warning(f'Load LABELS from dataset/annotations/{ds_name}.txt')
+                img = plt.imread(f'dataset/images/{ds_name}.png')
                 df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt', 
-                                       img=plt.imread(f'dataset/images/{ds_name}.png'),
+                                       img=img,
                                        dummy_value = self.dummy_class_value
                                   )
+                del img
             else:
                 logger.warning(f'assign dummy values [n/a] for labels if there is no annotations')
                 df['label'] = self.dummy_class_value
             
             df['ds_name'] = ds_name
-            ds_list.append(df)            
+            ds_list.append(df)
+            gc.collect()
                 
         logger.info('Concatenate datasets')
         self.dataset = pd.concat(ds_list)
@@ -359,6 +358,8 @@ class JDIDataset(Dataset):
         if rebalance:
             self._oversample()
         
+        self._count_vectorizer_class()
+
         ### add ohe_ columns to one hot encoding several attributes
         for attr in ['role', 'type', 'ui']:
             logger.info(f'Build OHE column for attribute {attr}')
@@ -377,7 +378,7 @@ class JDIDataset(Dataset):
         logger.info(f'tag_name_parent_sm.shape: {self.tag_name_parent_sm.shape}')
 
         logger.info('OHE ohe_role')
-        self.ohe_role_sm = self._ohe_column(colname='ohe_role')
+        self.ohe_role_sm = self._ohe_column('ohe_role')
         logger.info(f'ohe_role_sm.shape: {self.ohe_role_sm.shape}')
 
         logger.info('OHE ohe_role_parent')
@@ -385,7 +386,7 @@ class JDIDataset(Dataset):
         logger.info(f'ohe_role_parent_sm.shape: {self.ohe_role_parent_sm.shape}')
         
         logger.info('OHE ohe_type')
-        self.ohe_type_sm = self._ohe_column(colname='ohe_type')
+        self.ohe_type_sm = self._ohe_column('ohe_type')
         logger.info(f'ohe_type_sm.shape: {self.ohe_type_sm.shape}')
 
         logger.info('OHE ohe_type_parent')
@@ -393,18 +394,34 @@ class JDIDataset(Dataset):
         logger.info(f'ohe_type_parent_sm.shape: {self.ohe_type_parent_sm.shape}')
         
         logger.info('OHE ohe_ui')
-        self.ohe_ui_sm = self._ohe_column(colname='ohe_ui')
+        self.ohe_ui_sm = self._ohe_column('ohe_ui')
         logger.info(f'ohe_ui_sm.shape: {self.ohe_ui_sm.shape}')
 
         logger.info('OHE ohe_ui_parent')
-        self.ohe_ui_parent_sm = self._ohe_column(colname='ohe_ui_parent', ohe_file_path='model/ohe_ui.pkl')
-        logger.info(f'ohe_ui_parent_sm.shape: {self.ohe_ui_parent_sm.shape}')
+        self.ohe_ui_parent_sm = self._ohe_column('ohe_ui_parent', ohe_file_path='model/ohe_ui.pkl')
+        logger.info(f'ohe_ui_parent_sm.shape: {self.ohe_ui_parent_sm.shape}')       
         
         ## extract all non null attributes names
         self.dataset['attributes_text'] = self.dataset.attributes.apply(lambda x: " ".join([k for k in x.keys() if x[k] is not None ]))
         logger.info('Fit CountVectorizer for column "attributes"')
         self.attributes_sm = self._count_vectorizer_column('attributes_text')
-        logger.info(f'attributes_sm.shape: {self.attributes_sm.shape}')
+        logger.info(f'attributes_sm.shape: {self.attributes_sm.shape}')    
+
+        ## children_tags
+        file_path='model/count_vectorizer_children_tags.pkl'
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                logger.warning(f'Load CountVectorizer for column "chidren_tags": {file_path}')
+                self.count_vectorizer_chilgren_tags = pickle.load(f)
+        else:
+            logger.warning(f'Saving CountVectorizer for "children_tags": {file_path}')
+            self.count_vectorizer_chilgren_tags = CountVectorizer().fit(self.dataset.children_tags.values)
+            with open(file_path, 'wb') as f:
+                pickle.dump(self.count_vectorizer_chilgren_tags, f)
+        logger.info(f'CountVectorizer "chilren_tags" size: {len(self.count_vectorizer_chilgren_tags.vocabulary_)}')
+        self.children_tags_sm = self.count_vectorizer_chilgren_tags.transform(self.dataset.children_tags.values)
+        logger.info(f"chidren_tags_sm: {self.children_tags_sm.shape}")
+        
 
         ## extract all non null attributes names
         self.dataset['attributes_parent_text'] = self.dataset.attributes_parent.apply(lambda x: " ".join([k for k in x.keys() if x[k] is not None ]))
@@ -429,7 +446,9 @@ class JDIDataset(Dataset):
                     self.ohe_role_parent_sm,
                     self.ohe_ui_parent_sm,
                     self.attributes_parent_sm,
-                    self.features_df.values
+                    self.features_df.values,
+                    self.children_tags_sm,
+                    self.class_sm
                   ]).astype(np.float32)
         
         logger.info(f'OHE columns sparse matrix: {self.data.shape}')
@@ -450,7 +469,7 @@ class JDIDataset(Dataset):
         dfs = [self.dataset]
         for cc in class_counts[1:]:
             ratio = max_count//cc[1]
-            ratio = 20 if ratio >= 20 else ratio
+            ratio = 30 if ratio >= 30 else ratio
             for _ in range(ratio):
                 dfs.append(self.dataset[self.dataset.label == cc[0]].copy())
 
@@ -481,7 +500,6 @@ class JDIDataset(Dataset):
                 
         sm = ohe.transform(np.expand_dims(self.dataset[colname].values, axis=1))        
         return sm
-
         
     def _count_vectorizer_column(self, colname, file_path=None):
         """
@@ -505,7 +523,6 @@ class JDIDataset(Dataset):
                 
         sm = vectorizer.transform(self.dataset[colname].values)
         return sm
-
     
     def _build_vocabulary(self):
         
@@ -532,12 +549,12 @@ class JDIDataset(Dataset):
         attributes_list_df['num_unique_values'] = attributes_list_df.attribute.map(attr_unique_values_map)
         attributes_list_df['k'] = attributes_list_df.cnt/attributes_list_df.num_unique_values
         
-        attributes_list_df = attributes_list_df[(attributes_list_df.k>2.0) & (attributes_list_df.num_unique_values>1)]\
+        attributes_list_df = attributes_list_df[(attributes_list_df.k>3.0) & (attributes_list_df.num_unique_values>1)]\
                                     .sort_values(by='cnt', ascending=False).copy()
         
         self.vocabulary = { w:i for i,w in enumerate(sorted(attributes_list_df.attribute.values))}
         return self.vocabulary
-
+        
         
     def _extract_features(self):
         self.features_df = self.dataset[[
@@ -553,6 +570,7 @@ class JDIDataset(Dataset):
             'y_parent',
             'is_leaf',
             'is_leaf_parent',
+            'num_followers',
             'num_leafs',
             #'num_leafs_parent',
             'num_children',
@@ -579,18 +597,37 @@ class JDIDataset(Dataset):
         self.features_df['h'] = (self.features_df.height <= 2).astype(int)
         self.features_df['h_parent'] = (self.features_df.height_parent <= 2).astype(int)
         self.features_df.displayed = self.features_df.displayed.astype(int)
-        return self.features_df
-
+        
         
     def _find_dataset_names(self, path_mask='dataset/df/*.parquet'):
         return  set([re.sub( '.*[/\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
-                    for fn in glob.glob(path_mask)])
+                        for fn in glob.glob(path_mask)])
 
 
     def _gen_dataset_names(self):
-            dfs = self._find_dataset_names('dataset/df/*.parquet')
-            imgs = self._find_dataset_names('dataset/images/*.png')
-            anns = self._find_dataset_names('dataset/annotations/*.txt')
+        dfs = self._find_dataset_names('dataset/df/*.parquet')
+        imgs = self._find_dataset_names('dataset/images/*.png')
+        anns = self._find_dataset_names('dataset/annotations/*.txt')
 
-            return (dfs.intersection(imgs)).intersection(anns)
+        return (dfs.intersection(imgs)).intersection(anns)
         
+    def _count_vectorizer_class(self):
+
+        self.dataset['cv_class'] = self.dataset.attributes.apply(lambda x: x.get('class')).fillna('')
+        file_name = 'model/count_vectorizer_class.pkl'
+        if os.path.exists(file_name):
+            logger.warning(f'Loading count vectorizer for column "cv_class": {file_name}')
+            with open(file_name, 'rb') as f:
+                self.count_vectorizer_class = pickle.load(f)
+        else:
+            logger.warning(f'Build count vectorizer for column "cv_class": {file_name}')
+            class_dict = Counter()
+            for s in self.dataset['cv_class'].values:
+                class_dict.update(s.lower().replace('-', ' ').split())
+            vocabulary = [cls for cls in class_dict if re.match('^[a-z]*$', cls)]
+            self.count_vectorizer_class = CountVectorizer(vocabulary=vocabulary).fit(self.dataset['cv_class'].values)
+            with open(file_name, 'wb') as f:
+                pickle.dump(self.count_vectorizer_class, f)
+        self.class_sm = self.count_vectorizer_class.transform(self.dataset['cv_class'].values)
+        logger.info(f'class_sm: {self.class_sm.shape}')
+

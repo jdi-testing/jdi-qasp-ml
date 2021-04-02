@@ -35,6 +35,7 @@ dependencies:
     - pandas_profiling
     - lxml
     - html5lib
+    - torchsummary
     # - pivottablejs
     # - pdqc
 

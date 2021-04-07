@@ -35,5 +35,13 @@ dependencies:
     - pandas_profiling
     - lxml
     - html5lib
+<<<<<<< HEAD
     - torchsummapy
     - Flask
+=======
+    - torchsummary
+    # - pivottablejs
+    # - pdqc
+
+prefix: D:\Anaconda3\envs\py37-torch
+>>>>>>> 62b5ef61b584fb90af6c87dbcf8587e2ab249c4d

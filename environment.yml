@@ -8,7 +8,7 @@ dependencies:
   - pip
   - conda
   - pyyaml
-  - pytorch=1.8.0
+  - pytorch=1.8.1
   - cudatoolkit=11.1
   - matplotlib
   - imgaug
@@ -35,7 +35,5 @@ dependencies:
     - pandas_profiling
     - lxml
     - html5lib
-    # - pivottablejs
-    # - pdqc
-
-prefix: D:\Anaconda3\envs\py37-torch
+    - torchsummapy
+    - Flask

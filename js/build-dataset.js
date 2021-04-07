@@ -48,21 +48,4 @@ treeDataset = [...document.querySelectorAll('*')].map(el => {
    }
 })
 
-// /*
-// // Sending and receiving data in JSON format using POST method
-// */
-// function predict(data) {
-//    var xhr = new XMLHttpRequest();
-//    var url = "http://localhost:5000/predict";
-//    xhr.open("POST", url, true);
-//    xhr.setRequestHeader("Content-Type", "application/json");
-//    xhr.onreadystatechange = function () {
-//       if (xhr.readyState === 4 && xhr.status === 200) {
-//          var json = JSON.parse(xhr.responseText);
-//          console.log("Data were sent to", url);
-//       }
-//    };
-//    xhr.send(data);
-// }
-
 return treeDataset;

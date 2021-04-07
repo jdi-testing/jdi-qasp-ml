@@ -85,7 +85,7 @@ def predict():
 
     api.logger.info('Creating JDIDataset')
     dataset = JDIDataset(dataset_names=[filename.split('.')[0]], rebalance=False)
-    dataloader=DataLoader(dataset, shuffle=False, batch_size=1)
+    dataloader=DataLoader(dataset, shuffle=False, batch_size=1, collate_fn=dataset.collate_fn)
 
     device='cpu'
 

@@ -1,6 +1,7 @@
 import numba
 import pandas as pd
 import numpy as np
+import torch
 
 import selenium
 from selenium.webdriver.chrome.options import Options
@@ -15,6 +16,7 @@ from collections import Counter, defaultdict
 from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
 import glob
+from scipy.sparse import vstack, csr_matrix
 
 from .common import TQDM_BAR_FORMAT, get_all_elements, maximize_window, screenshot, build_elements_dataset
 from .config import logger
@@ -451,15 +453,21 @@ class JDIDataset(Dataset):
                     self.class_sm
                   ]).astype(np.float32)
         
+        self.data = csr_matrix(self.data)
+        
         logger.info(f'OHE columns sparse matrix: {self.data.shape}')
         
     def __len__(self):
         return self.data.shape[0]
     
     def __getitem__(self, idx):
-        return np.array(self.data.getrow(idx).todense()[0]).squeeze(), self.dataset.iloc[idx]['label']
-    
+        #return np.array(self.data.getrow(idx).todense()[0]).squeeze(), self.dataset.iloc[idx]['label']
+        return idx
 
+    def collate_fn(self, batch):
+        return  torch.tensor(vstack([self.data.getrow(idx) for idx in batch]).todense().astype(np.float32)), \
+                torch.tensor(self.dataset.iloc[batch]['label'].values.astype(np.int64))
+    
     def _oversample(self):
         logger.warning('Oversample data to balance the dataset, this will create duplicated rows in dataset')
         

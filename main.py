@@ -81,7 +81,12 @@ def predict():
     
     filename = filename.replace('.json', '.parquet')
     api.logger.info(f'saving {filename}')
-    pd.DataFrame(json.loads(request.data)).to_parquet(f'dataset/df/{filename}')
+    df = pd.DataFrame(json.loads(request.data))
+
+    # fix bad data which can come in 'onmouseover', 'onmouseenter'
+    df.onmouseover = df.onmouseover.apply(lambda x: 'true' if x is not None else None)
+    df.onmouseenter = df.onmouseenter.apply(lambda x: 'true' if x is not None else None)
+    df.to_parquet(f'dataset/df/{filename}')
 
     api.logger.info('Creating JDIDataset')
     dataset = JDIDataset(dataset_names=[filename.split('.')[0]], rebalance=False)

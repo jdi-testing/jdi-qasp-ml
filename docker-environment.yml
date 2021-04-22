@@ -7,13 +7,14 @@ dependencies:
   - pip
   - conda
   - pyyaml
-  - pytorch=1.8.1
   - matplotlib
   - tqdm
   - numba
   - pyarrow
   - fastparquet
   - uwsgi
+  - pytorch==1.8.1
+  - cpuonly
   - pip:
     - jupyter
     - h5py==3.1.0

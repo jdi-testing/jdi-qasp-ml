@@ -293,7 +293,10 @@ class DatasetBuilder:
 
         # build_children_features(self.dataset) # will be called at backend
 
-        logger.info(f'Save parquet to dataset/df/{self.dataset_name}.parquet')
+        self.dataset.onmouseover = self.dataset.onmouseover.apply(lambda x: 'true' if x is not None else None)
+        self.dataset.onmouseenter = self.dataset.onmouseenter.apply(lambda x: 'true' if x is not None else None)
+
+        logger.info(f'Save parquet to dataset/df/{self.dataset_name}.parquet') 
         self.dataset.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
 
         return self.dataset

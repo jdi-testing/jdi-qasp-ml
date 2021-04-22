@@ -40,7 +40,7 @@ Plans:
 5. Run jupyter notebook:<br>
 ````
     jupyter-notebook --ip=127.0.0.1 --port=9999
-`` 
+````
 
 # Amending the dataset for training model
 

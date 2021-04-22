@@ -54,6 +54,7 @@ It has that tree structure:
             |- images      # Dir
             |- classes.txt # file   
 ````
+
 **classes.txt** - list of classes of elements. Do not change it. Order of classes is important.<br>
 
 To add a new screenshot to the dataset (and its dom tree) you have to open **DatasetBuilder-Presentation-POC.ipynb**.<br>

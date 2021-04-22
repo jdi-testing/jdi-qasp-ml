@@ -10,9 +10,11 @@ Plans:
    - react:
  - Do we have to change number of classes? - Canceled
  - Split dataset to train/test by adding prefix to aliases - In Progress
- - experiment with removing **is_hover** procedure and its features - Done
+ - experiment with removing **is_hover** procedure and its features - Done, removed
  - check ability to train one class models in addition to existing multiclass model - Postponed for next Iteration
  - What about disabled/hidden elements? Should we detect them or not? - Canceled
+ - wrap model in Flask - Done 
+ - Flask in uWSGI - Done
 
  - Bugs/Improvements:
    - Count num folloers - lost from previos version
@@ -38,7 +40,7 @@ Plans:
 5. Run jupyter notebook:<br>
 ````
     jupyter-notebook --ip=127.0.0.1 --port=9999
-````
+`` 
 
 # Amending the dataset for training model
 
@@ -83,3 +85,14 @@ below
 To get predictions for an arbitrary web page you may use (or make a copy and use the copy)
 **DatasetBuilder-Presentation-POC.ipynb**. Just edit variables URL and DATASET_NAME. Then run all cells.
 If directory **dataset/annotations** does not contain annotation file for the screenshot, only predictions (blue labels) will be shown on the image below. Otherwise true labels (in red) will be shown as well.
+
+
+# Docker
+- build image: run build-docker-image.bat
+- run-docker.bat (check model's endpoint at http://localhost:5000/predict )
+- run build-dataset.js in your browser js console. 
+- send data using POST request to model
+- after a few seconds dataset with discovered controll elements will be sent back
+- you may check Test-Backend.ipynb as an example 
+
+

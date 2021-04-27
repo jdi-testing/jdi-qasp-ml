@@ -575,10 +575,10 @@ class JDIDataset(Dataset):
             'height', 
             'width_parent', 
             'height_parent', 
-            'x', 
-            'x_parent', 
-            'y', 
-            'y_parent',
+            #'x', 
+            #'x_parent', 
+            #'y', 
+            #'y_parent',
             'is_leaf',
             'is_leaf_parent',
             'num_followers',
@@ -599,10 +599,10 @@ class JDIDataset(Dataset):
         self.features_df.sum_children_widths = (self.features_df.sum_children_widths/self.features_df.num_children).fillna(-1)
         self.features_df.sum_children_widths_parent = (self.features_df.sum_children_widths_parent/self.features_df.num_children_parent).fillna(-1)
 
-        self.features_df.x = (self.features_df.x < 0).astype(int)
-        self.features_df.y = (self.features_df.y < 0).astype(int)
-        self.features_df.x_parent = (self.features_df.x_parent < 0).astype(int)
-        self.features_df.y_parent = (self.features_df.y_parent < 0).astype(int)
+        # self.features_df.x = (self.features_df.x < 0).astype(int)
+        # self.features_df.y = (self.features_df.y < 0).astype(int)
+        # self.features_df.x_parent = (self.features_df.x_parent < 0).astype(int)
+        # self.features_df.y_parent = (self.features_df.y_parent < 0).astype(int)
         self.features_df['w'] = (self.features_df.width <= 2).astype(int)
         self.features_df['w_parent'] = (self.features_df.width_parent <= 2).astype(int)
         self.features_df['h'] = (self.features_df.height <= 2).astype(int)

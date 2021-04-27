@@ -16,12 +16,14 @@ RUN chown ${USER_NAME}:${USER_NAME} ${HOME}
 USER ${USER_NAME}
 
 RUN mkdir ${HOME}/utils
+RUN mkdir ${HOME}/html
 RUN mkdir ${HOME}/model
 RUN mkdir -p ${HOME}/dataset/df
 RUN mkdir -p ${HOME}/flask-temp-storage
 COPY dataset/classes.txt ${HOME}/dataset/classes.txt
 COPY model model
 COPY utils utils
+COPY templates templates
 COPY main.py ${HOME}/main.py
 
 USER root

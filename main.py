@@ -4,7 +4,7 @@
 ############################################
 
 import os, gc
-from flask import Flask, request, abort, jsonify, send_from_directory, json
+from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template
 import datetime as dt
 import traceback
 
@@ -16,7 +16,7 @@ from tqdm.auto import trange
 from torch.utils.data import Dataset, DataLoader
 import logging
 
-UPLOAD_DIRECTORY = "flask-temp-storage"
+UPLOAD_DIRECTORY = "dataset/df"
 JS_DIRECTORY = "js"
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
@@ -24,15 +24,37 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = Flask(__name__)
 api.logger.setLevel(logging.DEBUG)
 
-@api.route("/files")
-def list_files():
-    """Endpoint to list files on the server."""
-    files = []
-    for filename in os.listdir(UPLOAD_DIRECTORY):
-        path = os.path.join(UPLOAD_DIRECTORY, filename)
-        if os.path.isfile(path):
-            files.append(filename)
-    return jsonify(files)
+# @api.route("/files")
+# def list_files():
+#     """Endpoint to list files on the server."""
+#     files = []
+#     for filename in os.listdir(UPLOAD_DIRECTORY):
+#         path = os.path.join(UPLOAD_DIRECTORY, filename)
+#         if os.path.isfile(path):
+#             files.append(filename)
+#     return jsonify(files)
+
+
+
+@api.route('/files', defaults={'req_path': ''})
+#@app.route('/<path:req_path>')
+def dir_listing(req_path):
+
+    # Joining the base and the requested path
+    abs_path = os.path.join(UPLOAD_DIRECTORY, req_path)
+
+    # Return 404 if path doesn't exist
+    if not os.path.exists(abs_path):
+        return abort(404)
+
+    # Check if path is a file and serve
+    if os.path.isfile(abs_path):
+        return send_file(abs_path)
+
+    # Show directory contents
+    files = os.listdir(abs_path)
+    return render_template('files.html', files=files)
+
 
 @api.route("/js")
 def list_js():

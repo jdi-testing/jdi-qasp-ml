@@ -89,6 +89,7 @@ def build_children_features(df:pd.DataFrame):
     #return  {'leafs':leafs_set, 'num_leafs':num_leafs_dict, 'num_children': num_children_dict }
     return df
 
+
 def get_grey_image(file_path:str) -> np.ndarray:
     img = plt.imread(file_path)
     img = (img[...,0] + img[...,1] + img[...,2])/3.0
@@ -137,20 +138,64 @@ def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray, du
 
     return df
 
+def children_depths(df:pd.DataFrame, children_set:set=None, level=0):
+    """
+        Build feature: "children_tags" and max reverse depth ( depth from leafs)
+        Concatenate all children tag_names into a string filed 'children_tags'
+    """
+    # get leafs (nodes without children)
+    if children_set is None:
+        level=0
+        children_set = set(df.element_id.values) - set(df.parent_id.values)
+        children_tags_df = df[df.element_id.isin(children_set)][['parent_id', 'tag_name']]\
+                                .groupby('parent_id')['tag_name']\
+                                .apply(lambda x: ','.join(x))\
+                                .reset_index()
+        children_tags_dict=dict(children_tags_df.values)
+        df['children_tags'] = df.element_id.map(children_tags_dict).fillna('')
+
+        # create max_depth field
+        df['max_depth'] = 0
+        df.max_depth = df.max_depth + df.element_id.isin(set(children_tags_dict.keys())).astype(int)
+
+        # recursive call
+        children_depths(df=df, children_set=set(children_tags_dict.keys()), level=level+1)
+
+    elif len(children_set) > 0:
+        # print(f'level: {level}')
+        children_tags_df = df[df.element_id.isin(children_set)][['parent_id', 'tag_name']]\
+                                .groupby('parent_id')['tag_name']\
+                                .apply(lambda x: ','.join(x))\
+                                .reset_index()
+        children_tags_dict=dict(children_tags_df.values)
+        df['children_tags'] = df.children_tags + ',' + df.element_id.map(children_tags_dict).fillna('')
+
+        # increase max_depth
+        df.max_depth = df.max_depth + df.element_id.isin(set(children_tags_dict.keys())).astype(int)
+
+        # recursive call
+        children_depths(df=df, children_set=set(children_tags_dict.keys()), level=level+1)
+        
+    df['children_tags'] = df['children_tags'].apply(lambda x: re.sub('\s+', ' ', x.replace(',', ' ')).lower().strip())
+
+
 
 def build_tree_features(elements_df:pd.DataFrame) -> pd.DataFrame:
+    """
+        Walk on elements tree and build tree-features
+    """
     
     def empty_string():
         return ''
 
     tree_dict = build_tree_dict(elements_df)
-    tag_name_dict = dict(zip(elements_df.element_id.values, elements_df.tag_name.values))
-    width_dict = dict(zip(elements_df.element_id.values, elements_df.width.values))
-    height_dict = dict(zip(elements_df.element_id.values, elements_df.height.values))
+    #tag_name_dict = dict(zip(elements_df.element_id.values, elements_df.tag_name.values))
+    #width_dict = dict(zip(elements_df.element_id.values, elements_df.width.values))
+    #height_dict = dict(zip(elements_df.element_id.values, elements_df.height.values))
 
     # Build paths
     followers_counter = Counter()
-    level_dict = defaultdict(int)
+    #level_dict = defaultdict(int)
     children_tags_dict = defaultdict(empty_string)
     
     with trange(elements_df.shape[0]) as tbar:
@@ -168,9 +213,9 @@ def build_tree_features(elements_df:pd.DataFrame) -> pd.DataFrame:
 
 
 class DatasetBuilder:
-
     """
-        Build dataset from a specific url
+        Build dataset from a specific url,
+
     """
     
     headless = True
@@ -263,11 +308,12 @@ class DatasetBuilder:
         self.driver.get(self.url)
         sleep(3.0)
         
-        driver.find_element_by_id("user-icon").click()
-        driver.find_element_by_id("name").send_keys(LOGIN)
-        driver.find_element_by_id("password").send_keys(PASSWORD)
-        driver.find_element_by_id("login-button").click()
-        sleep(3.0)
+        ## As an example:
+        # driver.find_element_by_id("user-icon").click()
+        # driver.find_element_by_id("name").send_keys(LOGIN)
+        # driver.find_element_by_id("password").send_keys(PASSWORD)
+        # driver.find_element_by_id("login-button").click()
+        # sleep(3.0)
         maximize_window(driver=self.driver, extend_pix=0)
         
         #self.full_page(driver)
@@ -301,7 +347,6 @@ class DatasetBuilder:
 
         return self.dataset
 
-
 class JDIDataset(Dataset):
     
     def __init__(self, dataset_names:list=None, rebalance=False):
@@ -321,6 +366,7 @@ class JDIDataset(Dataset):
         
         ds_list=[] # list of datasets to join
         
+        # Read and concatenate all listed datasets
         for ds_name in dataset_names:
             logger.info(f'Dataset for {ds_name}')
             df = pd.read_parquet(f'dataset/df/{ds_name}.parquet')

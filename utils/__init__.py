@@ -16,7 +16,7 @@ from .dataset import build_children_features, \
                      DatasetBuilder, \
                      JDIDataset, \
                      get_grey_image, \
-                     children_depths
+                     followers_features
 
 from .config import logger
 

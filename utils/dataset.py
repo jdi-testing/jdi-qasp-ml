@@ -138,45 +138,46 @@ def assign_labels(df:pd.DataFrame, annotations_file_path:str, img:np.ndarray, du
 
     return df
 
-def children_depths(df:pd.DataFrame, children_set:set=None, level=0):
+def followers_features(df:pd.DataFrame, followers_set:set=None, level=0) -> pd.DataFrame:
     """
         Build feature: "children_tags" and max reverse depth ( depth from leafs)
         Concatenate all children tag_names into a string filed 'children_tags'
     """
     # get leafs (nodes without children)
-    if children_set is None:
+    if followers_set is None:
         level=0
-        children_set = set(df.element_id.values) - set(df.parent_id.values)
-        children_tags_df = df[df.element_id.isin(children_set)][['parent_id', 'tag_name']]\
+        followers_set = set(df.element_id.values) - set(df.parent_id.values)
+        followers_tags_df = df[df.element_id.isin(followers_set)][['parent_id', 'tag_name']]\
                                 .groupby('parent_id')['tag_name']\
                                 .apply(lambda x: ','.join(x))\
                                 .reset_index()
-        children_tags_dict=dict(children_tags_df.values)
-        df['children_tags'] = df.element_id.map(children_tags_dict).fillna('')
+        followers_tags_dict=dict(followers_tags_df.values)
+        df['followers_tags'] = df.element_id.map(followers_tags_dict).fillna('')
 
         # create max_depth field
         df['max_depth'] = 0
-        df.max_depth = df.max_depth + df.element_id.isin(set(children_tags_dict.keys())).astype(int)
+        df.max_depth = df.max_depth + df.element_id.isin(set(followers_tags_dict.keys())).astype(int)
 
         # recursive call
-        children_depths(df=df, children_set=set(children_tags_dict.keys()), level=level+1)
+        followers_features(df=df, followers_set=set(followers_tags_dict.keys()), level=level+1)
 
-    elif len(children_set) > 0:
+    elif len(followers_set) > 0:
         # print(f'level: {level}')
-        children_tags_df = df[df.element_id.isin(children_set)][['parent_id', 'tag_name']]\
+        followers_tags_df = df[df.element_id.isin(followers_set)][['parent_id', 'tag_name']]\
                                 .groupby('parent_id')['tag_name']\
                                 .apply(lambda x: ','.join(x))\
                                 .reset_index()
-        children_tags_dict=dict(children_tags_df.values)
-        df['children_tags'] = df.children_tags + ',' + df.element_id.map(children_tags_dict).fillna('')
+        followers_tags_dict=dict(followers_tags_df.values)
+        df['followers_tags'] = df.followers_tags + ',' + df.element_id.map(followers_tags_dict).fillna('')
 
         # increase max_depth
-        df.max_depth = df.max_depth + df.element_id.isin(set(children_tags_dict.keys())).astype(int)
+        df.max_depth = df.max_depth + df.element_id.isin(set(followers_tags_dict.keys())).astype(int)
 
         # recursive call
-        children_depths(df=df, children_set=set(children_tags_dict.keys()), level=level+1)
+        followers_features(df=df, followers_set=set(followers_tags_dict.keys()), level=level+1)
         
-    df['children_tags'] = df['children_tags'].apply(lambda x: re.sub('\s+', ' ', x.replace(',', ' ')).lower().strip())
+    df['followers_tags'] = df['followers_tags'].apply(lambda x: re.sub('\s+', ' ', x.replace(',', ' ')).lower().strip())
+    return df
 
 
 
@@ -376,6 +377,7 @@ class JDIDataset(Dataset):
             df.tag_name = df.tag_name.apply(lambda x: x.lower().replace('-example', '')) ### tag_name LOWER()
             df = build_children_features(df=df)
             df = build_tree_features(df)
+            df = followers_features(df)
 
             #----------------------------------------------------------------------------------------------
             # Merge children with parents
@@ -473,6 +475,20 @@ class JDIDataset(Dataset):
         self.children_tags_sm = self.count_vectorizer_chilgren_tags.transform(self.dataset.children_tags.values)
         logger.info(f"chidren_tags_sm: {self.children_tags_sm.shape}")
         
+        ## followers_tags
+        file_path='model/count_vectorizer_followers_tags.pkl'
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                logger.warning(f'Load CountVectorizer for column "followers_tags": {file_path}')
+                self.count_vectorizer_followers_tags = pickle.load(f)
+        else:
+            logger.warning(f'Saving CountVectorizer for "followers_tags": {file_path}')
+            self.count_vectorizer_followers_tags = CountVectorizer().fit(self.dataset.followers_tags.values)
+            with open(file_path, 'wb') as f:
+                pickle.dump(self.count_vectorizer_followers_tags, f)
+        logger.info(f'CountVectorizer "followers_tags" size: {len(self.count_vectorizer_followers_tags.vocabulary_)}')
+        self.followers_tags_sm = self.count_vectorizer_followers_tags.transform(self.dataset.followers_tags.values)
+        logger.info(f"followers_tags_sm: {self.followers_tags_sm.shape}")
 
         ## extract all non null attributes names
         self.dataset['attributes_parent_text'] = self.dataset.attributes_parent.apply(lambda x: " ".join([k for k in x.keys() if x[k] is not None ]))
@@ -499,6 +515,7 @@ class JDIDataset(Dataset):
                     self.attributes_parent_sm,
                     self.features_df.values,
                     self.children_tags_sm,
+                    self.followers_tags_sm,
                     self.class_sm
                   ]).astype(np.float32)
         
@@ -630,6 +647,7 @@ class JDIDataset(Dataset):
             'num_followers',
             'num_leafs',
             #'num_leafs_parent',
+            'max_depth',
             'num_children',
             'num_children_parent',
             'sum_children_widths',

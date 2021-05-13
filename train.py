@@ -65,7 +65,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
     NUM_BATCHES = len(train_dataloader)
-    NUM_EPOCS = 30
+    NUM_EPOCS = 150
 
     for epoch in range(NUM_EPOCS):
         

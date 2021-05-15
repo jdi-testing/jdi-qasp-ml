@@ -1,47 +1,37 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import os, sys, re, gc, glob
-from tqdm.auto import tqdm, trange
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+import os, gc
+from tqdm.auto import trange
 from utils import logger
 from utils.model import JDIModel
 from multiprocessing import freeze_support
 from terminaltables import DoubleTable
 
-from utils import DatasetBuilder, \
-                  JDIDataset, \
-                  maximize_window, \
-                  assign_labels, \
-                  build_tree_features, \
-                  build_children_features, \
-                  build_elements_dataset
+from utils import JDIDataset
 
 from time import sleep
 
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.preprocessing import OneHotEncoder
-
 import torch
-import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
 BATCH_SISE = 256
 
 if __name__ == "__main__":
+
     freeze_support()
 
     train_dataset = JDIDataset(rebalance=True)
     logger.info(f' Dataset shapes:  {train_dataset.dataset.shape}, {train_dataset.data.shape}')
 
-    train_dataloader = DataLoader(train_dataset, 
-                                  batch_size=BATCH_SISE, 
-                                  shuffle=True, 
-                                  collate_fn = train_dataset.collate_fn, 
+    train_dataloader = DataLoader(train_dataset,
+                                  batch_size=BATCH_SISE,
+                                  shuffle=True,
+                                  collate_fn=train_dataset.collate_fn,
                                   pin_memory=True,
                                   drop_last=True,
                                   num_workers=0)
-    
+
     IN_FEATURES = next(iter(train_dataloader))[0][0].shape[0]
     OUT_FEATURES = len(train_dataset.classes_dict)
 
@@ -49,7 +39,7 @@ if __name__ == "__main__":
         print('WARNING: load saved model weights')
         model = torch.load('model/model.pth')
     else:
-        print('WARNING: Create brand new model')    
+        print('WARNING: Create brand new model')
         model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
     # model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
 
@@ -57,7 +47,7 @@ if __name__ == "__main__":
     logger.info(f'device: {DEVICE}')
 
     stats = []
-    lambda_input  = .01
+    lambda_input = .01
     lambda_hidden = .0001
     gc.collect()
 
@@ -68,7 +58,7 @@ if __name__ == "__main__":
     NUM_EPOCS = 150
 
     for epoch in range(NUM_EPOCS):
-        
+
         model.train()
         model.to(DEVICE)
 
@@ -79,29 +69,29 @@ if __name__ == "__main__":
 
             for x, y in train_dataloader:
                 y_hat = model(x.to(DEVICE))
-                
+
                 optimizer.zero_grad()
 
                 main_loss = criterion(y_hat, y.long().to(DEVICE))
 
-                loss = main_loss #\
-                    # + torch.abs(model.input_layer.weight).sum()*lambda_input \
-                    # + (model.hidden1.weight**2).sum()*lambda_hidden \
-                    # + (model.hidden2.weight**2).sum()*lambda_hidden
-                
+                loss = main_loss   # \ noqa
+                # + torch.abs(model.input_layer.weight).sum()*lambda_input \ noqa
+                # + (model.hidden1.weight**2).sum()*lambda_hidden \ noqa
+                # + (model.hidden2.weight**2).sum()*lambda_hidden noqa
+
                 loss.backward()
                 optimizer.step()
                 cumulative_loss += loss.item()
                 cumulative_main_loss += main_loss.item()
-                bar.set_description(f"Epoch: {epoch}, {round(cumulative_loss,5)}, {round(main_loss.item(),5)}, {round(loss.item(),5)}")
+                bar.set_description(f"Epoch: {epoch}, {round(cumulative_loss,5)}, {round(main_loss.item(),5)}, {round(loss.item(),5)}") # noqa
                 bar.update(1)
 
             bar.update(1)
 
             stats.append({
                 'epoch': epoch,
-                'mean(loss)': cumulative_loss/NUM_BATCHES,
-                'loss': cumulative_main_loss/NUM_BATCHES
+                'mean(loss)': cumulative_loss / NUM_BATCHES,
+                'loss': cumulative_main_loss / NUM_BATCHES
             })
             sleep(1)
             print()
@@ -111,9 +101,7 @@ if __name__ == "__main__":
             print(DoubleTable(table_data=table_data).table)
             print()
 
-
         model.eval()
         with torch.no_grad():
-            #torch.save(model, f'model/model-{epoch}.pth')
+            # torch.save(model, f'model/model-{epoch}.pth')
             torch.save(model, 'model/model.pth')
-

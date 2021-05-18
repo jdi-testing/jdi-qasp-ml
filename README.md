@@ -104,7 +104,7 @@ If directory **dataset/annotations** does not contain annotation file for the sc
     docker push registry.gitlab.com/vfuga/jdi-qasp-ml
 ````
 
-To run create and run docker container from gitlab's registry:
+- To run create and run docker container from gitlab's registry:
 ````
     docker login registry.gitlab.com                       # password will be asked 
     docker run -p 127.0.0.1:5000:5000/tcp -ti --rm --name jdi-ml registry.gitlab.com/vfuga/jdi-qasp-ml

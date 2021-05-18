@@ -6,6 +6,7 @@ from .common import get_all_elements, \
     get_pict, \
     get_grey_image, \
     build_tree_dict, \
+    accuracy, \
     maximize_window # noqa
 
 

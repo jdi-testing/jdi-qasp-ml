@@ -4,6 +4,8 @@ import re
 import io
 import numpy as np
 import pandas as pd
+from IPython.display import HTML
+from IPython.display import display as ipython_displpay
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
@@ -56,7 +58,8 @@ def iou_xywh(box_a, box_b):
     s1 = w1 * h1
     s2 = w2 * h2
 
-    si = (min(x1 + w1, x2 + w2) - max(x1, x2)) * (min(y1 + h1, y2 + h2) - max(y1, y2))
+    si = (min(x1 + w1, x2 + w2) - max(x1, x2)) * \
+        (min(y1 + h1, y2 + h2) - max(y1, y2))
 
     return si / (s1 + s2 - si)
 
@@ -434,3 +437,29 @@ if __name__ == "__main__":
 
         elements_df = get_all_elements(driver=driver)
         elements_df.to_parquet('dataset/df/angular.parquet')
+
+
+def accuracy(df: pd.DataFrame, y_true: str = 'y_true_label',
+             y_pred: str = 'y_pred_label', verbose: bool = True, dummy: str = 'n/a'):
+    """
+        Calculates accuracy on all elements which are not "n/a"
+        Parameters: y_true, y_pred are column names
+    """
+    total_cnt = df.shape[0]
+    df = df[[y_true, y_pred]][(df[y_true] != dummy) | (df[y_pred] != dummy)]
+    n = df.shape[0]
+
+    if n != 0:
+        true_cnt = df[df[y_true] == df[y_pred]].shape[0]
+        acc = true_cnt / n
+        if verbose:
+            ipython_displpay(HTML(f'<H2>Accuracy: {acc} <H2>'))
+            logger.info(f'Accuracy:  {true_cnt}/{n} = {acc}, for {total_cnt} elements')
+        return acc
+
+    else:
+        ipython_displpay('<h1>Exception: No predictions<h1>')
+        logger.info('<h1>Exception: No predictions<h1>')
+        raise Exception('No predictions')
+
+    return None

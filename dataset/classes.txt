@@ -3,9 +3,11 @@ link
 iframe
 textfield
 dropdown
-checkbox
+checkbox_btn
+checkbox_label
+radiobutton_btn
+radiobutton_label
 textarea
-label
 text
 fileinput
 image
@@ -16,6 +18,5 @@ datetimeselector
 numberselector
 dropdownselector
 checklist
-radiobutton
 table
 n/a

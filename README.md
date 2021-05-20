@@ -97,14 +97,14 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 - you may check Test-Backend.ipynb as an example 
 
 
-- To publish docker image to gitlab's registry:
+- To publish docker image into gitlab's registry:
 ````
     docker login registry.gitlab.com                       # password will be asked 
     docker build -t registry.gitlab.com/vfuga/jdi-qasp-ml .
     docker push registry.gitlab.com/vfuga/jdi-qasp-ml
 ````
 
-- To run create and run docker container from gitlab's registry:
+- To create and run docker container from gitlab's registry:
 ````
     docker login registry.gitlab.com                       # password will be asked 
     docker run -p 127.0.0.1:5000:5000/tcp -ti --rm --name jdi-ml registry.gitlab.com/vfuga/jdi-qasp-ml

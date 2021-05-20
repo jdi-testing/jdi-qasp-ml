@@ -155,6 +155,9 @@ class DatasetBuilder:
         # Last I checked this was necessary.
         self.options.add_argument('--disable-gpu')
         self.options.add_argument('--skip-js-errors')
+
+        # to prevent "I'm not a robot" check, we have to add next option:
+        self.options.add_argument('--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36")') # noqa
         self.options.set_capability("platformName", "windows")
         # self.options.add_argument("--start-maximized")
         if self.headless:

@@ -1,3 +1,4 @@
+
 from .common import get_all_elements, \
     build_elements_dataset, \
     is_hover, \
@@ -7,6 +8,7 @@ from .common import get_all_elements, \
     get_grey_image, \
     build_tree_dict, \
     accuracy, \
+    rule_base_predict, \
     maximize_window # noqa
 
 
@@ -19,6 +21,6 @@ from .dataset import build_children_features,\
     JDIDataset,\
     followers_features # noqa
 
-from .config import logger # noqa
-
 from .model import JDIModel # noqa
+
+from .config import logger # noqa

@@ -419,26 +419,6 @@ def setup_web_driver():
     return driver
 
 
-logger.info('Module utils.common is loaded...')
-
-
-if __name__ == "__main__":
-
-    with setup_web_driver() as driver:
-
-        driver.find_element_by_link_text("Elements packs").click()
-        driver.find_element_by_link_text("Angular").click()
-        maximize_window(driver=driver)
-        sleep(3.0)
-
-        plt.imshow(
-            screenshot(driver, save_to_file='dataset/images/angular.png')
-        )
-
-        elements_df = get_all_elements(driver=driver)
-        elements_df.to_parquet('dataset/df/angular.parquet')
-
-
 def accuracy(df: pd.DataFrame, y_true: str = 'y_true_label',
              y_pred: str = 'y_pred_label', verbose: bool = True, dummy: str = 'n/a'):
     """
@@ -454,7 +434,8 @@ def accuracy(df: pd.DataFrame, y_true: str = 'y_true_label',
         acc = true_cnt / n
         if verbose:
             ipython_displpay(HTML(f'<H2>Accuracy: {acc} <H2>'))
-            logger.info(f'Accuracy:  {true_cnt}/{n} = {acc}, for {total_cnt} elements')
+            logger.info(
+                f'Accuracy:  {true_cnt}/{n} = {acc}, for {total_cnt} elements')
         return acc
 
     else:
@@ -463,3 +444,86 @@ def accuracy(df: pd.DataFrame, y_true: str = 'y_true_label',
         raise Exception('No predictions')
 
     return None
+
+
+COLUMNS = ['element_id', 'x', 'y', 'width', 'height']
+
+
+def rule_base_predict(df: pd.DataFrame):
+    """
+        Find controls using rules
+    """
+
+    with open('dataset/classes.txt', 'r') as f:
+        controls_encoder = {l.strip(): i for i, l in enumerate(f.readlines())}
+        # controls_decoder = {v:k for k, v in controls_encoder.items()}
+
+    radio_df = df[(df.tag_name == 'INPUT') & (
+        df.attributes.apply(lambda x: x.get('type')) == 'radio')][COLUMNS]
+    logger.info(f'Num radio buttons found: {radio_df.shape[0]}')
+
+    checkbox_df = df[(df.tag_name == 'INPUT') & (
+        df.attributes.apply(lambda x: x.get('type')) == 'checkbox')][COLUMNS]
+    logger.info(f'Num checkboxes found: {checkbox_df.shape[0]}')
+
+    combobox_df = df[(df.tag_name == 'INPUT')
+                      & (df.attributes.apply(lambda x: x.get('type')) == 'text') # noqa
+                      & (df.attributes.apply(lambda x: x.get('role')) == 'combobox')  # noqa
+                    ][COLUMNS]  # noqa
+    logger.info(f"Num comboboxes/dropdowns found: {combobox_df.shape[0]}")
+
+    text_df = df[(df.tag_name == 'INPUT')
+                 & (df.attributes.apply(lambda x: x.get('type')) == 'text')          # noqa
+                 & (df.attributes.apply(lambda x: x.get('role')) != 'combobox')      # noqa
+                ][COLUMNS]  # noqa
+    logger.info(f"Num textfields found: {text_df.shape[0]}")
+
+    textnumber_df = df[(df.tag_name == 'INPUT')
+                       & (df.attributes.apply(lambda x: x.get('type')) == 'number')  # noqa
+                      ][COLUMNS]  # noqa
+    logger.info(f"Num texfields for numbers found: {textnumber_df.shape[0]}")
+
+    range_df = df[(df.tag_name == 'INPUT')
+                  & (df.attributes.apply(lambda x: x.get('type')) == 'range')        # noqa
+                 ][COLUMNS]  # noqa
+    logger.info(f"Num ranges found: {range_df.shape[0]}")
+
+    inputtext_df = df[(df.tag_name == 'INPUT')
+                      & (df.attributes.apply(lambda x: x.get('type') == ''))         # noqa
+                     ][COLUMNS]  # noqa
+    logger.info(f"Num ordinary text inputs found: {inputtext_df.shape[0]}")
+
+    button_df = df[df.tag_name == 'BUTTON'][COLUMNS]
+    logger.info(f"Num buttons found: {button_df.shape[0]}")
+
+    link_df = df[(df.tag_name == 'A') & (df.attributes.apply(
+        lambda x: x.get('href') is not None))][COLUMNS]
+    logger.info(f"Num links found: {link_df.shape[0]}")
+
+    radio_df['label'] = controls_encoder['radiobutton_btn']
+    checkbox_df['label'] = controls_encoder['checkbox_btn']
+    combobox_df['label'] = controls_encoder['dropdown']
+    text_df['label'] = controls_encoder['textfield']
+    button_df['label'] = controls_encoder['button']
+    link_df['label'] = controls_encoder['link']
+    textnumber_df['label'] = controls_encoder['textfield']
+    inputtext_df['label'] = controls_encoder['textfield']
+    range_df['label'] = controls_encoder['range']
+
+    df_list = [radio_df,
+               checkbox_df,
+               combobox_df,
+               text_df,
+               button_df,
+               link_df,
+               textnumber_df,
+               inputtext_df,
+               range_df
+               ]
+
+    controls_df = pd.concat(df_list).copy()
+
+    return controls_df
+
+
+logger.info('Module utils.common is loaded...')

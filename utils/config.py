@@ -12,3 +12,5 @@ formatter = logging.Formatter('%(asctime)s -%(levelname)s - %(module)s:%(filenam
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+
+logger.info('Module utils.config was loaded')

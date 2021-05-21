@@ -526,4 +526,24 @@ def rule_base_predict(df: pd.DataFrame):
     return controls_df
 
 
+def to_yolo(label: int, x: int, y: int, w: int, h: int, img_width: int, img_height: int):
+    if x <= 0 and y <= 0 and w == 0 and h == 0:
+        return [label, 0, 0, 0, 0]
+
+    # There are some elements with (width, height) = (0, 0), let's fix it
+    if w == 0:
+        w += 20
+        x -= 6
+
+    if h == 0:
+        h += 20
+        y -= 10
+
+    return [label,
+            round((x + w / 2) / img_width, 6),
+            round((y + h / 2) / img_height, 6),
+            round(w / img_width, 6),
+            round(h / img_height, 6)]
+
+
 logger.info('Module utils.common is loaded...')

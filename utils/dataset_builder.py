@@ -13,7 +13,6 @@ from time import sleep
 
 from .config import logger
 
-logger.info("dataset package is loaded...")
 
 def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray, dummy_value=-1.0) -> pd.DataFrame: # noqa
     """
@@ -240,3 +239,6 @@ class DatasetBuilder:
         self.dataset.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
 
         return self.dataset
+
+
+logger.info("dataset package is loaded...")

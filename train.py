@@ -3,26 +3,101 @@
 # import matplotlib.pyplot as plt
 import os, gc
 from tqdm.auto import trange
-from utils import logger
-from utils.model import JDIModel
-from multiprocessing import freeze_support
-from terminaltables import DoubleTable
-
-from utils import JDIDataset
-
-from time import sleep
+import pandas as pd
 
 import torch
 from torch.utils.data import DataLoader
 
+from utils import logger
+from utils import JDIDataset
+from utils import JDIModel
+from utils import accuracy
+
+from multiprocessing import freeze_support
+from terminaltables import DoubleTable
+
 BATCH_SISE = 256
+
+TRAIN_DATASETS = [
+    'angular',
+    'bootstrap-1',
+    'bootstrap-form-control',
+    'bootstrap-form',
+    'bootstrap-forms',
+    'bootstrap-reboot',
+    'bootstrap',
+    'complex-table',
+    'contact-form',
+    # 'dates',
+    "different-elemants",
+    'gitlab',
+    'google-voice',
+    'html-5',
+    'login',
+    'metals-and-colors',
+    'mobile-and-html-5',
+    'ms-office',
+    'ozon',
+    'performance',
+    'react-ant',
+    # 'search',
+    # 'support',
+    # 'table-with-pages',
+    'user-table',
+    'wildberries'
+]
+
+TEST_DATASETS = [
+    'dates',
+    'search',
+    'support',
+    'table-with-pages'
+]
+
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+logger.info(f'device: {DEVICE}')
+
+
+def evaluate(model: JDIModel, dataset: JDIDataset) -> pd.DataFrame:
+
+    model.eval()
+    with torch.no_grad():
+
+        dataloader = DataLoader(test_dataset,
+                                shuffle=False,
+                                batch_size=1,
+                                collate_fn=dataset.collate_fn,
+                                pin_memory=True)
+
+        results = []
+
+        with trange(len(dataloader), desc='Evaluating:') as bar:
+            with torch.no_grad():
+                for x, y in dataloader:
+                    y_pred = torch.round(torch.nn.Softmax(dim=1)(model(x.to(DEVICE)).to('cpu'))).detach().numpy()
+                    y_pred = y_pred[0].argmax()
+                    y = y.item()
+
+                    results.append({
+                        'y_true': y,
+                        'y_pred': y_pred,
+                        'y_true_label': dataset.classes_reverse_dict[y],
+                        'y_pred_label': dataset.classes_reverse_dict[y_pred]
+                    })
+                    bar.update(1)
+
+    results_df = pd.DataFrame(results)
+    return accuracy(results_df)
+
 
 if __name__ == "__main__":
 
     freeze_support()
 
-    train_dataset = JDIDataset(rebalance=True)
-    logger.info(f' Dataset shapes:  {train_dataset.dataset.shape}, {train_dataset.data.shape}')
+    train_dataset = JDIDataset(dataset_names=TRAIN_DATASETS, rebalance=True)
+    test_dataset = JDIDataset(dataset_names=TEST_DATASETS, rebalance=False)
+
+    logger.info(f'Train dataset shape:  {train_dataset.dataset.shape}; Test dataset shape: {test_dataset.data.shape}')
 
     train_dataloader = DataLoader(train_dataset,
                                   batch_size=BATCH_SISE,
@@ -41,12 +116,11 @@ if __name__ == "__main__":
     else:
         print('WARNING: Create brand new model')
         model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
+
+    # just for test purpose:
     # model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
 
-    DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-    logger.info(f'device: {DEVICE}')
-
-    stats = []
+    train_metrics = []
     lambda_input = .01
     lambda_hidden = .0001
     gc.collect()
@@ -55,7 +129,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
     NUM_BATCHES = len(train_dataloader)
-    NUM_EPOCS = 150
+    NUM_EPOCS = 30
 
     for epoch in range(NUM_EPOCS):
 
@@ -88,20 +162,26 @@ if __name__ == "__main__":
 
             bar.update(1)
 
-            stats.append({
-                'epoch': epoch,
-                'mean(loss)': cumulative_loss / NUM_BATCHES,
-                'loss': cumulative_main_loss / NUM_BATCHES
-            })
-            sleep(1)
-            print()
-            table_data = [['epoch', 'mean(loss)', 'loss']]
-            for r in stats:
-                table_data.append([r['epoch'], r['mean(loss)'], r['loss']])
-            print(DoubleTable(table_data=table_data).table)
-            print()
+        # evaluate model
+        # torch.save(model, f'model/model-{epoch}.pth')
+        test_accuracy = evaluate(model=model, dataset=test_dataset)
+        logger.info(f'Test accuracy: {test_accuracy}')
+        torch.save(model, 'model/model.pth')
 
-        model.eval()
-        with torch.no_grad():
-            # torch.save(model, f'model/model-{epoch}.pth')
-            torch.save(model, 'model/model.pth')
+        train_metrics.append({
+            'epoch': epoch,
+            'mean(loss)': cumulative_loss / NUM_BATCHES,
+            # 'loss': cumulative_main_loss / NUM_BATCHES,
+            'accuracy(test)': test_accuracy
+        })
+
+        # report metrics
+        print()
+        # table_data = [['epoch', 'mean(loss)', 'loss', 'accuracy(test)']]
+        table_data = [['epoch', 'mean(loss)', 'accuracy(test)']]
+        for r in train_metrics:
+            # table_data.append([r['epoch'], r['mean(loss)'], r['loss'], r['accuracy(test)']])
+            table_data.append([r['epoch'], r['mean(loss)'], r['accuracy(test)']])
+
+        print(DoubleTable(table_data=table_data).table)
+        print()

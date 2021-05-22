@@ -113,9 +113,13 @@ if __name__ == "__main__":
     if os.path.exists('model/model.pth'):
         print('WARNING: load saved model weights')
         model = torch.load('model/model.pth')
+        best_accuracy = evaluate(model=model, dataset=test_dataset)
     else:
         print('WARNING: Create brand new model')
         model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
+        best_accuracy = 0.0
+
+    logger.info(f'START TRAINING THE MODEL WITH THE BEST ACCURACY: {best_accuracy}')
 
     # just for test purpose:
     # model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
@@ -165,8 +169,10 @@ if __name__ == "__main__":
         # evaluate model
         # torch.save(model, f'model/model-{epoch}.pth')
         test_accuracy = evaluate(model=model, dataset=test_dataset)
-        logger.info(f'Test accuracy: {test_accuracy}')
-        torch.save(model, 'model/model.pth')
+        if test_accuracy > best_accuracy:
+            best_accuracy = test_accuracy
+            logger.info(f'SAVING MODEL WITH THE BEST ACCUCACY: {best_accuracy}')
+            torch.save(model, 'model/model.pth')
 
         train_metrics.append({
             'epoch': epoch,
@@ -184,4 +190,4 @@ if __name__ == "__main__":
             table_data.append([r['epoch'], r['mean(loss)'], r['accuracy(test)']])
 
         print(DoubleTable(table_data=table_data).table)
-        print()
+        print(f'Best accuracy: {best_accuracy}')

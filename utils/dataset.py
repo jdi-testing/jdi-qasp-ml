@@ -554,7 +554,7 @@ class JDIDataset(Dataset):
             'is_leaf_parent',
             'num_followers',
             'num_leafs',
-            # 'num_leafs_parent',
+            'num_leafs_parent',
             'max_depth',
             'num_children',
             'num_children_parent',

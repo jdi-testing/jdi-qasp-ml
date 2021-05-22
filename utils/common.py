@@ -462,6 +462,10 @@ def rule_base_predict(df: pd.DataFrame):
         df.attributes.apply(lambda x: x.get('type')) == 'radio')][COLUMNS]
     logger.info(f'Num radio buttons found: {radio_df.shape[0]}')
 
+    radio2_df = df[(df.tag_name == 'LABEL') & (
+        df.attributes.apply(lambda x: 'c-radio' in str(x.get('class'))))][COLUMNS]
+    logger.info(f'Num radio2 buttons found: {radio2_df.shape[0]}')
+
     checkbox_df = df[(df.tag_name == 'INPUT') & (
         df.attributes.apply(lambda x: x.get('type')) == 'checkbox')][COLUMNS]
     logger.info(f'Num checkboxes found: {checkbox_df.shape[0]}')
@@ -471,6 +475,11 @@ def rule_base_predict(df: pd.DataFrame):
                       & (df.attributes.apply(lambda x: x.get('role')) == 'combobox')  # noqa
                     ][COLUMNS]  # noqa
     logger.info(f"Num comboboxes/dropdowns found: {combobox_df.shape[0]}")
+
+    # checkbox2_df = df[(df.tag_name == 'LABEL') & (
+    #     df.attributes.apply(lambda x: 'c-checkbox-withText' in str(x.get('class')))) & (
+    #     df.attributes.apply(lambda x: x.get('data-value') is not None))][COLUMNS]
+    # logger.info(f'Num checkbox2 buttons found: {checkbox2_df.shape[0]}')
 
     text_df = df[(df.tag_name == 'INPUT')
                  & (df.attributes.apply(lambda x: x.get('type')) == 'text')          # noqa
@@ -501,6 +510,7 @@ def rule_base_predict(df: pd.DataFrame):
     logger.info(f"Num links found: {link_df.shape[0]}")
 
     radio_df['label'] = controls_encoder['radiobutton_btn']
+    radio2_df['label'] = controls_encoder['radiobutton_btn']
     checkbox_df['label'] = controls_encoder['checkbox_btn']
     combobox_df['label'] = controls_encoder['dropdown']
     text_df['label'] = controls_encoder['textfield']
@@ -511,7 +521,9 @@ def rule_base_predict(df: pd.DataFrame):
     range_df['label'] = controls_encoder['range']
 
     df_list = [radio_df,
+               radio2_df,
                checkbox_df,
+               # checkbox2_df,
                combobox_df,
                text_df,
                button_df,

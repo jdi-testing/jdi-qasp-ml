@@ -208,7 +208,7 @@ if __name__ == "__main__":
             table_data.append([r['epoch'], r['mean(loss)'], r['accuracy(test)']])
 
         print(DoubleTable(table_data=table_data).table)
-        print(f'Best accuracy: {best_accuracy}')
+        print(f'Best accuracy: {best_accuracy}, attempts left: {early_stopping_steps}')
 
         if early_stopping_steps <= 0:
             logger.info('EARLY STOPPING')

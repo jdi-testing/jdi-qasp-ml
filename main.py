@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 import logging
 
 UPLOAD_DIRECTORY = "dataset/df"
+MODEL_VERSION_DIRECTORY = "model/version"
 JS_DIRECTORY = "js"
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
@@ -22,15 +23,16 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = Flask(__name__)
 api.logger.setLevel(logging.DEBUG)
 
-# @api.route("/files")
-# def list_files():
-#     """Endpoint to list files on the server."""
-#     files = []
-#     for filename in os.listdir(UPLOAD_DIRECTORY):
-#         path = os.path.join(UPLOAD_DIRECTORY, filename)
-#         if os.path.isfile(path):
-#             files.append(filename)
-#     return jsonify(files)
+
+@api.route("/version")
+def list_files():
+    """Endpoint to list files on the server."""
+    files = []
+    for filename in os.listdir(MODEL_VERSION_DIRECTORY):
+        path = os.path.join(MODEL_VERSION_DIRECTORY, filename)
+        if os.path.isfile(path):
+            files.append(filename)
+    return jsonify(files)
 
 
 @api.route('/files', defaults={'req_path': ''})

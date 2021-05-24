@@ -31,6 +31,7 @@ RUN echo "#!/bin/bash" >> /entrypoint.sh
 RUN echo "cd ${HOME}" >> /entrypoint.sh
 RUN echo "uwsgi --socket 0.0.0.0:5000 --process=5 --protocol=http -w main:api" >> /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
+RUN MODEL_VERSION=`date +%Y-%m-%d-%H.%M.%S`; mkdir -p ${HOME}/model/version; touch ${HOME}/model/version/${MODEL_VERSION};  
 
 USER ${USER_NAME}
 ENTRYPOINT [ "/entrypoint.sh" ]

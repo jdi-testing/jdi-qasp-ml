@@ -385,6 +385,10 @@ class JDIDataset(Dataset):
             self.dataset.followers_tags.values)
         logger.info(f"followers_tags_sm: {self.followers_tags_sm.shape}")
 
+        self.followers_tags_parent_sm = self.count_vectorizer_followers_tags.transform(  # PARENT's followers tags
+            self.dataset.followers_tags_parent.values)
+        logger.info(f"followers_tags_parent_sm: {self.followers_tags_parent_sm.shape}")
+
         # extract all non null attributes names
         self.dataset['attributes_parent_text'] = self.dataset.attributes_parent.apply(
             lambda x: " ".join([k for k in x.keys() if x[k] is not None]))
@@ -415,6 +419,7 @@ class JDIDataset(Dataset):
             self.features_df.values,
             self.children_tags_sm,
             self.followers_tags_sm,
+            self.followers_tags_parent_sm,
             self.class_sm
         ]).astype(np.float32)
 

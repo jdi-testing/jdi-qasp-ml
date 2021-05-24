@@ -505,6 +505,11 @@ def rule_base_predict(df: pd.DataFrame):
     button_df = df[df.tag_name == 'BUTTON'][COLUMNS]
     logger.info(f"Num buttons found: {button_df.shape[0]}")
 
+    button2_df = df[(df.tag_name == 'DIV')
+                      & (df.attributes.apply(lambda x: x.get('role') == 'button'))   # noqa
+                     ][COLUMNS]  # noqa
+    logger.info(f"Num buttons2 (Material-UI) found: {button2_df.shape[0]}")
+
     link_df = df[(df.tag_name == 'A') & (df.attributes.apply(
         lambda x: x.get('href') is not None))][COLUMNS]
     logger.info(f"Num links found: {link_df.shape[0]}")
@@ -515,6 +520,7 @@ def rule_base_predict(df: pd.DataFrame):
     combobox_df['label'] = controls_encoder['dropdown']
     text_df['label'] = controls_encoder['textfield']
     button_df['label'] = controls_encoder['button']
+    button2_df['label'] = controls_encoder['button']
     link_df['label'] = controls_encoder['link']
     textnumber_df['label'] = controls_encoder['textfield']
     inputtext_df['label'] = controls_encoder['textfield']
@@ -527,6 +533,7 @@ def rule_base_predict(df: pd.DataFrame):
                combobox_df,
                text_df,
                button_df,
+               button2_df,
                link_df,
                textnumber_df,
                inputtext_df,

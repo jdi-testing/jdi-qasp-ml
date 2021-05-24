@@ -230,7 +230,7 @@ class JDIDataset(Dataset):
 
         if dataset_names is None:
             logger.warning('Using all available data to generate dataset')
-            dataset_names = self._gen_dataset_names()
+            dataset_names = JDIDataset.gen_dataset_names()
 
         logger.info(f"List of dataset_names:{dataset_names}")
 
@@ -587,14 +587,16 @@ class JDIDataset(Dataset):
             self.features_df.height_parent <= 2).astype(int)
         self.features_df.displayed = self.features_df.displayed.astype(int)
 
-    def _find_dataset_names(self, path_mask='dataset/df/*.parquet'):
+    @staticmethod
+    def find_file_names(self, path_mask='dataset/df/*.parquet'):
         return set([re.sub('.*[/\\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
                     for fn in glob.glob(path_mask)])
 
-    def _gen_dataset_names(self):
-        dfs = self._find_dataset_names('dataset/df/*.parquet')
-        imgs = self._find_dataset_names('dataset/images/*.png')
-        anns = self._find_dataset_names('dataset/annotations/*.txt')
+    @staticmethod
+    def gen_dataset_names():
+        dfs = JDIDataset.find_file_names('dataset/df/*.parquet')
+        imgs = JDIDataset.find_file_names('dataset/images/*.png')
+        anns = JDIDataset.find_file_names('dataset/annotations/*.txt')
 
         return (dfs.intersection(imgs)).intersection(anns)
 

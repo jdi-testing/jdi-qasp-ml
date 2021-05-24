@@ -35,7 +35,7 @@ TRAIN_DATASETS = [
     'html-5',
     'login',
     'metals-and-colors',
-    'mobile-and-html-5',
+    # 'mobile-and-html-5',
     'ms-office',
     'ozon',
     'performance',
@@ -44,14 +44,27 @@ TRAIN_DATASETS = [
     # 'support',
     # 'table-with-pages',
     'user-table',
-    'wildberries'
+    'wildberries',
+    'material-ui-Button Groups',
+    'material-ui-Switch',
+    'material-ui-Textarea Autosize',
+    'material-ui-Progress',
+    'material-ui-Radio',
+    'material-ui-Buttons',
+    'material-ui-Checkbox',
+    'material-ui-List',
+    'material-ui-Text Field',
+    'material-ui-Floating Action Button',
+    'material-ui-Slider',
+    'material-ui-Select'
 ]
 
 TEST_DATASETS = [
     'dates',
     'search',
     'support',
-    'table-with-pages'
+    'table-with-pages',
+    'mobile-and-html-5'
 ]
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -95,6 +108,7 @@ if __name__ == "__main__":
     freeze_support()
 
     train_dataset = JDIDataset(dataset_names=TRAIN_DATASETS, rebalance=True)
+    # train_dataset = JDIDataset(dataset_names=None, rebalance=True)
     test_dataset = JDIDataset(dataset_names=TEST_DATASETS, rebalance=False)
 
     logger.info(f'Train dataset shape:  {train_dataset.dataset.shape}; Test dataset shape: {test_dataset.data.shape}')
@@ -133,7 +147,9 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
     NUM_BATCHES = len(train_dataloader)
-    NUM_EPOCS = 30
+    NUM_EPOCS = 90
+    EARLY_STOPPING_THRESHOLD = 20
+    early_stopping_steps = EARLY_STOPPING_THRESHOLD
 
     for epoch in range(NUM_EPOCS):
 
@@ -168,11 +184,13 @@ if __name__ == "__main__":
 
         # evaluate model
         # torch.save(model, f'model/model-{epoch}.pth')
+        early_stopping_steps -= 1
         test_accuracy = evaluate(model=model, dataset=test_dataset)
         if test_accuracy > best_accuracy:
             best_accuracy = test_accuracy
             logger.info(f'SAVING MODEL WITH THE BEST ACCUCACY: {best_accuracy}')
             torch.save(model, 'model/model.pth')
+            early_stopping_steps = EARLY_STOPPING_THRESHOLD
 
         train_metrics.append({
             'epoch': epoch,
@@ -191,3 +209,7 @@ if __name__ == "__main__":
 
         print(DoubleTable(table_data=table_data).table)
         print(f'Best accuracy: {best_accuracy}')
+
+        if early_stopping_steps <= 0:
+            logger.info('EARLY STOPPING')
+            exit(0)

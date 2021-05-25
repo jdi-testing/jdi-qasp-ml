@@ -24,7 +24,7 @@ api = Flask(__name__)
 api.logger.setLevel(logging.DEBUG)
 
 
-@api.route("/version")
+@api.route("/build")
 def list_files():
     """Endpoint to list files on the server."""
     files = []
@@ -144,16 +144,17 @@ def predict():
 
     results_df = pd.DataFrame(results)
     dataset.dataset['predicted_label'] = results_df.y_pred_label
+    columns_to_publish = ['element_id',
+                          'x',
+                          'y',
+                          'width',
+                          'height',
+                          'predicted_label']
 
-    results_df = dataset.dataset[
-                    dataset.dataset['predicted_label'] != 'n/a'][ # noqa
-                        ['element_id',
-                         'x',
-                         'y',
-                         'width',
-                         'height',
-                         'predicted_label']
-                 ].copy() # noqa
+    results_df = dataset.dataset[dataset.dataset['predicted_label'] != 'n/a'][columns_to_publish].copy()
+    # sort in descending order: big controls first
+    results_df['sort_key'] = results_df.height * results_df.width
+    results_df = results_df.sort_values(by='sort_key', ascending=False)
 
     if results_df.shape[0] == 0:
         gc.collect()

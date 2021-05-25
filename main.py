@@ -97,6 +97,9 @@ def post_file(filename):
 def predict():
     """Upload a file."""
 
+    # create softmax layser function to get probabilities from logits
+    softmax = torch.nn.Softmax(dim=1)
+
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
     with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
@@ -130,26 +133,34 @@ def predict():
             for x, y in dataloader:
                 x.to(device)
                 y.to(device)
-                y_pred = torch.round(torch.nn.Softmax(dim=1)(model(x.to(device)).to('cpu'))).detach().numpy()
-                y_pred = y_pred[0].argmax()
+                y_prob = softmax(model(x.to(device)).to('cpu')).detach().numpy()
+
+                y_pred = y_prob[0].argmax()
                 y = y.item()
+                y_prob = y_prob[0, y_pred].item()
 
                 results.append({
                     'y_true': y,
                     'y_pred': y_pred,
+                    'y_probability': y_prob,
                     'y_true_label': dataset.classes_reverse_dict[y],
                     'y_pred_label': dataset.classes_reverse_dict[y_pred]
                 })
                 bar.update(1)
 
     results_df = pd.DataFrame(results)
+
+    # update the dataset with predictions
     dataset.dataset['predicted_label'] = results_df.y_pred_label
+    dataset.dataset['predicted_probability'] = results_df.y_probability
+
     columns_to_publish = ['element_id',
                           'x',
                           'y',
                           'width',
                           'height',
-                          'predicted_label']
+                          'predicted_label',
+                          'predicted_probability']
 
     results_df = dataset.dataset[dataset.dataset['predicted_label'] != 'n/a'][columns_to_publish].copy()
     # sort in descending order: big controls first

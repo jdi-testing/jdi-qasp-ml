@@ -112,7 +112,7 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 
 - To create and run docker container from gitlab's registry:
 ````
-    docker login registry.gitlab.com  -u <your_gitlab_user_name> -p <your_gitlab_user_password>  # password will be asked 
+    docker login registry.gitlab.com            # password will be asked 
     # or as an alternative way:
     # docker login registry.gitlab.com  -u <your_gitlab_user_name> -p <your_gitlab_user_password>
     docker run -p 127.0.0.1:5000:5000/tcp -ti --rm --name jdi-ml registry.gitlab.com/vfuga/jdi-qasp-ml

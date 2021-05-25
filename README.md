@@ -41,6 +41,11 @@ Plans:
 ````
     jupyter-notebook --ip=127.0.0.1 --port=9999
 ````
+6. To view the build number:
+````
+    curl http://localhost:5000/build
+````
+
 
 # Amending the dataset for training model
 

@@ -21,7 +21,8 @@ Plans:
      build_path_fetures -> build_tree_features (num_followers, level, list of child tags)
      
    - "class" - extract features using CountVectorizer
-   - DatasetBuilder - filter out elements which coordinates are outside of screenshot field 
+   - DatasetBuilder - filter out elements which coordinates are outside of screenshot field
+   - Logits -> Probabilities - In Progress
 
 
 # Install environment to train / test model

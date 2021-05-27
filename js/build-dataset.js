@@ -11,10 +11,10 @@ function gen_uuid(e) {
 }
 
 function collect_attributes(el) {
-   var items = {}; 
-   for (index = 0; index < el.attributes.length; ++index) { 
-      items[el.attributes[index].name] = el.attributes[index].value 
-   }; 
+   var items = {};
+   for (index = 0; index < el.attributes.length; ++index) {
+      items[el.attributes[index].name] = el.attributes[index].value
+   };
    return items;
 }
 
@@ -25,11 +25,15 @@ function collect_attributes(el) {
 
 // generate tree representation
 treeDataset = [...document.querySelectorAll('*')].map(el => {
-   _x = el.getBoundingClientRect()['x'],
-   _y = el.getBoundingClientRect()['y'],
-   _width = el.getBoundingClientRect()['width'],
-   _height = el.getBoundingClientRect()['height']
-   _displayed = (_x<0) | (_y<0) | (_width<=1) | (_height<=1)
+   _x = el.getBoundingClientRect()['x'];
+   _y = el.getBoundingClientRect()['y'];
+   _width = el.getBoundingClientRect()['width'];
+   _height = el.getBoundingClientRect()['height'];
+   _isHidden = el.hasAttribute('hidden') && el.style.display !== 'block';
+   _isDisplayNone = el.style.display === 'none';
+   _isOpacityZero = el.style.opacity === '0';
+   _isVisibilityHidden = el.style.visibility === 'hidden';
+   _displayed = _x < 0 || _y < 0 || _width <= 1 || _height <= 1 || _isHidden || _isOpacityZero || _isVisibilityHidden;
 
    return {
      tag_name: el.tagName,

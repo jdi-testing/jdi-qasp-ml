@@ -64,7 +64,8 @@ TEST_DATASETS = [
     'search',
     'support',
     'table-with-pages',
-    'mobile-and-html-5'
+    'mobile-and-html-5',
+    # 'phys-org'
 ]
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'

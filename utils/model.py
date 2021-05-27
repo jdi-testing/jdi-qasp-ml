@@ -9,7 +9,7 @@ class JDIModel(torch.nn.Module):
             f'IN_FEATURES: {in_features}, OUT_FEATURES: {out_features}')
 
         self.input_layer = torch.nn.Linear(
-            in_features=in_features, out_features=64, bias=False)
+            in_features=in_features, out_features=128, bias=False)
         self.batchNorm1 = torch.nn.LayerNorm(
             normalized_shape=[self.input_layer.out_features])
         self.leaky_relu1 = torch.nn.LeakyReLU(0.1, inplace=True)

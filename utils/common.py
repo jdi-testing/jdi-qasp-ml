@@ -458,20 +458,20 @@ def rule_base_predict(df: pd.DataFrame):
         controls_encoder = {l.strip(): i for i, l in enumerate(f.readlines())}
         # controls_decoder = {v:k for k, v in controls_encoder.items()}
 
-    radio_df = df[(df.tag_name == 'INPUT') & (
+    radio_df = df[(df.tag_name == 'INPUT') & (df.displayed == True) & (               # noqa
         df.attributes.apply(lambda x: x.get('type')) == 'radio')][COLUMNS]
     logger.info(f'Num radio buttons found: {radio_df.shape[0]}')
 
-    radio2_df = df[(df.tag_name == 'LABEL') & (
+    radio2_df = df[(df.tag_name == 'LABEL') & (df.displayed == True) & (              # noqa
         df.attributes.apply(lambda x: 'c-radio' in str(x.get('class'))))][COLUMNS]
     logger.info(f'Num radio2 buttons found: {radio2_df.shape[0]}')
 
-    checkbox_df = df[(df.tag_name == 'INPUT') & (
+    checkbox_df = df[(df.tag_name == 'INPUT') & (df.displayed == True) & (            # noqa
         df.attributes.apply(lambda x: x.get('type')) == 'checkbox')][COLUMNS]
     logger.info(f'Num checkboxes found: {checkbox_df.shape[0]}')
 
-    combobox_df = df[(df.tag_name == 'INPUT')
-                      & (df.attributes.apply(lambda x: x.get('type')) == 'text') # noqa
+    combobox_df = df[(df.tag_name == 'INPUT') & (df.displayed == True)                # noqa
+                      & (df.attributes.apply(lambda x: x.get('type')) == 'text')      # noqa
                       & (df.attributes.apply(lambda x: x.get('role')) == 'combobox')  # noqa
                     ][COLUMNS]  # noqa
     logger.info(f"Num comboboxes/dropdowns found: {combobox_df.shape[0]}")
@@ -481,43 +481,43 @@ def rule_base_predict(df: pd.DataFrame):
     #     df.attributes.apply(lambda x: x.get('data-value') is not None))][COLUMNS]
     # logger.info(f'Num checkbox2 buttons found: {checkbox2_df.shape[0]}')
 
-    text_df = df[(df.tag_name == 'INPUT')
+    text_df = df[(df.tag_name == 'INPUT') & (df.displayed == True)                   # noqa
                  & (df.attributes.apply(lambda x: x.get('type')) == 'text')          # noqa
                  & (df.attributes.apply(lambda x: x.get('role')) != 'combobox')      # noqa
                 ][COLUMNS]  # noqa
     logger.info(f"Num textfields found: {text_df.shape[0]}")
 
-    textnumber_df = df[(df.tag_name == 'INPUT')
+    textnumber_df = df[(df.tag_name == 'INPUT') & (df.displayed == True)             # noqa
                        & (df.attributes.apply(lambda x: x.get('type')) == 'number')  # noqa
                       ][COLUMNS]  # noqa
     logger.info(f"Num texfields for numbers found: {textnumber_df.shape[0]}")
 
-    range_df = df[(df.tag_name == 'INPUT')
+    range_df = df[(df.tag_name == 'INPUT') & (df.displayed == True)                  # noqa
                   & (df.attributes.apply(lambda x: x.get('type')) == 'range')        # noqa
                  ][COLUMNS]  # noqa
     logger.info(f"Num ranges found: {range_df.shape[0]}")
 
-    inputtext_df = df[(df.tag_name == 'INPUT')
+    inputtext_df = df[(df.tag_name == 'INPUT') & (df.displayed == True)              # noqa
                       & (df.attributes.apply(lambda x: x.get('type') == ''))         # noqa
                      ][COLUMNS]  # noqa
     logger.info(f"Num ordinary text inputs found: {inputtext_df.shape[0]}")
 
-    button_df = df[df.tag_name == 'BUTTON'][COLUMNS]
+    button_df = df[(df.tag_name == 'BUTTON') & (df.displayed == True)][COLUMNS]      # noqa
     logger.info(f"Num buttons found: {button_df.shape[0]}")
 
-    button2_df = df[(df.tag_name == 'DIV')
+    button2_df = df[(df.tag_name == 'DIV') & (df.displayed == True)                  # noqa
                       & (df.attributes.apply(lambda x: x.get('role') == 'button'))   # noqa
                      ][COLUMNS]  # noqa
     logger.info(f"Num buttons2 (Material-UI) found: {button2_df.shape[0]}")
 
-    link_df = df[(df.tag_name == 'A') & (df.attributes.apply(
+    link_df = df[(df.tag_name == 'A') & (df.displayed == True) & (df.attributes.apply(  # noqa
         lambda x: x.get('href') is not None))][COLUMNS]
     logger.info(f"Num links found: {link_df.shape[0]}")
 
     radio_df['label'] = controls_encoder['radiobutton_btn']
     radio2_df['label'] = controls_encoder['radiobutton_btn']
     checkbox_df['label'] = controls_encoder['checkbox_btn']
-    combobox_df['label'] = controls_encoder['dropdown']
+    combobox_df['label'] = controls_encoder['dropdown']           # combobox/dropdown
     text_df['label'] = controls_encoder['textfield']
     button_df['label'] = controls_encoder['button']
     button2_df['label'] = controls_encoder['button']
@@ -541,6 +541,7 @@ def rule_base_predict(df: pd.DataFrame):
                ]
 
     controls_df = pd.concat(df_list).copy()
+    controls_df = controls_df[(controls_df.x > 0) & (controls_df.y > 0)].copy()
 
     return controls_df
 

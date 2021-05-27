@@ -1,59 +1,15 @@
 
 import pandas as pd
-import numpy as np
 
 from selenium.webdriver.common.keys import Keys
 
-from .common import iou_xywh, maximize_window
-from tqdm.auto import tqdm
 import re
 import os
 
 from time import sleep
+from .common import maximize_window
 
 from .config import logger
-
-
-def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray, dummy_value=-1.0) -> pd.DataFrame: # noqa
-    """
-        mark up dataset: assign labels
-        annotations_file_path: yolo-v3 formatted annotation
-    """
-
-    _ann = np.loadtxt(annotations_file_path)
-    _boxes = df[['x', 'y', 'width', 'height']].values
-
-    labels = []
-
-    for bb in tqdm(_ann, desc='Assigning labels'):
-        c, x, y, w, h = bb
-        x = (x - w / 2) * img.shape[1]
-        y = (y - h / 2) * img.shape[0]
-        w = w * img.shape[1]
-        h = h * img.shape[0]
-
-        best_iou = 0.0
-        best_i = 0
-
-        for i, r in enumerate(_boxes):
-
-            if (r[2] <= 0) or (r[3] <= 0) or (r[0] < 0) or (r[1] < 0):
-                continue
-
-            _iou = iou_xywh((x, y, w, h), (r[0], r[1], r[2], r[3]))
-
-            if _iou > best_iou:
-                best_i, best_iou = (i, _iou)
-
-        labels.append({'idx': best_i, 'label': c, 'iou': best_iou})
-
-    labels_df = pd.DataFrame(data=labels)
-    labels_df.index = labels_df.idx
-    df = df.merge(labels_df, how='left', left_index=True, right_index=True)
-    df.label = df.label.fillna(dummy_value)
-    df.drop(columns=['iou', 'idx'], inplace=True)  # drop auxiliary columns
-
-    return df
 
 
 def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> pd.DataFrame:

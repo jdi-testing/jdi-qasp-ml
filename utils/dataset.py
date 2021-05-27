@@ -20,6 +20,9 @@ from sklearn.preprocessing import OneHotEncoder
 from scipy.sparse import hstack
 import pickle
 
+FULL_HD_WIDTH = 1920
+FULL_HD_HEIGHT = 1080
+
 
 @numba.jit(forceobj=True)
 def get_parents_list(tree_dict: dict, element_id: str, paternts_list: list = None) -> list:
@@ -88,6 +91,13 @@ def get_grey_image(file_path: str) -> np.ndarray:
     return img
 
 
+PRIORITY_TAG_SCALERS = {  # We have to scale IoU for certain tags
+    'a': 1.,
+    'button': 1.,
+    'input': 1.,
+}
+
+
 def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray, dummy_value=-1.0) -> pd.DataFrame:
     """
         mark up dataset: assign labels
@@ -95,8 +105,9 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray,
 
     """
 
+    df['scalar'] = df.tag_name.map(PRIORITY_TAG_SCALERS).fillna(1.0)
     _ann = np.loadtxt(annotations_file_path)
-    _boxes = df[['x', 'y', 'width', 'height']].values
+    _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
 
     labels = []
 
@@ -115,9 +126,9 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray,
             if (r[2] <= 0) or (r[3] <= 0) or (r[0] < 0) or (r[1] < 0):
                 continue
 
-            _iou = iou_xywh((x, y, w, h), (r[0], r[1], r[2], r[3]))
+            _iou = iou_xywh((x, y, w, h), (r[0], r[1], r[2], r[3])) * r[4]  # r[4] is a scalar
 
-            if _iou > best_iou:
+            if _iou >= best_iou:  # We have to use >=, because the next tag might be more important
                 best_i, best_iou = (i, _iou)
 
         labels.append({'idx': best_i, 'label': c, 'iou': best_iou})
@@ -248,6 +259,8 @@ class JDIDataset(Dataset):
             df = build_children_features(df=df)
             df = build_tree_features(df)
             df = followers_features(df)
+            # df.width = (FULL_HD_WIDTH - df.width) / FULL_HD_WIDTH
+            # df.height = (FULL_HD_HEIGHT - df.height) / FULL_HD_HEIGHT
 
             # ----------------------------------------------------------------------------------------------
             # Merge children with parents

@@ -4,6 +4,7 @@ import numpy as np
 import torch
 
 from .common import iou_xywh, build_tree_dict
+from .hidden import build_is_hidden
 from tqdm.auto import tqdm, trange
 import os
 import re
@@ -121,7 +122,7 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray,
         best_iou = 0.0
         best_i = 0
 
-        for i, r in enumerate(_boxes):
+        for i, r in enumerate(_boxes):  # r[5]: 'is_hidden' - Let's skip hidden nodes
 
             if (r[2] <= 0) or (r[3] <= 0) or (r[0] < 0) or (r[1] < 0):
                 continue
@@ -256,6 +257,7 @@ class JDIDataset(Dataset):
             logger.info('cleaning tag_name from dummy/auxiliary words')
             df.tag_name = df.tag_name.apply(
                 lambda x: x.lower().replace('-example', ''))  # tag_name LOWER()
+            df = build_is_hidden(df=df)
             df = build_children_features(df=df)
             df = build_tree_features(df)
             df = followers_features(df)
@@ -581,6 +583,7 @@ class JDIDataset(Dataset):
             'sum_children_hights',
             'sum_children_hights_parent',
             'displayed',
+            'is_hidden',
             # 'onmouseenter'
         ]].copy()
 
@@ -644,4 +647,4 @@ class JDIDataset(Dataset):
         logger.info(f'class_sm: {self.class_sm.shape}')
 
 
-logger.info("dataset package is loaded...")
+logger.info("dataset module is loaded...")

@@ -419,14 +419,14 @@ def setup_web_driver():
     return driver
 
 
-def accuracy(df: pd.DataFrame, y_true: str = 'y_true_label',
+def accuracy(df: pd.DataFrame, y_true: str = 'y_true_label', is_hidden: str = 'is_hidden',
              y_pred: str = 'y_pred_label', verbose: bool = True, dummy: str = 'n/a'):
     """
         Calculates accuracy on all elements which are not "n/a"
         Parameters: y_true, y_pred are column names
     """
     total_cnt = df.shape[0]
-    df = df[[y_true, y_pred]][(df[y_true] != dummy) | (df[y_pred] != dummy)]
+    df = df[[y_true, y_pred]][((df[y_true] != dummy) | (df[y_pred] != dummy)) & (df[is_hidden] == 0)]
     n = df.shape[0]
 
     if n != 0:

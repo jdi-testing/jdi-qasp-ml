@@ -77,7 +77,7 @@ def evaluate(model: JDIModel, dataset: JDIDataset) -> pd.DataFrame:
     model.eval()
     with torch.no_grad():
 
-        dataloader = DataLoader(test_dataset,
+        dataloader = DataLoader(dataset,
                                 shuffle=False,
                                 batch_size=1,
                                 collate_fn=dataset.collate_fn,
@@ -101,6 +101,7 @@ def evaluate(model: JDIModel, dataset: JDIDataset) -> pd.DataFrame:
                     bar.update(1)
 
     results_df = pd.DataFrame(results)
+    results_df['is_hidden'] = dataset.dataset.is_hidden.values
     return accuracy(results_df)
 
 
@@ -187,7 +188,7 @@ if __name__ == "__main__":
         # torch.save(model, f'model/model-{epoch}.pth')
         early_stopping_steps -= 1
         test_accuracy = evaluate(model=model, dataset=test_dataset)
-        if test_accuracy > best_accuracy:
+        if test_accuracy >= best_accuracy:
             best_accuracy = test_accuracy
             logger.info(f'SAVING MODEL WITH THE BEST ACCUCACY: {best_accuracy}')
             torch.save(model, 'model/model.pth')

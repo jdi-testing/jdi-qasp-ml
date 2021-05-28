@@ -3,7 +3,8 @@
 # this is a Flask-based backend
 ############################################
 
-import os, gc
+import os
+import gc
 from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
 import datetime as dt
 
@@ -112,13 +113,17 @@ def predict():
     df = pd.DataFrame(json.loads(request.data))
 
     # fix bad data which can come in 'onmouseover', 'onmouseenter'
-    df.onmouseover = df.onmouseover.apply(lambda x: 'true' if x is not None else None)
-    df.onmouseenter = df.onmouseenter.apply(lambda x: 'true' if x is not None else None)
+    df.onmouseover = df.onmouseover.apply(
+        lambda x: 'true' if x is not None else None)
+    df.onmouseenter = df.onmouseenter.apply(
+        lambda x: 'true' if x is not None else None)
     df.to_parquet(f'dataset/df/{filename}')
 
     api.logger.info('Creating JDIDataset')
-    dataset = JDIDataset(dataset_names=[filename.split('.')[0]], rebalance=False)
-    dataloader = DataLoader(dataset, shuffle=False, batch_size=1, collate_fn=dataset.collate_fn)
+    dataset = JDIDataset(
+        dataset_names=[filename.split('.')[0]], rebalance=False)
+    dataloader = DataLoader(dataset, shuffle=False,
+                            batch_size=1, collate_fn=dataset.collate_fn)
 
     device = 'cpu'
 
@@ -133,7 +138,8 @@ def predict():
             for x, y in dataloader:
                 x.to(device)
                 y.to(device)
-                y_prob = softmax(model(x.to(device)).to('cpu')).detach().numpy()
+                y_prob = softmax(model(x.to(device)).to('cpu')
+                                 ).detach().numpy()
 
                 y_pred = y_prob[0].argmax()
                 y = y.item()
@@ -162,7 +168,9 @@ def predict():
                           'predicted_label',
                           'predicted_probability']
 
-    results_df = dataset.dataset[dataset.dataset['predicted_label'] != 'n/a'][columns_to_publish].copy()
+    results_df = dataset.dataset[
+        (dataset.dataset['predicted_label'] != 'n/a') & (dataset.dataset['is_hidden'] == 0)
+    ][columns_to_publish].copy()
     # sort in descending order: big controls first
     results_df['sort_key'] = results_df.height * results_df.width
     results_df = results_df.sort_values(by='sort_key', ascending=False)

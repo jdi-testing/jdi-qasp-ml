@@ -10,7 +10,9 @@ from .common import get_all_elements, \
     accuracy, \
     rule_base_predict, \
     to_yolo, \
-    maximize_window # noqa
+    maximize_window  # noqa
+
+from .hidden import build_is_hidden  # noqa
 
 
 from .dataset_builder import DatasetBuilder # noqa

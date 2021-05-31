@@ -106,6 +106,8 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray,
 
     """
 
+    logger.info(f'Assign labels using annotation file: {annotations_file_path}')
+
     df['scalar'] = df.tag_name.map(PRIORITY_TAG_SCALERS).fillna(1.0)
     _ann = np.loadtxt(annotations_file_path)
     _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
@@ -196,7 +198,9 @@ def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> 
 
 def build_tree_features(elements_df: pd.DataFrame) -> pd.DataFrame:
     """
-        Walk on elements tree and build tree-features
+        Walk on elements tree and build tree-features:
+           - chilren_tags
+           - folloer_counters
     """
 
     def empty_string():
@@ -277,8 +281,6 @@ class JDIDataset(Dataset):
 
             # If annotation file exists, lets load it and assign labels
             if os.path.exists(f'dataset/annotations/{ds_name}.txt'):
-                logger.warning(
-                    f'Load LABELS from dataset/annotations/{ds_name}.txt')
                 img = plt.imread(f'dataset/images/{ds_name}.png')
                 df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt',
                                    img=img,

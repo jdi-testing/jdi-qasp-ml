@@ -151,7 +151,7 @@ def get_grey_image(file_path: str) -> np.ndarray:
     return img
 
 
-def load_grey_image(file_path: str) -> np.ndarray:
+def load_gray_image(file_path: str) -> np.ndarray:
     img = plt.imread(file_path)
     img = (img[..., 0] + img[..., 1] + img[..., 2]) / 3.0
     return img
@@ -540,8 +540,9 @@ def rule_base_predict(df: pd.DataFrame):
                      ][COLUMNS]  # noqa
     logger.info(f"Num buttons2 (Material-UI) found: {button2_df.shape[0]}")
 
-    link_df = df[(df.tag_name == 'A') & (df.attributes.apply(                        # noqa
-        lambda x: x.get('href') is not None))][COLUMNS]
+    # link_df = df[(df.tag_name == 'A') & (df.attributes.apply(                        # noqa
+    #     lambda x: x.get('href') is not None))][COLUMNS]
+    link_df = df[df.tag_name == 'A'][COLUMNS]
     logger.info(f"Num links found: {link_df.shape[0]}")
 
     radio_df['label'] = controls_encoder['radiobutton_btn']
@@ -577,9 +578,10 @@ def rule_base_predict(df: pd.DataFrame):
     return controls_df
 
 
+@numba.jit
 def to_yolo(label: int, x: int, y: int, w: int, h: int, img_width: int, img_height: int):
     if x <= 0 and y <= 0 and w == 0 and h == 0:
-        return [label, 0, 0, 0, 0]
+        return [label, 0.0, 0.0, 0.0, 0.0]
 
     # There are some elements with (width, height) = (0, 0), let's fix it
     if w == 0:
@@ -595,6 +597,13 @@ def to_yolo(label: int, x: int, y: int, w: int, h: int, img_width: int, img_heig
             round((y + h / 2) / img_height, 6),
             round(w / img_width, 6),
             round(h / img_height, 6)]
+
+
+@numba.jit
+def from_yolo(x: float, y: float, w: float, h: float, img_width, img_height):
+    x = x - w / 2.0
+    y = y - h / 2.0
+    return (int(x * img_width), int(y * img_height), int(w * img_width), int(h * img_height))
 
 
 logger.info('Module utils.common is loaded...')

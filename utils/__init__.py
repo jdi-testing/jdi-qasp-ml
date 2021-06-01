@@ -6,17 +6,18 @@ from .common import get_all_elements, \
     iou_xywh, \
     get_pict, \
     get_grey_image, \
-    load_grey_image, \
+    load_gray_image, \
     build_tree_dict, \
     build_elements_dict, \
     accuracy, \
     rule_base_predict, \
     to_yolo, \
+    from_yolo, \
     maximize_window  # noqa
 
 from .hidden import build_is_hidden, check_is_inside  # noqa
-
-
+from .features_builder import build_features # noqa
+from .describe import describe_node  # noqa
 from .dataset_builder import DatasetBuilder # noqa
 
 from .dataset import build_children_features,\

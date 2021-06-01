@@ -17,6 +17,8 @@ from .common import get_all_elements, \
 
 from .hidden import build_is_hidden, check_is_inside  # noqa
 from .features_builder import build_features # noqa
+from .features_builder import build_to_yolo # noqa
+
 from .describe import describe_node  # noqa
 from .dataset_builder import DatasetBuilder # noqa
 

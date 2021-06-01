@@ -513,7 +513,7 @@ def rule_base_predict(df: pd.DataFrame):
 
     text_df = df[(df.tag_name == 'INPUT')                                            # noqa
                  & (df.attributes.apply(lambda x: x.get('type')) == 'text')          # noqa
-                 & (df.attributes.apply(lambda x: x.get('role')) != 'combobox')      # noqa
+                 # & (df.attributes.apply(lambda x: x.get('role')) != 'combobox')    # noqa
                 ][COLUMNS]  # noqa
     logger.info(f"Num textfields found: {text_df.shape[0]}")
 
@@ -535,6 +535,11 @@ def rule_base_predict(df: pd.DataFrame):
     button_df = df[(df.tag_name == 'BUTTON')][COLUMNS]                               # noqa
     logger.info(f"Num buttons found: {button_df.shape[0]}")
 
+    button1_df = df[df.attributes.apply(lambda x: x.get('class') == 'icon-search')][COLUMNS]  # noqa
+    print('Button1: ', button1_df.element_id.values)
+
+    logger.info(f"Num buttons1 found: {button1_df.shape[0]}")
+
     button2_df = df[(df.tag_name == 'DIV')                                           # noqa
                       & (df.attributes.apply(lambda x: x.get('role') == 'button'))   # noqa
                      ][COLUMNS]  # noqa
@@ -551,6 +556,7 @@ def rule_base_predict(df: pd.DataFrame):
     combobox_df['label'] = controls_encoder['dropdown']           # combobox/dropdown
     text_df['label'] = controls_encoder['textfield']
     button_df['label'] = controls_encoder['button']
+    button1_df['label'] = controls_encoder['button']
     button2_df['label'] = controls_encoder['button']
     link_df['label'] = controls_encoder['link']
     textnumber_df['label'] = controls_encoder['textfield']
@@ -564,6 +570,7 @@ def rule_base_predict(df: pd.DataFrame):
                combobox_df,
                text_df,
                button_df,
+               button1_df,
                button2_df,
                link_df,
                textnumber_df,

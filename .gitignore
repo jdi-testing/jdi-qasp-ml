@@ -3,7 +3,7 @@ __pycache__/*
 */__pycache__/*
 *.log
 .vscode/*
-.ipynb_checkpoints/*
+*.ipynb_checkpoints/*
 *.pyc
 *.log
 flask-temp-storage/*

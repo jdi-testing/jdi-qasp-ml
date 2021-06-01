@@ -1,6 +1,9 @@
+import numba
+import numpy as np
 import pandas as pd
 from .common import build_elements_dict  # noqa
 from .common import build_tree_dict
+from .common import to_yolo
 from .hidden import build_is_hidden
 
 
@@ -23,6 +26,14 @@ def build_siblings_dict(df: pd.DataFrame):
         p[r.element_id] = idx
 
     return siblings_dict
+
+
+# @numba.jit
+def build_to_yolo(df: pd.DataFrame, img_width: int, img_heght: int):
+    return np.round(np.array(
+        [to_yolo(r.label, r.x, r.y, r.width, r.height, img_width, img_heght)
+         for _, r in df.iterrows()]
+    ), 6)
 
 
 def get_siblings(siblings_dict: dict, tree_dict: dict, index_dict: dict, element_id: str):

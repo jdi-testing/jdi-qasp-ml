@@ -550,9 +550,9 @@ def rule_base_predict(df: pd.DataFrame):
     link_df = df[df.tag_name == 'A'][COLUMNS]
     logger.info(f"Num links found: {link_df.shape[0]}")
 
-    radio_df['label'] = controls_encoder['radiobutton_btn']
-    radio2_df['label'] = controls_encoder['radiobutton_btn']
-    checkbox_df['label'] = controls_encoder['checkbox_btn']
+    radio_df['label'] = controls_encoder['radiobutton']
+    radio2_df['label'] = controls_encoder['radiobutton']
+    checkbox_df['label'] = controls_encoder['checkbox']
     combobox_df['label'] = controls_encoder['dropdown']           # combobox/dropdown
     text_df['label'] = controls_encoder['textfield']
     button_df['label'] = controls_encoder['button']

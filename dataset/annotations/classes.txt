@@ -12,6 +12,7 @@ progressbar
 datetimeselector
 colorpicker
 numberselector
-dropdownselector
+selector
 table
+slider
 n/a

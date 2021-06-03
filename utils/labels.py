@@ -21,7 +21,7 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
 
     logger.info('Getting image size')
     # img_width, img_height = df[df.tag_name=='HTML'][['width', 'height']].head(1).values[0]
-    logger.info(f'Image size: {(img_width, img_height)}')
+    logger.info(f'Image size (w,h): {(img_width, img_height)}')
 
     with open(classes_file_path, 'r') as f:
         lines = f.readlines()
@@ -102,13 +102,14 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         labels_df = pd.DataFrame(data=labels)
         if verbose:
             display(labels_df)
-
+        logger.info(f'{labels_df.shape[0]} labels have been assigned')
         labels_df.index = labels_df.idx
         df = df.merge(labels_df, how='left', left_index=True, right_index=True)
         df.label = df.label.fillna(dummy_value).astype(int)
         df.iou = df.iou.fillna(0.0)
         df.label_text = df.label_text.fillna('n/a')
     else:
+        logger.warning('No labels were assigned')
         df['label'] = int(dummy_value)
         df['label_text'] = 'n/a'
         df['iou'] = 0.0

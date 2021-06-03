@@ -53,7 +53,7 @@ def iou_xywh(box_a, box_b):
         return 0.0
 
     if (w1 <= 0.0) or (w2 <= 0.0) or (h1 <= 0.0) or (h2 <= 0.0):
-        return None
+        return 0.0
 
     s1 = w1 * h1
     s2 = w2 * h2

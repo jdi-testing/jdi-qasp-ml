@@ -5,6 +5,23 @@ import numpy as np
 from .config import logger
 from .common import iou_xywh, from_yolo
 from tqdm.auto import tqdm
+from collections import defaultdict
+
+EPSILON = 1e-6
+
+PRIORITY_SCALAR = defaultdict(int, {
+    'A': EPSILON,
+    'BUTTON': EPSILON,
+    'SELECT': EPSILON,
+    'MAT-SELECT': EPSILON,
+    'MAT-CHECKBOX': EPSILON,
+    'MAT-RADIO-BUTTON': EPSILON,
+    'MAT-SLIDE-TOGGLE': EPSILON,
+    'TEXT-FIELD': EPSILON,
+    'MAT-TREE-NODE': EPSILON,
+    'MAT-SLIDER': EPSILON,
+    'TEXTAREA': EPSILON
+})
 
 
 def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int = 0, img_height: int = 0,
@@ -76,7 +93,7 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
             #                 continue
 
             iou = iou_xywh(from_yolo(x, y, w, h, img_width,
-                           img_height), (r.x, r.y, r.width, r.height))
+                           img_height), (r.x, r.y, r.width, r.height)) + PRIORITY_SCALAR[r.tag_name]
 
             if iou >= best_iou:  # We have to use >=, because the next tag might be more important
                 best_idx, best_iou, best_tag, best_rect, best_yolo, best_label = (  # noqa

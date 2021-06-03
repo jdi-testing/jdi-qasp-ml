@@ -3,9 +3,10 @@ import pandas as pd
 import numpy as np
 import torch
 
-from .common import iou_xywh, build_tree_dict
+from .common import iou_xywh, build_tree_dict, load_gray_image # noqa
 from .hidden import build_is_hidden
-from tqdm.auto import tqdm, trange
+from tqdm.auto import tqdm, trange # noqa
+from .labels import assign_labels
 import os
 import re
 import gc
@@ -99,50 +100,50 @@ PRIORITY_TAG_SCALERS = {  # We have to scale IoU for certain tags
 }
 
 
-def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray, dummy_value=-1.0) -> pd.DataFrame:
-    """
-        mark up dataset: assign labels
-        annotations_file_path: yolo-v3 formatted annotation
+# def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray, dummy_value=-1.0) -> pd.DataFrame:
+#     """
+#         mark up dataset: assign labels
+#         annotations_file_path: yolo-v3 formatted annotation
 
-    """
+#     """
 
-    logger.info(f'Assign labels using annotation file: {annotations_file_path}')
+#     logger.info(f'Assign labels using annotation file: {annotations_file_path}')
 
-    df['scalar'] = df.tag_name.map(PRIORITY_TAG_SCALERS).fillna(1.0)
-    _ann = np.loadtxt(annotations_file_path)
-    _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
+#     df['scalar'] = df.tag_name.map(PRIORITY_TAG_SCALERS).fillna(1.0)
+#     _ann = np.loadtxt(annotations_file_path)
+#     _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
 
-    labels = []
+#     labels = []
 
-    for bb in tqdm(_ann, desc='Assigning labels'):
-        c, x, y, w, h = bb
-        x = (x - w / 2) * img.shape[1]
-        y = (y - h / 2) * img.shape[0]
-        w = w * img.shape[1]
-        h = h * img.shape[0]
+#     for bb in tqdm(_ann, desc='Assigning labels'):
+#         c, x, y, w, h = bb
+#         x = (x - w / 2) * img.shape[1]
+#         y = (y - h / 2) * img.shape[0]
+#         w = w * img.shape[1]
+#         h = h * img.shape[0]
 
-        best_iou = 0.0
-        best_i = 0
+#         best_iou = 0.0
+#         best_i = 0
 
-        for i, r in enumerate(_boxes):  # r[5]: 'is_hidden' - Let's skip hidden nodes
+#         for i, r in enumerate(_boxes):  # r[5]: 'is_hidden' - Let's skip hidden nodes
 
-            if (r[2] <= 0) or (r[3] <= 0) or (r[0] < 0) or (r[1] < 0):
-                continue
+#             if (r[2] <= 0) or (r[3] <= 0) or (r[0] < 0) or (r[1] < 0):
+#                 continue
 
-            _iou = iou_xywh((x, y, w, h), (r[0], r[1], r[2], r[3])) * r[4]  # r[4] is a scalar
+#             _iou = iou_xywh((x, y, w, h), (r[0], r[1], r[2], r[3])) * r[4]  # r[4] is a scalar
 
-            if _iou >= best_iou:  # We have to use >=, because the next tag might be more important
-                best_i, best_iou = (i, _iou)
+#             if _iou >= best_iou:  # We have to use >=, because the next tag might be more important
+#                 best_i, best_iou = (i, _iou)
 
-        labels.append({'idx': best_i, 'label': c, 'iou': best_iou})
+#         labels.append({'idx': best_i, 'label': c, 'iou': best_iou})
 
-    labels_df = pd.DataFrame(data=labels)
-    labels_df.index = labels_df.idx
-    df = df.merge(labels_df, how='left', left_index=True, right_index=True)
-    df.label = df.label.fillna(dummy_value)
-    df.drop(columns=['iou', 'idx'], inplace=True)  # drop auxiliary columns
+#     labels_df = pd.DataFrame(data=labels)
+#     labels_df.index = labels_df.idx
+#     df = df.merge(labels_df, how='left', left_index=True, right_index=True)
+#     df.label = df.label.fillna(dummy_value)
+#     df.drop(columns=['iou', 'idx'], inplace=True)  # drop auxiliary columns
 
-    return df
+#     return df
 
 
 def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> pd.DataFrame:
@@ -281,10 +282,10 @@ class JDIDataset(Dataset):
 
             # If annotation file exists, lets load it and assign labels
             if os.path.exists(f'dataset/annotations/{ds_name}.txt'):
-                img = plt.imread(f'dataset/images/{ds_name}.png')
+                img = load_gray_image(f'dataset/images/{ds_name}.png')
                 df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt',
-                                   img=img,
-                                   dummy_value=self.dummy_class_value
+                                   img_width=img.shape[1],
+                                   img_height=img.shape[0]
                                    )
                 del img
             else:

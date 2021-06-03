@@ -536,7 +536,7 @@ def rule_base_predict(df: pd.DataFrame):
     logger.info(f"Num buttons found: {button_df.shape[0]}")
 
     button1_df = df[df.attributes.apply(lambda x: x.get('class') == 'icon-search')][COLUMNS]  # noqa
-    print('Button1: ', button1_df.element_id.values)
+    # print('Button1: ', button1_df.element_id.values)
 
     logger.info(f"Num buttons1 found: {button1_df.shape[0]}")
 

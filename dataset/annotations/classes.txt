@@ -14,6 +14,9 @@ colorpicker
 numberselector
 selector
 table
-toggle-slider
+slider-toggle
 slider
+tree-node
+steper
+tab
 n/a

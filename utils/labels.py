@@ -20,7 +20,8 @@ PRIORITY_SCALAR = defaultdict(int, {
     'TEXT-FIELD': EPSILON,
     'MAT-TREE-NODE': EPSILON,
     'MAT-SLIDER': EPSILON,
-    'TEXTAREA': EPSILON
+    'TEXTAREA': EPSILON,
+    'LABEL': -0.1
 })
 
 
@@ -68,7 +69,7 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         _ann = [np.array([])]
     else:
         _ann = np.loadtxt(annotations_file_path)
-        logger.info(f"{_ann.shape[0]} annotation bas benn read")
+        logger.info(f"{_ann.shape[0]} annotation has been read")
 
     # _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
     _boxes_df = df[['x', 'y', 'width', 'height',
@@ -117,14 +118,15 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
 
     if len(labels) != 0:
         labels_df = pd.DataFrame(data=labels)
+        logger.info(f'labels_df: {labels_df.columns}')
         if verbose:
             display(labels_df)
         logger.info(f'{labels_df.shape[0]} labels have been assigned')
         labels_df.index = labels_df.idx
         df = df.merge(labels_df, how='left', left_index=True, right_index=True)
-        df.label = df.label.fillna(dummy_value).astype(int)
-        df.iou = df.iou.fillna(0.0)
-        df.label_text = df.label_text.fillna('n/a')
+        df['label'] = df['label'].fillna(dummy_value).astype(int)
+        df['iou'] = df.iou.fillna(0.0)
+        df['label_text'] = df.label_text.fillna('n/a')
     else:
         logger.warning('No labels were assigned')
         df['label'] = int(dummy_value)

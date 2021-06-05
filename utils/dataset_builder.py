@@ -92,6 +92,8 @@ class DatasetBuilder:
         os.makedirs('dataset/annotations', exist_ok=True)
         # logger.info('dataset/html')
         os.makedirs('dataset/html', exist_ok=True)
+        # logger.info('dataset/cache-labels')
+        os.makedirs('dataset/cache-labels', exist_ok=True)
 
         self.__enter__()
 

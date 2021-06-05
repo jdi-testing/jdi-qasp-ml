@@ -36,5 +36,5 @@ dependencies:
     - pandas_profiling
     - lxml
     - html5lib
-    - torchsummapy
+    - torchsummary
     - Flask

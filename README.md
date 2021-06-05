@@ -102,7 +102,7 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 - after a few seconds dataset with discovered controll elements will be sent back
 - you may check Test-Backend.ipynb as an example 
 
-# Docker - get debuging info:
+# Docker - get debugging info:
 - http://localhost:5000/build  - get the docker image build's datetime
 - http://localhost:5000/files  - get data sent by browser to model
 

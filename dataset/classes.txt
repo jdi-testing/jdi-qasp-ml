@@ -14,5 +14,6 @@ colorpicker
 numberselector
 selector
 table
+toggle-slider
 slider
 n/a

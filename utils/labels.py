@@ -21,7 +21,9 @@ PRIORITY_SCALAR = defaultdict(int, {
     'MAT-TREE-NODE': EPSILON,
     'MAT-SLIDER': EPSILON,
     'TEXTAREA': EPSILON,
-    'LABEL': -0.1
+    'LABEL': -0.1,
+    'SPAN': -0.1,
+    'SVG': -0.05
 })
 
 

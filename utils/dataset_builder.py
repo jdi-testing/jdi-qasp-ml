@@ -194,6 +194,11 @@ class DatasetBuilder:
             lambda x: 'true' if x is not None else None)
 
         logger.info(f'Save parquet to dataset/df/{self.dataset_name}.parquet')
+
+        logger.info("No attributes: " + str(self.dataset[self.dataset.attributes == {}].shape))
+
+        self.dataset.attributes = self.dataset.attributes.apply(lambda x: None if x == {} else x)
+
         self.dataset.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
 
         return self.dataset

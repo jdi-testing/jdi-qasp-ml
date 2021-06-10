@@ -23,7 +23,8 @@ PRIORITY_SCALAR = defaultdict(int, {
     'TEXTAREA': EPSILON,
     'LABEL': -0.1,
     'SPAN': -0.1,
-    'SVG': -0.05
+    'SVG': -0.05,
+    'TABLE': EPSILON
 })
 
 

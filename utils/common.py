@@ -484,8 +484,10 @@ def rule_base_predict(df: pd.DataFrame):
         controls_encoder = {l.strip(): i for i, l in enumerate(f.readlines())}
         # controls_decoder = {v:k for k, v in controls_encoder.items()}
 
-    radio_df = df[(df.tag_name == 'INPUT') & (               # noqa
-        df.attributes.apply(lambda x: x.get('type')) == 'radio')][COLUMNS]
+    # Parquet does not support empty dictionaries, let's fix this
+    df.attributes = df.attributes.apply(lambda x: {} if x is None else x)
+
+    radio_df = df[(df.tag_name == 'INPUT') & df.attributes.apply(lambda x: x.get('type') == 'radio')][COLUMNS]
     logger.info(f'Num radio buttons found: {radio_df.shape[0]}')
 
     radio2_df = df[(df.tag_name == 'LABEL') & (              # noqa

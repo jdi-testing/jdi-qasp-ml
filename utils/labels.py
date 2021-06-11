@@ -3,9 +3,12 @@ from IPython.display import display
 import pandas as pd
 import numpy as np
 from .config import logger
-from .common import iou_xywh, from_yolo
+from .common import iou_xywh, from_yolo, load_gray_image
 from tqdm.auto import tqdm
 from collections import defaultdict
+from datetime import datetime
+import re
+import pickle
 
 EPSILON = 1e-6
 
@@ -28,6 +31,16 @@ PRIORITY_SCALAR = defaultdict(int, {
 })
 
 
+def assign_dummy_labels(df: pd.DataFrame, encoder_dict: dict):
+    logger.warning('Assign dummy labels')
+    df['label'] = encoder_dict['n/a']
+    df['annotation_line_no'] = -1
+    df['iou'] = 0.0
+    df['tag'] = df['tag_name']
+    df['label_text'] = 'n/a'
+    return df
+
+
 def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int = 0, img_height: int = 0,
                   classes_file_path: str = 'dataset/classes.txt', verbose=False) -> pd.DataFrame:
     """
@@ -39,10 +52,6 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
 
     """
     logger.info(f'Assign labels from annotation file: {annotations_file_path}')
-
-    logger.info('Getting image size')
-    # img_width, img_height = df[df.tag_name=='HTML'][['width', 'height']].head(1).values[0]
-    logger.info(f'Image size (w,h): {(img_width, img_height)}')
 
     with open(classes_file_path, 'r') as f:
         lines = f.readlines()
@@ -64,7 +73,34 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         raise KeyError
     logger.info(f'"n/a" class code: {dummy_value}')
 
-    # df['scalar'] = df.tag_name.map(PRIORITY_TAG_SCALERS).fillna(1.0)
+    if not os.path.exists(annotations_file_path):
+        logger.warning(f"There are no annotation file: {annotations_file_path}")
+        df = assign_dummy_labels(df=df, encoder_dict=encoder_dict)
+        return df
+
+    ann_last_modified = datetime.fromtimestamp(os.path.getmtime(annotations_file_path))
+    cache_file_name = re.sub(r'\.txt$', '.pkl', re.sub(
+        r'^dataset[/\\]{1}annotations[/\\]{1}', 'dataset/cache-labels/', annotations_file_path))
+
+    image_file_name = re.sub(r'\.txt$', '.png', re.sub(
+        r'^dataset[/\\]{1}annotations[/\\]{1}', 'dataset/images/', annotations_file_path))
+
+    if os.path.exists(image_file_name):
+        logger.warning(f"Image's (width,height) are taken from image file: {image_file_name}")
+        img_height, img_width = load_gray_image(image_file_name).shape
+
+    if os.path.exists(cache_file_name):
+        cache_last_modified = datetime.fromtimestamp(os.path.getmtime(cache_file_name))
+        if cache_last_modified > ann_last_modified:
+            logger.warning(f'Use cache file: {cache_file_name}')
+            with open(cache_file_name, 'rb') as f:
+                df = pickle.load(f)
+                logger.info(f"{df.shape[0]} rows were read from {cache_file_name}")
+                return df
+
+    logger.info('Getting image size')
+    # img_width, img_height = df[df.tag_name=='HTML'][['width', 'height']].head(1).values[0]
+    logger.info(f'Image size (w,h): {(img_width, img_height)}')
 
     if not os.path.exists(annotations_file_path):
         logger.warning(
@@ -72,7 +108,7 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         _ann = [np.array([])]
     else:
         _ann = np.loadtxt(annotations_file_path)
-        logger.info(f"{_ann.shape[0]} annotation has been read")
+        logger.info(f"{_ann.shape[0]} annotations have been read")
 
     # _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
     _boxes_df = df[['x', 'y', 'width', 'height',
@@ -137,5 +173,9 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         df['iou'] = 0.0
 
     # df.drop(columns=['iou', 'idx'], inplace=True)  # drop auxiliary columns
+    logger.info(f'Save to cache: {cache_file_name}')
+    with open(cache_file_name, 'wb') as f:
+        pickle.dump(df, f)
+        f.flush()
 
     return df

@@ -36,7 +36,7 @@ def assign_dummy_labels(df: pd.DataFrame, encoder_dict: dict):
     df['label'] = encoder_dict['n/a']
     df['annotation_line_no'] = -1
     df['iou'] = 0.0
-    df['tag'] = df['tag_name']
+    df['tag'] = df['tag_name'].str.upper()
     df['label_text'] = 'n/a'
     return df
 
@@ -86,13 +86,13 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         r'^dataset[/\\]{1}annotations[/\\]{1}', 'dataset/images/', annotations_file_path))
 
     if os.path.exists(image_file_name):
-        logger.warning(f"Image's (width,height) are taken from image file: {image_file_name}")
+        logger.info(f"Image's (width,height) are taken from image file: {image_file_name}")
         img_height, img_width = load_gray_image(image_file_name).shape
 
     if os.path.exists(cache_file_name):
         cache_last_modified = datetime.fromtimestamp(os.path.getmtime(cache_file_name))
         if cache_last_modified > ann_last_modified:
-            logger.warning(f'Use cache file: {cache_file_name}')
+            logger.info(f'Use cache file: {cache_file_name}')
             with open(cache_file_name, 'rb') as f:
                 df = pickle.load(f)
                 logger.info(f"{df.shape[0]} rows were read from {cache_file_name}")
@@ -171,6 +171,9 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         df['label'] = int(dummy_value)
         df['label_text'] = 'n/a'
         df['iou'] = 0.0
+
+    logger.info('apply UPPERCASE() to TAG_NAME')
+    df.tag_name = df.tag_name.str.upper()
 
     # df.drop(columns=['iou', 'idx'], inplace=True)  # drop auxiliary columns
     logger.info(f'Save to cache: {cache_file_name}')

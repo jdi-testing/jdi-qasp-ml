@@ -1,9 +1,21 @@
+import os
+import re
 import numba
 import pandas as pd
+import numpy as np
+
 from .common import build_elements_dict  # noqa
 from .common import build_tree_dict
 from .common import to_yolo
 from .hidden import build_is_hidden
+from tqdm.auto import trange
+from .config import logger
+
+# from scipy.sparse import csc_matrix, csr_matrix
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.preprocessing import OneHotEncoder
+from scipy.sparse.csr import csr_matrix
+import pickle
 
 
 def build_siblings_dict(df: pd.DataFrame):
@@ -101,3 +113,173 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df['siblings'] = siblings
 
     return df
+
+
+EXTRACT_ATTRIBUTES_LIST = [
+    'aria-invalid',
+    'aria-haspopup',
+    'aria-expanded',
+    'aria-required',
+    'aria-disabled',
+    'aria-selected',
+    'aria-describedby',
+    'aria-controls',
+    'aria-invalid',
+    'placeholder',
+    'value',
+    'for',
+    'onclick',
+    'target',
+    # 'role',
+    # 'type',
+    # 'class',
+    'id',
+    'name',
+    # 'href',  ## I think it highly correlates with <A> attribute
+    'min',
+    'max'
+]
+
+
+def build_attributes_feature(df: pd.DataFrame) -> pd.DataFrame:
+    """
+        df must have "attributes" field and we are going
+        to extract flag whether the attribute exist or not
+    """
+
+    attributes = []
+
+    with trange(df.shape[0]) as bar:
+        bar.set_description('Extract "attributes"')
+        for _, r in df.iterrows():
+            attr = r.attributes
+            if attr is not None:
+                d = {}
+                # d['label'] = 1 if r.label_text != 'n/a' else 0
+                for k in EXTRACT_ATTRIBUTES_LIST:
+                    v = attr.get(k)
+                    if v is not None and v.strip() != "":
+                        d[k] = 1
+                    else:
+                        d[k] = 0
+            else:
+                d = {k: 0 for k in EXTRACT_ATTRIBUTES_LIST}
+
+            attributes.append(d)
+            bar.update(1)
+    return pd.DataFrame(attributes)
+
+
+def build_class_feature(df: pd.DataFrame) -> csr_matrix:
+    """
+        Extract TfIdf features for "class" attribute
+    """
+
+    model_file_path = 'model/tfidf_attr_class.pkl'
+
+    if os.path.exists(model_file_path):
+        logger.info("TfIdfVectorizer for class attribute exists. Loaging...")
+        with open(model_file_path, 'rb') as f:
+            model = pickle.load(file=f)
+        attr_class_series = df.attributes.apply(lambda x: None if x is None else x.get('class')).fillna('')
+
+    else:
+        logger.info("TfIdfVectorizer for class attribute does not exist. Build the one.")
+        if len(set(df.columns).intersection(set(['label', 'label_text']))) != 2:
+            raise Exception('Cannot prepare CountVectorizer for attribute "class": need labels')
+
+        logger.info("Extract useful attr_class features")
+        attr_class_series = df[df.label_text != 'n/a']\
+            .attributes.apply(lambda x: None if x is None else x.get('class'))\
+            .fillna('')
+
+        class_cv = CountVectorizer()
+        class_cv.fit(attr_class_series.values)
+        # filter out class names:  length is at least 2 characters and only letters
+        vocabulary = sorted([v for v in class_cv.vocabulary_.keys() if re.match(r'^[a-z][a-z]+$', v)])
+
+        attr_class_series = df.attributes.apply(lambda x: None if x is None else x.get('class')).fillna('')
+        model = TfidfVectorizer(vocabulary=vocabulary)
+        model.fit(attr_class_series.values)
+        logger.info(f'Saving {model_file_path}, vocabulary length: {len(vocabulary)}')
+        with open(model_file_path, 'wb') as f:
+            pickle.dump(model, f)
+            f.flush()
+
+    return model.transform(attr_class_series.values)
+
+
+def build_tag_name_feature(df: pd.DataFrame) -> csr_matrix:
+    model_file_path = 'model/ohe_tag_name.pkl'
+
+    if os.path.exists(model_file_path):
+        logger.info(f'loading {model_file_path}')
+        with open(model_file_path, 'rb') as f:
+            model = pickle.load(f)
+    else:
+        logger.info('Building OHE for "tag_name"')
+        tag_name_series = df[df.label_text != 'n/a'].tag_name.value_counts()
+        tag_name_lst = sorted(list(tag_name_series.index))
+        model = OneHotEncoder(handle_unknown='ignore', categories=[tag_name_lst])
+        logger.info(f'OHE "tag_name" categories: {model.categories}')
+        model.fit(np.expand_dims(df.tag_name.values, -1))
+        with open(model_file_path, 'wb') as f:
+            logger.info(f'Saving {model_file_path}')
+            pickle.dump(model, f)
+            f.flush()
+
+    return model.transform(np.expand_dims(df.tag_name.values, -1))
+
+
+def build_role_feature(df: pd.DataFrame) -> csr_matrix:
+    model_file_path = 'model/ohe_role.pkl'
+
+    if os.path.exists(model_file_path):
+        logger.info(f'loading {model_file_path}')
+        with open(model_file_path, 'rb') as f:
+            ohe = pickle.load(f)
+    else:
+        logger.info('Building OHE for "role"')
+        # We'll use only target's data
+        attr_role_series = df[df.label_text != 'n/a'].attributes\
+            .apply(lambda x: None if x is None else x.get('role'))\
+            .fillna('')
+        ohe = OneHotEncoder(handle_unknown='ignore').fit(np.expand_dims(attr_role_series.values, -1))
+        logger.info(f'OHE "role" categories: {ohe.categories}')
+        with open(model_file_path, 'wb') as f:
+            logger.info(f'Saving {model_file_path}')
+            pickle.dump(ohe, f)
+            f.flush()
+
+    attr_role_series = df.attributes\
+        .apply(lambda x: None if x is None else x.get('role'))\
+        .fillna('')
+
+    return ohe.transform(np.expand_dims(attr_role_series, -1))
+
+
+def build_type_feature(df: pd.DataFrame) -> csr_matrix:
+    model_file_path = 'model/ohe_type.pkl'
+
+    if os.path.exists(model_file_path):
+        logger.info(f'loading {model_file_path}')
+        with open(model_file_path, 'rb') as f:
+            ohe = pickle.load(f)
+    else:
+        logger.info('Building OHE for "type"')
+        # We'll use only target's data
+        attr_type_series = df[df.label_text != 'n/a'].attributes\
+            .apply(lambda x: None if x is None else x.get('type'))\
+            .fillna('')
+        ohe = OneHotEncoder(handle_unknown='ignore').fit(np.expand_dims(attr_type_series.values, -1))
+        logger.info(f'OHE "type" categories: {ohe.categories}')
+        with open(model_file_path, 'wb') as f:
+            logger.info(f'Saving {model_file_path}')
+            pickle.dump(ohe, f)
+            f.flush()
+
+    attr_type_series = df.attributes\
+        .apply(lambda x: None if x is None else x.get('type'))\
+        .fillna('')
+
+    return ohe.transform(np.expand_dims(attr_type_series, -1))

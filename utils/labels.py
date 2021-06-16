@@ -51,7 +51,8 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         - get dummy_value from dataset/classes.txt
 
     """
-    logger.info(f'Assign labels from annotation file: {annotations_file_path}')
+    ds_name = re.split(r'[/\\]+', re.sub(r'\.txt$', '', annotations_file_path))[-1]
+    logger.info(f' Dataset: {ds_name}, assign labels from annotation file: {annotations_file_path}')
 
     with open(classes_file_path, 'r') as f:
         lines = f.readlines()
@@ -107,7 +108,7 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
             f'annotation file "{annotations_file_path}", does not exists')
         _ann = [np.array([])]
     else:
-        _ann = np.loadtxt(annotations_file_path)
+        _ann = np.unique(np.loadtxt(annotations_file_path), axis=0)
         logger.info(f"{_ann.shape[0]} annotations have been read")
 
     # _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
@@ -117,7 +118,7 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
     labels = []
     i = 0
 
-    for bb in tqdm(_ann, desc='Assign labels'):
+    for bb in tqdm(_ann, desc=f'Assign labels for dataset [{ds_name}]'):
         c, x, y, w, h = bb
 
         best_iou = 0.0001  # threshold to filter bad overlaps
@@ -174,6 +175,11 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
 
     logger.info('apply UPPERCASE() to TAG_NAME')
     df.tag_name = df.tag_name.str.upper()
+    df['dataset'] = ds_name
+
+    # remove duplicates
+    df = df.sort_values(by=['element_id', 'parent_id'])
+    df = df[~df[['element_id', 'parent_id']].duplicated(keep='last')].copy()
 
     # df.drop(columns=['iou', 'idx'], inplace=True)  # drop auxiliary columns
     logger.info(f'Save to cache: {cache_file_name}')

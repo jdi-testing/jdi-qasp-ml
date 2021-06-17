@@ -21,6 +21,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import OneHotEncoder
 from scipy.sparse import hstack
 import pickle
+from IPython.display import display
 
 FULL_HD_WIDTH = 1920
 FULL_HD_HEIGHT = 1080
@@ -91,59 +92,6 @@ def get_grey_image(file_path: str) -> np.ndarray:
     img = plt.imread(file_path)
     img = (img[..., 0] + img[..., 1] + img[..., 2]) / 3.0
     return img
-
-
-PRIORITY_TAG_SCALERS = {  # We have to scale IoU for certain tags
-    'a': 1.,
-    'button': 1.,
-    'input': 1.,
-}
-
-
-# def assign_labels(df: pd.DataFrame, annotations_file_path: str, img: np.ndarray, dummy_value=-1.0) -> pd.DataFrame:
-#     """
-#         mark up dataset: assign labels
-#         annotations_file_path: yolo-v3 formatted annotation
-
-#     """
-
-#     logger.info(f'Assign labels using annotation file: {annotations_file_path}')
-
-#     df['scalar'] = df.tag_name.map(PRIORITY_TAG_SCALERS).fillna(1.0)
-#     _ann = np.loadtxt(annotations_file_path)
-#     _boxes = df[['x', 'y', 'width', 'height', 'scalar']].values
-
-#     labels = []
-
-#     for bb in tqdm(_ann, desc='Assigning labels'):
-#         c, x, y, w, h = bb
-#         x = (x - w / 2) * img.shape[1]
-#         y = (y - h / 2) * img.shape[0]
-#         w = w * img.shape[1]
-#         h = h * img.shape[0]
-
-#         best_iou = 0.0
-#         best_i = 0
-
-#         for i, r in enumerate(_boxes):  # r[5]: 'is_hidden' - Let's skip hidden nodes
-
-#             if (r[2] <= 0) or (r[3] <= 0) or (r[0] < 0) or (r[1] < 0):
-#                 continue
-
-#             _iou = iou_xywh((x, y, w, h), (r[0], r[1], r[2], r[3])) * r[4]  # r[4] is a scalar
-
-#             if _iou >= best_iou:  # We have to use >=, because the next tag might be more important
-#                 best_i, best_iou = (i, _iou)
-
-#         labels.append({'idx': best_i, 'label': c, 'iou': best_iou})
-
-#     labels_df = pd.DataFrame(data=labels)
-#     labels_df.index = labels_df.idx
-#     df = df.merge(labels_df, how='left', left_index=True, right_index=True)
-#     df.label = df.label.fillna(dummy_value)
-#     df.drop(columns=['iou', 'idx'], inplace=True)  # drop auxiliary columns
-
-#     return df
 
 
 def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> pd.DataFrame:
@@ -648,6 +596,39 @@ class JDIDataset(Dataset):
         self.class_sm = self.count_vectorizer_class.transform(
             self.dataset['cv_class'].values)
         logger.info(f'class_sm: {self.class_sm.shape}')
+
+
+def rebalance(y: np.ndarray):
+    logger.info('Rebalance dataset')
+
+    with open('dataset/classes.txt', 'r') as f:
+        decoder_dict = {i: v.strip() for i, v in enumerate(f.readlines())}
+
+    proportion_df = pd.DataFrame([
+        {'label': i, 'label_text': decoder_dict[i], 'cnt': np.where(y == i)[0].shape[0]}
+        for i in range(0, len(decoder_dict))
+    ])
+
+    labels_cnt = proportion_df[proportion_df.label_text != 'n/a'][['cnt']].sum().values[0]
+    na_label_cnt = proportion_df[proportion_df.label_text == 'n/a'].cnt.values[0]
+    logger.info(f'"n/a" count: {na_label_cnt}, labels count: {labels_cnt}')
+
+    proportion_df['ratio'] = proportion_df.apply(
+        lambda r: na_label_cnt // r.cnt // 7 if r.label_text != 'n/a' else 1, axis=1)
+
+    proportion_df['cnt_rebalanced'] = proportion_df.ratio * proportion_df.cnt
+    display(proportion_df)
+
+    indices = []
+    for i, r in proportion_df.iterrows():
+        lst = np.where(y == r.label)[0].tolist()
+        for _ in range(r.ratio):
+            indices.extend(lst)
+
+    np.random.shuffle(indices)
+    logger.info(f'Rebalanced and shuffled indices: {len(indices)}')
+
+    return indices
 
 
 logger.info("dataset module is loaded...")

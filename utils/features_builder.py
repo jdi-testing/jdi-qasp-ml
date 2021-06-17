@@ -300,3 +300,6 @@ def build_type_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
         .fillna('')
 
     return ohe.transform(np.expand_dims(attr_type_series, -1))
+
+
+logger.info('feature_bilder module is loaded...')

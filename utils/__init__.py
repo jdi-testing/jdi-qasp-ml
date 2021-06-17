@@ -31,6 +31,7 @@ from .dataset_builder import DatasetBuilder  # noqa
 
 from .dataset import build_children_features,\
     get_parents_list,\
+    rebalance,\
     assign_labels,\
     build_tree_features,\
     JDIDataset,\

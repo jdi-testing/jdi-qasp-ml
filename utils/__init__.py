@@ -24,16 +24,18 @@ from .features_builder import build_tag_name_feature  # noqa
 from .features_builder import build_role_feature  # noqa
 from .features_builder import build_type_feature  # noqa
 
+from .dataset_collector import collect_dataset  # noqa 
+
 from .describe import describe_node  # noqa
-from .dataset_builder import DatasetBuilder # noqa
+from .dataset_builder import DatasetBuilder  # noqa
 
 from .dataset import build_children_features,\
     get_parents_list,\
     assign_labels,\
     build_tree_features,\
     JDIDataset,\
-    followers_features # noqa
+    followers_features  # noqa
 
-from .model import JDIModel # noqa
+from .model import JDIModel  # noqa
 
-from .config import logger # noqa
+from .config import logger  # noqa

@@ -14,7 +14,7 @@ colorpicker
 numberselector
 selector
 table
-slider-toggle
+switch
 slider
 tree-node
 steper

@@ -1,27 +1,24 @@
+import os
+import re
+
 import numba
 import pandas as pd
 import numpy as np
-import torch
+import logging
+from tqdm.auto import trange
+from .dataset_collector import collect_dataset
+from .features_builder import build_features
 
-from .common import iou_xywh, build_tree_dict, load_gray_image # noqa
-from .hidden import build_is_hidden
-from tqdm.auto import tqdm, trange # noqa
+from .common import iou_xywh, build_tree_dict, load_gray_image  # noqa
 from .labels import assign_labels
-import os
-import re
-import gc
+
 
 from collections import Counter, defaultdict
 from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
-import glob
-from scipy.sparse import vstack, csr_matrix
+from glob import glob
 from .config import logger
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import OneHotEncoder
-from scipy.sparse import hstack
-import pickle
-from IPython.display import display
+from IPython.display import display  # noqa
 
 FULL_HD_WIDTH = 1920
 FULL_HD_HEIGHT = 1080
@@ -180,424 +177,6 @@ def build_tree_features(elements_df: pd.DataFrame) -> pd.DataFrame:
     return elements_df
 
 
-class JDIDataset(Dataset):
-
-    def __init__(self, dataset_names: list = None, rebalance=False):
-        super(JDIDataset, self).__init__()
-        self.rebalanced = rebalance
-
-        with open('dataset/classes.txt', 'r') as f:
-            self.classes_dict = {
-                class_name.strip(): i for i, class_name in enumerate(f.readlines())}
-            self.classes_reverse_dict = {
-                v: k for k, v in self.classes_dict.items()}
-        self.dummy_class_value = self.classes_dict['n/a']
-
-        if dataset_names is None:
-            logger.warning('Using all available data to generate dataset')
-            dataset_names = JDIDataset.gen_dataset_names()
-
-        logger.info(f"List of dataset_names:{dataset_names}")
-
-        ds_list = []  # list of datasets to join
-
-        # Read and concatenate all listed datasets
-        for ds_name in dataset_names:
-            logger.info(f'Dataset for {ds_name}')
-            df = pd.read_parquet(f'dataset/df/{ds_name}.parquet')
-            logger.info(f"Dataset shape: {df.shape}")
-
-            logger.info('cleaning tag_name from dummy/auxiliary words')
-            df.tag_name = df.tag_name.apply(
-                lambda x: x.lower().replace('-example', ''))  # tag_name LOWER()
-            df = build_is_hidden(df=df)
-            df = build_children_features(df=df)
-            df = build_tree_features(df)
-            df = followers_features(df)
-            # df.width = (FULL_HD_WIDTH - df.width) / FULL_HD_WIDTH
-            # df.height = (FULL_HD_HEIGHT - df.height) / FULL_HD_HEIGHT
-
-            # ----------------------------------------------------------------------------------------------
-            # Merge children with parents
-            # WARNING: There is a tag <HTML> without parent. Let's fix this issue
-            df.parent_id = df.apply(
-                lambda r: r.element_id if r.parent_id is None else r.parent_id, axis=1)
-            df = df.merge(df, left_on='parent_id',
-                          right_on='element_id', suffixes=('', '_parent'))
-            logger.info(
-                f"Dataset shape after merging with parents: {df.shape}")
-            # ----------------------------------------------------------------------------------------------
-
-            # If annotation file exists, lets load it and assign labels
-            if os.path.exists(f'dataset/annotations/{ds_name}.txt'):
-                img = load_gray_image(f'dataset/images/{ds_name}.png')
-                df = assign_labels(df, annotations_file_path=f'dataset/annotations/{ds_name}.txt',
-                                   img_width=img.shape[1],
-                                   img_height=img.shape[0]
-                                   )
-                del img
-            else:
-                logger.warning(
-                    'assign dummy values [n/a] for labels if there is no annotations')
-                df['label'] = self.dummy_class_value
-
-            df['ds_name'] = ds_name
-            ds_list.append(df)
-            gc.collect()
-
-        logger.info('Concatenate datasets')
-        self.dataset = pd.concat(ds_list)
-        logger.info(f"Dataset shape after reading: {self.dataset.shape}")
-
-        if rebalance:
-            self._oversample()
-
-        self._count_vectorizer_class()
-
-        # add ohe_ columns to one hot encoding several attributes
-        for attr in ['role', 'type', 'ui']:
-            logger.info(f'Build OHE column for attribute {attr}')
-            self.dataset['ohe_' + attr] = self.dataset['attributes'].apply(
-                lambda x: x.get(attr)).fillna("").str.lower()
-
-        for attr in ['role', 'type', 'ui']:
-            logger.info(f'Build OHE column for attribute {attr}_parent')
-            self.dataset['ohe_' + attr + '_parent'] = self.dataset['attributes_parent'].apply(
-                lambda x: x.get(attr)).fillna("").str.lower()
-
-        logger.info('OHE tag_name')
-        self.tag_name_sm = self._ohe_column('tag_name')
-        logger.info(f'tag_name_sm.shape: {self.tag_name_sm.shape}')
-
-        logger.info('OHE tag_name_parent')
-        self.tag_name_parent_sm = self._ohe_column(
-            colname='tag_name_parent', ohe_file_path='model/tag_name.pkl')
-        logger.info(
-            f'tag_name_parent_sm.shape: {self.tag_name_parent_sm.shape}')
-
-        logger.info('OHE ohe_role')
-        self.ohe_role_sm = self._ohe_column('ohe_role')
-        logger.info(f'ohe_role_sm.shape: {self.ohe_role_sm.shape}')
-
-        logger.info('OHE ohe_role_parent')
-        self.ohe_role_parent_sm = self._ohe_column(
-            colname='ohe_role_parent', ohe_file_path='model/ohe_role.pkl')
-        logger.info(
-            f'ohe_role_parent_sm.shape: {self.ohe_role_parent_sm.shape}')
-
-        logger.info('OHE ohe_type')
-        self.ohe_type_sm = self._ohe_column('ohe_type')
-        logger.info(f'ohe_type_sm.shape: {self.ohe_type_sm.shape}')
-
-        logger.info('OHE ohe_type_parent')
-        self.ohe_type_parent_sm = self._ohe_column(
-            colname='ohe_type_parent', ohe_file_path='model/ohe_type.pkl')
-        logger.info(
-            f'ohe_type_parent_sm.shape: {self.ohe_type_parent_sm.shape}')
-
-        logger.info('OHE ohe_ui')
-        self.ohe_ui_sm = self._ohe_column('ohe_ui')
-        logger.info(f'ohe_ui_sm.shape: {self.ohe_ui_sm.shape}')
-
-        logger.info('OHE ohe_ui_parent')
-        self.ohe_ui_parent_sm = self._ohe_column(
-            'ohe_ui_parent', ohe_file_path='model/ohe_ui.pkl')
-        logger.info(f'ohe_ui_parent_sm.shape: {self.ohe_ui_parent_sm.shape}')
-
-        # extract all non null attributes names
-        self.dataset['attributes_text'] = self.dataset.attributes.apply(
-            lambda x: " ".join([k for k in x.keys() if x[k] is not None]))
-        logger.info('Fit CountVectorizer for column "attributes"')
-        self.attributes_sm = self._count_vectorizer_column('attributes_text')
-        logger.info(f'attributes_sm.shape: {self.attributes_sm.shape}')
-
-        # children_tags
-        file_path = 'model/count_vectorizer_children_tags.pkl'
-        if os.path.exists(file_path):
-            with open(file_path, 'rb') as f:
-                logger.warning(
-                    f'Load CountVectorizer for column "chidren_tags": {file_path}')
-                self.count_vectorizer_chilgren_tags = pickle.load(f)
-        else:
-            logger.warning(
-                f'Saving CountVectorizer for "children_tags": {file_path}')
-            self.count_vectorizer_chilgren_tags = CountVectorizer().fit(
-                self.dataset.children_tags.values)
-            with open(file_path, 'wb') as f:
-                pickle.dump(self.count_vectorizer_chilgren_tags, f)
-        logger.info(
-            f'CountVectorizer "chilren_tags" size: {len(self.count_vectorizer_chilgren_tags.vocabulary_)}')
-        self.children_tags_sm = self.count_vectorizer_chilgren_tags.transform(
-            self.dataset.children_tags.values)
-        logger.info(f"chidren_tags_sm: {self.children_tags_sm.shape}")
-
-        # followers_tags
-        file_path = 'model/count_vectorizer_followers_tags.pkl'
-        if os.path.exists(file_path):
-            with open(file_path, 'rb') as f:
-                logger.warning(
-                    f'Load CountVectorizer for column "followers_tags": {file_path}')
-                self.count_vectorizer_followers_tags = pickle.load(f)
-        else:
-            logger.warning(
-                f'Saving CountVectorizer for "followers_tags": {file_path}')
-            self.count_vectorizer_followers_tags = CountVectorizer().fit(
-                self.dataset.followers_tags.values)
-            with open(file_path, 'wb') as f:
-                pickle.dump(self.count_vectorizer_followers_tags, f)
-        logger.info(
-            f'CountVectorizer "followers_tags" size: {len(self.count_vectorizer_followers_tags.vocabulary_)}')
-        self.followers_tags_sm = self.count_vectorizer_followers_tags.transform(
-            self.dataset.followers_tags.values)
-        logger.info(f"followers_tags_sm: {self.followers_tags_sm.shape}")
-
-        # self.followers_tags_parent_sm = self.count_vectorizer_followers_tags.transform(  # PARENT's followers tags, acc = 0.8720 # noqa
-        #     self.dataset.followers_tags_parent.values)
-        # logger.info(f"followers_tags_parent_sm: {self.followers_tags_parent_sm.shape}")
-
-        # extract all non null attributes names
-        self.dataset['attributes_parent_text'] = self.dataset.attributes_parent.apply(
-            lambda x: " ".join([k for k in x.keys() if x[k] is not None]))
-        logger.info('Fit CountVectorizer for column "attributes_parent"')
-        self.attributes_parent_sm = \
-            self._count_vectorizer_column(colname='attributes_parent_text',
-                                          file_path='model/count_vectorizer_attributes_text.pkl')
-        logger.info(
-            f'attributes_parent_sm.shape: {self.attributes_parent_sm.shape}')
-
-        self._extract_features()
-
-        self.labels = self.dataset.label.astype(
-            int).map(self.classes_reverse_dict)
-        self.dataset.label = self.dataset.label.astype(int)
-
-        self.data = hstack([
-            self.attributes_sm,
-            self.tag_name_sm,
-            self.ohe_role_sm,
-            self.ohe_type_sm,
-            self.ohe_ui_sm,
-            self.tag_name_parent_sm,
-            self.ohe_type_parent_sm,
-            self.ohe_role_parent_sm,
-            self.ohe_ui_parent_sm,
-            self.attributes_parent_sm,
-            self.features_df.values,
-            self.children_tags_sm,
-            self.followers_tags_sm,
-            # self.followers_tags_parent_sm,
-            self.class_sm
-        ]).astype(np.float32)
-
-        self.data = csr_matrix(self.data)
-
-        logger.info(f'OHE columns sparse matrix: {self.data.shape}')
-
-    def __len__(self):
-        return self.data.shape[0]
-
-    def __getitem__(self, idx):
-        # return np.array(self.data.getrow(idx).todense()[0]).squeeze(), self.dataset.iloc[idx]['label']
-        return idx
-
-    def collate_fn(self, batch):
-        return torch.tensor(vstack([self.data.getrow(idx) for idx in batch]).todense().astype(np.float32)), \
-            torch.tensor(self.dataset.iloc[batch]
-                         ['label'].values.astype(np.int64))
-
-    def _oversample(self):
-        logger.warning(
-            'Oversample data to balance the dataset, this will create duplicated rows in dataset')
-
-        class_counts = [r for r in self.dataset.label.value_counts(
-        ).sort_values(ascending=False).items()]
-        max_count = class_counts[0][1]
-
-        dfs = [self.dataset]
-        for cc in class_counts[1:]:
-            ratio = max_count // cc[1]
-            ratio = 30 if ratio >= 30 else ratio
-            for _ in range(ratio):
-                dfs.append(self.dataset[self.dataset.label == cc[0]].copy())
-
-        self.dataset = pd.concat(dfs)
-        logger.warning(f'Rebalanced dataset size: {self.dataset.shape[0]}')
-
-    def _ohe_column(self, colname, ohe_file_path=None):
-        """
-            load attr_ohe if exists model/attr_ohe.pkl
-            otherwise build the one
-        """
-        if ohe_file_path is None:
-            file_path = f'model/{colname}.pkl'
-        else:
-            file_path = ohe_file_path
-
-        if os.path.exists(file_path):
-            logger.warning(
-                f'loading existing OHE for column "{colname}" from {file_path}')
-            with open(file_path, 'rb') as f:
-                ohe = pickle.load(f)
-        else:
-            logger.warning(f'Create and fit OHE for column "{colname}"')
-            ohe = OneHotEncoder(handle_unknown='ignore')
-            ohe.fit(np.expand_dims(self.dataset[colname].values, axis=1))
-            with open(file_path, 'wb') as f:
-                pickle.dump(ohe, f)
-
-        sm = ohe.transform(np.expand_dims(
-            self.dataset[colname].values, axis=1))
-        return sm
-
-    def _count_vectorizer_column(self, colname, file_path=None):
-        """
-            load count_vercorizer for a column if a pkl file exists
-            otherwise create the one
-        """
-        if file_path is None:
-            file_path = f'model/count_vectorizer_{colname}.pkl'
-
-        if os.path.exists(file_path):
-            logger.warning(
-                f'loading existing count vectorizer for column "{colname}" from {file_path}')
-            with open(file_path, 'rb') as f:
-                vectorizer = pickle.load(f)
-            self.vocabulary = vectorizer.vocabulary_
-        else:
-            logger.warning(
-                f'Create and fit count vectorizer for column "{colname}"')
-            vectorizer = CountVectorizer(vocabulary=self._build_vocabulary())
-            vectorizer.fit(self.dataset[colname].values)
-            with open(file_path, 'wb') as f:
-                pickle.dump(vectorizer, f)
-
-        sm = vectorizer.transform(self.dataset[colname].values)
-        return sm
-
-    def _build_vocabulary(self):
-        """
-            Attempt to reduce number of features by removing rarely used attributes
-
-        """
-
-        attributes_usage = Counter()
-        for attr_list in self.dataset.attributes.apply(lambda x: [field for field in x if x[field] is not None]).values:
-            attributes_usage.update(attr_list)
-
-        attributes_usasge_df = pd.DataFrame(
-            [[attribute, cnt] for attribute, cnt in attributes_usage.items()],
-            columns=['attribute', 'cnt']
-        ).sort_values(by='cnt', ascending=False)
-
-        # Lets cut off attributes which are rarely used
-        attributes_list_df = attributes_usasge_df[attributes_usasge_df.cnt > 1].copy()
-
-        attr_unique_values_map = {
-            attr: self.dataset['attributes'].apply(
-                lambda x: x.get(attr)).nunique()
-            for attr in (attributes_list_df.attribute.values)
-        }
-        attributes_list_df['num_unique_values'] = attributes_list_df.attribute.map(
-            attr_unique_values_map)
-        attributes_list_df['k'] = attributes_list_df.cnt / attributes_list_df.num_unique_values
-
-        attributes_list_df = attributes_list_df[
-            (attributes_list_df.k > 3.0) & (attributes_list_df.num_unique_values > 1)
-        ].sort_values(by='cnt', ascending=False).copy()
-
-        self.vocabulary = {w: i for i, w in enumerate(
-            sorted(attributes_list_df.attribute.values))}
-        return self.vocabulary
-
-    def _extract_features(self):
-        self.features_df = self.dataset[[
-            # 'tag_name_parent',
-            # 'tag_name',
-            'width',
-            'height',
-            'width_parent',
-            'height_parent',
-            # 'x',
-            # 'x_parent',
-            # 'y',
-            # 'y_parent',
-            'is_leaf',
-            'is_leaf_parent',
-            'num_followers',
-            'num_leafs',
-            'num_leafs_parent',
-            'max_depth',
-            'num_children',
-            'num_children_parent',
-            'sum_children_widths',
-            'sum_children_widths_parent',
-            'sum_children_hights',
-            'sum_children_hights_parent',
-            'displayed',
-            'is_hidden',
-            # 'onmouseenter'
-        ]].copy()
-
-        self.features_df.sum_children_hights = (
-            self.features_df.sum_children_hights / self.features_df.num_children).fillna(-1)
-        self.features_df.sum_children_hights_parent = (
-            self.features_df.sum_children_hights_parent / self.features_df.num_children_parent).fillna(-1)
-        self.features_df.sum_children_widths = (
-            self.features_df.sum_children_widths / self.features_df.num_children).fillna(-1)
-        self.features_df.sum_children_widths_parent = (
-            self.features_df.sum_children_widths_parent / self.features_df.num_children_parent).fillna(-1)
-
-        # self.features_df.x = (self.features_df.x < 0).astype(int)
-        # self.features_df.y = (self.features_df.y < 0).astype(int)
-        # self.features_df.x_parent = (self.features_df.x_parent < 0).astype(int)
-        # self.features_df.y_parent = (self.features_df.y_parent < 0).astype(int)
-        self.features_df['w'] = (self.features_df.width <= 2).astype(int)
-        self.features_df['w_parent'] = (
-            self.features_df.width_parent <= 2).astype(int)
-        self.features_df['h'] = (self.features_df.height <= 2).astype(int)
-        self.features_df['h_parent'] = (
-            self.features_df.height_parent <= 2).astype(int)
-        self.features_df.displayed = self.features_df.displayed.astype(int)
-
-    @staticmethod
-    def find_file_names(self, path_mask='dataset/df/*.parquet'):
-        return set([re.sub('.*[/\\\\]', '', re.sub('\\..*$', '', os.path.normpath(fn)))
-                    for fn in glob.glob(path_mask)])
-
-    @staticmethod
-    def gen_dataset_names():
-        dfs = JDIDataset.find_file_names('dataset/df/*.parquet')
-        imgs = JDIDataset.find_file_names('dataset/images/*.png')
-        anns = JDIDataset.find_file_names('dataset/annotations/*.txt')
-
-        return (dfs.intersection(imgs)).intersection(anns)
-
-    def _count_vectorizer_class(self):
-        self.dataset['cv_class'] = self.dataset.attributes.apply(
-            lambda x: x.get('class')).fillna('')
-        file_name = 'model/count_vectorizer_class.pkl'
-        if os.path.exists(file_name):
-            logger.warning(
-                f'Loading count vectorizer for column "cv_class": {file_name}')
-            with open(file_name, 'rb') as f:
-                self.count_vectorizer_class = pickle.load(f)
-        else:
-            logger.warning(
-                f'Build count vectorizer for column "cv_class": {file_name}')
-            class_dict = Counter()
-            for s in self.dataset['cv_class'].values:
-                class_dict.update(s.lower().replace('-', ' ').split())
-            vocabulary = [
-                cls for cls in class_dict if re.match('^[a-z]*$', cls)]
-            self.count_vectorizer_class = CountVectorizer(
-                vocabulary=vocabulary).fit(self.dataset['cv_class'].values)
-            with open(file_name, 'wb') as f:
-                pickle.dump(self.count_vectorizer_class, f)
-        self.class_sm = self.count_vectorizer_class.transform(
-            self.dataset['cv_class'].values)
-        logger.info(f'class_sm: {self.class_sm.shape}')
-
-
 def rebalance(y: np.ndarray):
     logger.info('Rebalance dataset')
 
@@ -605,7 +184,8 @@ def rebalance(y: np.ndarray):
         decoder_dict = {i: v.strip() for i, v in enumerate(f.readlines())}
 
     proportion_df = pd.DataFrame([
-        {'label': i, 'label_text': decoder_dict[i], 'cnt': np.where(y == i)[0].shape[0]}
+        {'label': i, 'label_text': decoder_dict[i], 'cnt': np.where(y == i)[
+            0].shape[0]}
         for i in range(0, len(decoder_dict))
     ])
 
@@ -614,10 +194,10 @@ def rebalance(y: np.ndarray):
     logger.info(f'"n/a" count: {na_label_cnt}, labels count: {labels_cnt}')
 
     proportion_df['ratio'] = proportion_df.apply(
-        lambda r: na_label_cnt // r.cnt // 7 if r.label_text != 'n/a' else 1, axis=1)
+        lambda r: na_label_cnt // r.cnt // 7 if (r.label_text != 'n/a') and (r.cnt > 0) else 1, axis=1)
 
     proportion_df['cnt_rebalanced'] = proportion_df.ratio * proportion_df.cnt
-    display(proportion_df)
+    # display(proportion_df)
 
     indices = []
     for i, r in proportion_df.iterrows():
@@ -629,6 +209,69 @@ def rebalance(y: np.ndarray):
     logger.info(f'Rebalanced and shuffled indices: {len(indices)}')
 
     return indices
+
+
+class JDNDataset(Dataset):
+
+    def __init__(self, datasets_list: list = None, rebalance_and_shuffle: bool = False):
+
+        super(JDNDataset, self).__init__()
+        self.rebalance_and_suffle = rebalance_and_shuffle
+
+        with open('dataset/classes.txt', 'r') as f:
+            lines = f.readlines()
+            self.classes_dict = {v.strip(): i for i, v in enumerate(lines)}
+            self.classes_reverse_dict = {i: v.strip() for i, v in enumerate(lines)}
+
+        if datasets_list is None:
+            logger.info('Will use all available datasets')
+            ds_files = glob('dataset/df/*.parquet')
+            ds_files = [(fn, 'dataset/annotations/' + re.split(r'[/\\]', re.sub(r'\.parquet$', '', fn))[-1] + '.txt')
+                        for fn in ds_files]
+        else:
+            ds_files = [(f'dataset/df/{fn}.parquet', f'dataset/annotations/{fn}.txt') for fn in datasets_list]
+
+        # display(ds_files)
+
+        df_list = []
+
+        logger.setLevel(logging.ERROR)
+        with trange(len(ds_files)) as bar:
+            for df_file_path, ann_file_path in ds_files:
+                if not os.path.exists(df_file_path):
+                    logger.error(f'File: {df_file_path} does not extst')
+                else:
+                    bar.set_postfix_str(f'{df_file_path}, {ann_file_path}')
+                    df = pd.read_parquet(df_file_path)
+                    df = build_features(df)
+                    df = assign_labels(
+                        df=df, annotations_file_path=ann_file_path)
+                    df_list.append(df)
+                bar.update(1)
+
+        logger.setLevel(logging.DEBUG)
+
+        self.df = pd.concat(df_list)
+        logger.info(f'self.df.shape: {self.df.shape}')
+
+        logger.info('Check for duplicates...')
+        if self.df.element_id.nunique() != self.df.shape[0]:
+            logger.fatal('There are duplicates in the dataset')
+            raise Exception('There are duplicates in the dataset')
+        logger.info('Check for duplicates is OK')
+
+        self.X, self.y = collect_dataset(self.df)
+
+        if self.rebalance_and_suffle:
+            self.indices = np.array(rebalance(self.y))
+        else:
+            self.indices = np.array([i for i in range(len(self.y))])
+
+    def __getitem__(self, idx):
+        return self.X[self.indices[idx]], self.y[self.indices[idx]]
+
+    def __len__(self):
+        return self.indices.shape[0]
 
 
 logger.info("dataset module is loaded...")

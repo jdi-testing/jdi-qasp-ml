@@ -9,14 +9,14 @@ import torch
 from torch.utils.data import DataLoader
 
 from utils import logger
-from utils import JDIDataset
+from utils import JDNDataset
 from utils import JDIModel
 from utils import accuracy
 
 from multiprocessing import freeze_support
 from terminaltables import DoubleTable
 
-BATCH_SISE = 256
+BATCH_SIZE = 256
 
 TRAIN_DATASETS = [
     'angular',
@@ -27,22 +27,24 @@ TRAIN_DATASETS = [
     'bootstrap-reboot',
     'bootstrap',
     'complex-table',
+    'cnews',
     'contact-form',
-    # 'dates',
-    "different-elemants",
+    'dates',
+    "different-elements",
     'gitlab',
     'google-voice',
     'html-5',
     'login',
     'metals-and-colors',
-    # 'mobile-and-html-5',
+    'mobile-and-html-5',
     'ms-office',
     'ozon',
     'performance',
+    'phys-org',
     'react-ant',
-    # 'search',
-    # 'support',
-    # 'table-with-pages',
+    'search',
+    'support',
+    'table-with-pages',
     'user-table',
     'wildberries',
     'material-ui-Button Groups',
@@ -60,29 +62,27 @@ TRAIN_DATASETS = [
 ]
 
 TEST_DATASETS = [
-    'dates',
-    'search',
-    'support',
-    'table-with-pages',
+    # 'dates',
+    # 'search',
+    # 'support',
+    # 'table-with-pages',
+    'complex-table',
     'mobile-and-html-5',
-    'phys-org'
+    'cnews'
+    'phys-org',
+    'wildberries'
 ]
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 logger.info(f'device: {DEVICE}')
 
 
-def evaluate(model: JDIModel, dataset: JDIDataset) -> pd.DataFrame:
+def evaluate(model: JDIModel, dataset: JDNDataset) -> pd.DataFrame:
 
     model.eval()
     with torch.no_grad():
 
-        dataloader = DataLoader(dataset,
-                                shuffle=False,
-                                batch_size=1,
-                                collate_fn=dataset.collate_fn,
-                                pin_memory=True)
-
+        dataloader = DataLoader(dataset, shuffle=False, batch_size=1, pin_memory=True)
         results = []
 
         with trange(len(dataloader), desc='Evaluating:') as bar:
@@ -101,7 +101,7 @@ def evaluate(model: JDIModel, dataset: JDIDataset) -> pd.DataFrame:
                     bar.update(1)
 
     results_df = pd.DataFrame(results)
-    results_df['is_hidden'] = dataset.dataset.is_hidden.values
+    results_df['is_hidden'] = dataset.df.is_hidden.values
     return accuracy(results_df)
 
 
@@ -109,16 +109,15 @@ if __name__ == "__main__":
 
     freeze_support()
 
-    train_dataset = JDIDataset(dataset_names=TRAIN_DATASETS, rebalance=True)
-    # train_dataset = JDIDataset(dataset_names=None, rebalance=True)
-    test_dataset = JDIDataset(dataset_names=TEST_DATASETS, rebalance=False)
+    train_dataset = JDNDataset(datasets_list=TRAIN_DATASETS, rebalance_and_shuffle=True)
+    # train_dataset = JDNDataset(datasets_list=None, rebalance_and_suffle=True)
+    test_dataset = JDNDataset(datasets_list=TEST_DATASETS, rebalance_and_shuffle=False)
 
-    logger.info(f'Train dataset shape:  {train_dataset.dataset.shape}; Test dataset shape: {test_dataset.data.shape}')
+    logger.info(f'Train dataset shape:  {train_dataset.X.shape}; Test dataset shape: {test_dataset.X.shape}')
 
     train_dataloader = DataLoader(train_dataset,
-                                  batch_size=BATCH_SISE,
+                                  batch_size=BATCH_SIZE,
                                   shuffle=True,
-                                  collate_fn=train_dataset.collate_fn,
                                   pin_memory=True,
                                   drop_last=True,
                                   num_workers=0)

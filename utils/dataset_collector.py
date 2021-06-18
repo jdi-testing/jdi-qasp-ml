@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from .config import logger
 from scipy.sparse.csr import csr_matrix
 from scipy.sparse import hstack
@@ -72,7 +73,7 @@ def collect_dataset(df: pd.DataFrame) -> csr_matrix:
     dnsib_role_sm = build_role_feature(dataset_df, colname='attributes_dnsib')
     logger.info(f'role_sm: {role_sm.shape}')
 
-    X = csr_matrix(hstack([
+    X = np.array(hstack([
         attributes_sm,
         parent_attributes_sm,
         upsib_attributes_sm,
@@ -97,11 +98,11 @@ def collect_dataset(df: pd.DataFrame) -> csr_matrix:
         dataset_df.displayed_parent.fillna(False).astype(int).values.reshape(-1, 1),
         dataset_df.displayed_upsib.fillna(False).astype(int).values.reshape(-1, 1),
         dataset_df.displayed_dnsib.fillna(False).astype(int).values.reshape(-1, 1),
-        dataset_df.is_hidden.values.reshape(-1, 1),
-        dataset_df.is_hidden_parent.values.reshape(-1, 1),
-        dataset_df.is_hidden_upsib.values.reshape(-1, 1),
-        dataset_df.is_hidden_dnsib.values.reshape(-1, 1)
-    ]))
+        dataset_df.is_hidden.fillna(1.0).values.reshape(-1, 1),
+        dataset_df.is_hidden_parent.fillna(1.0).values.reshape(-1, 1),
+        dataset_df.is_hidden_upsib.fillna(1.0).values.reshape(-1, 1),
+        dataset_df.is_hidden_dnsib.fillna(1.0).values.reshape(-1, 1)
+    ]).todense())  # I hope we have enougth RAM
 
-    logger.info('X:' + X.__repr__())
-    return X, y
+    logger.info(f'X: {X.shape}')
+    return X.astype(np.float32), y

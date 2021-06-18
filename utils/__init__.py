@@ -34,7 +34,7 @@ from .dataset import build_children_features,\
     rebalance,\
     assign_labels,\
     build_tree_features,\
-    JDIDataset,\
+    JDNDataset,\
     followers_features  # noqa
 
 from .model import JDIModel  # noqa

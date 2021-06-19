@@ -8,5 +8,6 @@ __pycache__/*
 *.log
 flask-temp-storage/*
 dataset/cache-labels/*
+dataset/df/20*
 model/*.*
 

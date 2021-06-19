@@ -3,7 +3,7 @@ EXPOSE 5000/tcp
 EXPOSE 5000/udp
 
 RUN apt-get update -y && apt-get install -y apt-utils && apt-get upgrade -y && apt-get install -y locales && apt-get dist-upgrade
-RUN apt install -y curl mc wget
+RUN apt install -y curl wget mc
 COPY docker-environment.yml ${HOME}/environment.yml
 RUN conda env update -n base -f environment.yml
 

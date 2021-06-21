@@ -67,10 +67,11 @@ TEST_DATASETS = [
     # 'support',
     # 'table-with-pages',
     'complex-table',
-    'mobile-and-html-5',
+    # 'mobile-and-html-5',
     'cnews'
     'phys-org',
-    'wildberries'
+    'wildberries',
+    'html-5'
 ]
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'

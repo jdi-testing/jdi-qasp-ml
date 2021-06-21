@@ -97,7 +97,7 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 - To publish docker image into gitlab's registry:
 ````
     docker login registry.gitlab.com                       # password will be asked 
-    docker build -t registry.gitlab.com/vfuga/jdi-qasp-ml .
+    docker build -t registry.gitlab.com/vfuga/jdi-qasp-ml:latest .
     docker push registry.gitlab.com/vfuga/jdi-qasp-ml:latest
 ````
 

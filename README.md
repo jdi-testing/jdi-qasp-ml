@@ -1,20 +1,8 @@
 # JDI-QASP-ml v.0.1
 
 Plans:
- - Move to pytorch-1.8.0 - Done
- - Extract more features - In Progress
- - Add more data - In Progress
-   - HTML 5: https://tutorial.techaltum.com/html5.html
-   - bootstrap: 
-   - angular:
-   - react:
- - Do we have to change number of classes? - Canceled
- - Split dataset to train/test by adding prefix to aliases - In Progress
- - experiment with removing **is_hover** procedure and its features - Done, removed
- - check ability to train one class models in addition to existing multiclass model - Postponed for next Iteration
- - What about disabled/hidden elements? Should we detect them or not? - Canceled
- - wrap model in Flask - Done 
- - Flask in uWSGI - Done
+ - Extend dataset - ?
+ - Features: number of children, followers, backward level of tag, list of follower tags - ?
 
  - Bugs/Improvements:
    - Count num folloers - lost from previos version

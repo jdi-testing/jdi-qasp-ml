@@ -1,4 +1,3 @@
-
 ############################################
 # this is a Flask-based backend
 ############################################
@@ -166,7 +165,7 @@ def predict():
                           'predicted_probability']
 
     results_df = dataset.df[
-        (dataset.df['predicted_label'] != 'n/a') & (dataset.df['is_hidden'] == 0)
+        (dataset.df['predicted_label'] != 'n/a')  # & (dataset.df['is_hidden'] == 0)
     ][columns_to_publish].copy()
     # sort in descending order: big controls first
     results_df['sort_key'] = results_df.height * results_df.width

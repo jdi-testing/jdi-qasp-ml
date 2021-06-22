@@ -165,7 +165,6 @@ def predict():
                           'predicted_probability']
 
     results_df = dataset.df[
-
         (dataset.df['predicted_label'] != 'n/a')  # & (dataset.df['is_hidden'] == 0)
     ][columns_to_publish].copy()
     # sort in descending order: big controls first

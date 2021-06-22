@@ -13,6 +13,7 @@ import torch
 from tqdm.auto import trange
 from torch.utils.data import DataLoader
 import logging
+import pickle
 
 UPLOAD_DIRECTORY = "dataset/df"
 MODEL_VERSION_DIRECTORY = "model/version"
@@ -112,10 +113,14 @@ def predict():
     df = pd.DataFrame(json.loads(request.data))
 
     # fix bad data which can come in 'onmouseover', 'onmouseenter'
-    # df.onmouseover = df.onmouseover.apply(
-    #     lambda x: 'true' if x is not None else None)
-    # df.onmouseenter = df.onmouseenter.apply(
-    #     lambda x: 'true' if x is not None else None)
+    df.onmouseover = df.onmouseover.apply(
+        lambda x: 'true' if x is not None else None)
+    df.onmouseenter = df.onmouseenter.apply(
+        lambda x: 'true' if x is not None else None)
+    with open(f'dataset/df/{filename}.pkl', 'wb') as f:
+        pickle.dump(df, f)
+        f.flush()
+
     df.to_parquet(f'dataset/df/{filename}')
 
     api.logger.info('Creating JDNDataset')

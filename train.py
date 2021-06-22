@@ -21,7 +21,7 @@ BATCH_SIZE = 256
 TRAIN_DATASETS = [
     'angular',
     'bootstrap-1',
-    'bootstrap-form-control',
+    # 'bootstrap-form-control',
     'bootstrap-form',
     'bootstrap-forms',
     'bootstrap-reboot',
@@ -58,7 +58,9 @@ TRAIN_DATASETS = [
     'material-ui-Text Field',
     'material-ui-Floating Action Button',
     'material-ui-Slider',
-    'material-ui-Select'
+    'material-ui-Select',
+    'vk-com',
+    'vk-com-2'
 ]
 
 TEST_DATASETS = [
@@ -71,7 +73,8 @@ TEST_DATASETS = [
     'cnews'
     'phys-org',
     'wildberries',
-    'html-5'
+    'html-5',
+    'vk-com'
 ]
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'

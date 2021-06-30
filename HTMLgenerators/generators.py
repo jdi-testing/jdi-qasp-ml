@@ -1,23 +1,20 @@
 import sys
 
+import argh
+
 from html5_generator import HTML5Builder
 
-if __name__ == '__main__':
-    output_path = 'output'
-    num_of_pages = 1
-    elements_on_page = 50
+builders = (HTML5Builder,)
 
-    if len(sys.argv) > 1:
-        output_path = sys.argv[1]
 
-    if len(sys.argv) > 2:
-        num_of_pages = int(sys.argv[2])
-
-    if len(sys.argv) > 3:
-        num_of_elements = int(sys.argv[3])
-
-    for HTMLBuilderClass in (HTML5Builder, ):
+def main(output='output', num_of_pages=1, elements_on_page=50):
+    for HTMLBuilderClass in builders:
         html_builder = HTMLBuilderClass(num_of_pages=num_of_pages,
                                         elements_on_page=elements_on_page,
-                                        output_path=output_path)
+                                        output_path=output)
         html_builder.generate()
+
+
+if __name__ == '__main__':
+    argh.dispatch_command(main)
+

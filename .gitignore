@@ -10,4 +10,6 @@ flask-temp-storage/*
 dataset/cache-labels/*
 dataset/df/20*
 model/*.*
-
+.idea/*
+HTMLgenerators/output/*
+venv/

@@ -1,8 +1,6 @@
-import sys
-
 import argh
 
-from html5_generator import HTML5Builder
+from HTMLbuilders.html5_builder import HTML5Builder
 
 builders = (HTML5Builder,)
 

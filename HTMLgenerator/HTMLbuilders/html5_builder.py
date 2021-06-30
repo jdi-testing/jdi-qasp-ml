@@ -4,7 +4,7 @@ from datetime import datetime
 
 from faker import Faker
 
-from base_classes import BaseHTMLBuilder, BaseElement
+from HTMLgenerator.HTMLbuilders.base_classes import BaseHTMLBuilder, BaseElement
 
 fake = Faker()
 

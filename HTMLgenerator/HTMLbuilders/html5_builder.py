@@ -5,17 +5,103 @@ from datetime import datetime
 from faker import Faker
 
 from HTMLgenerator.HTMLbuilders.base_classes import BaseHTMLBuilder, BaseElement
+from HTMLgenerator.service import generate_uuid
 
 fake = Faker()
 
 
-class Button(BaseElement):
+class BaseHTML5Element(BaseElement):
     @property
-    def tag(self):
+    def label(self):
+        return 'n/a'
+
+    def __init__(self):
+        super().__init__()
+        self.add_specific_attributes()
+
+    def element_markup(self):
+        """Defines full element markup with all specified attributes"""
+        if self.label_needed:
+            return self.generate_markup_with_label()
+        else:
+            return self.generate_standard_markup()
+
+    def generate_standard_markup(self):
+        return f"""<{self.tag} 
+            {self.generate_html_attributes_string()}
+            {"/>" if self.self_closing_tag else
+        f">{self.html_attributes['inner_value'] if 'inner_value' in self.html_attributes else ''}</{self.tag}>"}"""
+
+    def generate_markup_with_label(self):
+        if random.randint(0, 10) > 5:  # with or without label
+            return self.generate_standard_markup()
+        else:
+            element_markup_text = self.generate_standard_markup()
+            label_text = self.generate_label()
+            return f'''<div>{''.join(random.sample([label_text, element_markup_text], 2))}</div>'''
+
+    def randomize_styling(self):
+        """Generates default CSS properties"""
+        self.style_attributes = {
+            'color': fake.color(hue=random.choice(['blue', 'monochrome', 'red', 'green']),
+                                luminosity='dark'),
+            'font-size': f"{random.randint(14, 28)}px",
+        }
+
+    def add_specific_attributes(self):
+        """Generates default HTML attributes"""
+        self.html_attributes = {
+            'class': generate_uuid(),
+            'id': generate_uuid(),
+            'name': generate_uuid(),
+        }
+        self.add_unnecessary_html_attribute('disabled', True, 30)
+
+    def generate_label(self):
+        """Generates random label for element"""
+        return f'''<label for="{self.html_attributes["id"]}">
+                                {fake.sentence(nb_words=random.randint(5, 15))}
+                             </label>'''
+
+    @staticmethod
+    def generate_options():
+        """Generates list of options with randomized value"""
+        options_text = ''
+        for i in range(random.randint(3, 10)):
+            value = fake.word()
+            options_text += f'''<option value="{value}">{value}</option>\n'''
+        return options_text
+
+    def generate_checkbox_elements(self, input_class="", label_class=""):
+        """Generates markup of random checkboxes"""
+        num_of_elements = random.randint(2, 12)
+        checklist_text = ''
+        for i in range(num_of_elements):
+            value = fake.word()
+            input_id = '-'.join([self.html_attributes['id'], value])
+            checked = True if random.randint(0, 10) > 8 else False
+            input_class_string = f'class="{input_class}"' if input_class else ''
+            label_class_string = f'class="{label_class}"' if label_class else ''
+            input_text = f'''<input type="checkbox" {input_class_string} data-label="checkbox" 
+                             id={input_id} name="{self.html_attributes['name']}" 
+                             {'checked' if checked else ''}>'''
+            label_text = f'''<label for="{input_id}" {label_class_string} 
+                             style="{self.generate_style_string()}">{value}</label>'''
+            checklist_text += f'''{''.join(random.sample([input_text, label_text], 2))}<br>'''
+        return checklist_text
+
+
+class Button(BaseHTML5Element):
+    def __init__(self):
+        super().__init__()
+        self.tag = 'button'
+
+    @property
+    def label(self):
         return 'button'
 
-    def generate_style_attributes(self):
-        super().generate_style_attributes()
+    def randomize_styling(self):
+        super().randomize_styling()
         specific_styling = {
             'background': fake.color(),
             'border-color': fake.color(),
@@ -25,23 +111,27 @@ class Button(BaseElement):
         }
         self.style_attributes.update(specific_styling)
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
             'inner_value': fake.sentence(nb_words=1),
         }
         self.html_attributes.update(specific_attributes)
 
 
-class Range(BaseElement):
+class Range(BaseHTML5Element):
     self_closing_tag = True
 
-    @property
-    def tag(self):
-        return 'input'
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
 
-    def generate_html_attributes(self):
-        super(Range, self).generate_html_attributes()
+    @property
+    def label(self):
+        return 'range'
+
+    def add_specific_attributes(self):
+        super(Range, self).add_specific_attributes()
         min_value = random.randint(0, 1000)
         max_value = random.randint(min_value + 1, 2000)
         specific_attributes = {
@@ -87,17 +177,21 @@ class Range(BaseElement):
                 '''
 
 
-class RadioButtons(BaseElement):
+class RadioButtons(BaseHTML5Element):
+    @property
+    def label(self):
+        return 'radiobutton'
+
     self_closing_tag = True
 
-    @property
-    def tag(self):
-        return 'input'
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
-            'name': {''.join(random.choices(string.ascii_lowercase + string.digits, k=8))}
+            'name': {generate_uuid()}
         }
         self.html_attributes.update(specific_attributes)
 
@@ -110,7 +204,7 @@ class RadioButtons(BaseElement):
         vertical_alignment = bool(random.randint(0, 1))
         active_element = random.randint(0, num_of_choices)
         for i in range(num_of_choices):
-            element_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+            element_id = generate_uuid()
             label_style_string = self.generate_style_string()
             label_style_string = f'style="{label_style_string}"'
             disabled = random.randint(0, 10) > 7
@@ -136,12 +230,16 @@ class RadioButtons(BaseElement):
                 """
 
 
-class Table(BaseElement):
+class Table(BaseHTML5Element):
 
-    def generate_html_attributes(self):
+    @property
+    def label(self):
+        return 'table'
+
+    def add_specific_attributes(self):
         self.html_attributes = {}
 
-    def generate_style_attributes(self):
+    def randomize_styling(self):
         self.style_attributes = {
             'border-style': random.choice(('solid', 'none', 'dotted', 'inset',
                                            'dashed solid', 'hidden', 'double',
@@ -165,47 +263,55 @@ class Table(BaseElement):
             table_row_string += '</tr>'
             table_contents += table_row_string
 
-        return f'<table style="{self.generate_style_string()}">{table_contents}</table>'
+        return f'<table style="{self.generate_style_string()}" data-label="table">{table_contents}</table>'
 
-    @property
-    def tag(self):
-        return 'table'
+    def __init__(self):
+        super().__init__()
+        self.tag = 'table'
 
 
-class Paragraph(BaseElement):
+class Paragraph(BaseHTML5Element):
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'p'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         self.html_attributes['inner_value'] = fake.paragraph(nb_sentences=random.randint(5, 15))
 
+
+class Link(BaseHTML5Element):
+
     @property
-    def tag(self):
-        return 'p'
+    def label(self):
+        return 'link'
 
+    def __init__(self):
+        super().__init__()
+        self.tag = 'a'
 
-class Link(BaseElement):
-
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         self.html_attributes.update({
             'href': f"http://{fake.word()}.{fake.word()}",
             'inner_value': fake.sentence(nb_words=random.randint(3, 30))
         })
 
-    @property
-    def tag(self):
-        return 'a'
 
-
-class TextField(BaseElement):
+class TextField(BaseHTML5Element):
     self_closing_tag = True
 
     @property
-    def tag(self):
-        return 'input'
+    def label(self):
+        return 'textfield'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
             'type': 'text',
         }
@@ -220,14 +326,18 @@ class TextField(BaseElement):
         self.add_unnecessary_html_attribute('placeholder', fake.sentence(nb_words=random.randint(3, 8)), 90)
 
 
-class TextArea(BaseElement):
+class TextArea(BaseHTML5Element):
 
     @property
-    def tag(self):
+    def label(self):
         return 'textarea'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'textarea'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
             'rows': random.randint(4, 15),
             'cols': random.randint(10, 30)
@@ -238,14 +348,18 @@ class TextArea(BaseElement):
         self.html_attributes.update(specific_attributes)
 
 
-class FileUpload(BaseElement):
+class FileUpload(BaseHTML5Element):
 
     @property
-    def tag(self):
-        return 'input'
+    def label(self):
+        return 'fileinput'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         accept = ','.join([f"*.{fake.bothify(text='???', letters=string.ascii_lowercase)}"
                            for _ in range(random.randint(1, 3))])
         specific_attributes = {
@@ -262,14 +376,18 @@ class FileUpload(BaseElement):
         return ''.join(elements)
 
 
-class Selector(BaseElement):
+class Selector(BaseHTML5Element):
 
     @property
-    def tag(self):
-        return 'select'
+    def label(self):
+        return 'selector'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'select'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         self.add_unnecessary_html_attribute('multiple', None, 40)
         self.add_unnecessary_html_attribute('required', True, 60)
         self.add_unnecessary_html_attribute('size', random.randint(3, 10), 80)
@@ -283,14 +401,18 @@ class Selector(BaseElement):
         return ''.join(random.sample([label_text, selector_text], 2))  # randomize label position
 
 
-class Datalist(BaseElement):
+class Datalist(BaseHTML5Element):
 
     @property
-    def tag(self):
-        return 'datalist'
+    def label(self):
+        return 'dropdown'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'datalist'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
             'list': f'datalist-{self.html_attributes["id"]}',
         }
@@ -307,35 +429,30 @@ class Datalist(BaseElement):
         return f'''<div>{''.join(random.sample([label, input_markup, datalist], 3))}</div>'''
 
 
-class CheckList(BaseElement):
+class CheckList(BaseHTML5Element):
 
-    @property
-    def tag(self):
-        return 'input'
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
 
     def element_markup(self):
-        num_of_elements = random.randint(2, 12)
-        checklist_text = ''
-        for i in range(num_of_elements):
-            value = fake.word()
-            input_id = '-'.join([self.html_attributes['id'], value])
-            checked = True if random.randint(0, 10) > 8 else False
-            input_text = f'''<input type="checkbox" id={input_id} name="{self.html_attributes['name']}" 
-                         {'checked' if checked else ''}>'''
-            label_text = f'''<label for="{input_id}" style="{self.generate_style_string()}">{value}</label>'''
-            checklist_text += f'''{''.join(random.sample([input_text, label_text], 2))}<br>'''
+        checklist_text = self.generate_checkbox_elements()
         return f'''<div {self.generate_html_attributes_string()}>{checklist_text}</div>'''
 
 
-class ColorPicker(BaseElement):
+class ColorPicker(BaseHTML5Element):
     label_needed = True
 
     @property
-    def tag(self):
-        return 'input'
+    def label(self):
+        return 'colorpicker'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
             'type': 'color'
         }
@@ -343,15 +460,19 @@ class ColorPicker(BaseElement):
         self.add_unnecessary_html_attribute('value', fake.color(), 50)
 
 
-class Progress(BaseElement):
+class Progress(BaseHTML5Element):
     label_needed = True
 
     @property
-    def tag(self):
-        return 'progress'
+    def label(self):
+        return 'progressbar'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'progress'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         max_value = random.randint(0, 1000)
         value = random.randint(0, max_value)
         specific_attributes = {
@@ -362,15 +483,19 @@ class Progress(BaseElement):
         self.html_attributes.update(specific_attributes)
 
 
-class DateTimeInput(BaseElement):
+class DateTimeInput(BaseHTML5Element):
     label_needed = True
 
     @property
-    def tag(self):
-        return 'input'
+    def label(self):
+        return 'datetimeselector'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
             'type': random.choice(['date', 'month', 'datetime-local', 'time', 'week'])
         }
@@ -382,6 +507,7 @@ class DateTimeInput(BaseElement):
         min_date = self.get_random_date()
         max_date = self.get_random_date(min_date)
         value = self.get_random_date(min_date, max_date)
+        format_string = '%Y-%m-%dT%H:%M'
         if self.html_attributes['type'] == 'date':
             format_string = '%Y-%m-%d'
         elif self.html_attributes['type'] == 'month':
@@ -419,26 +545,30 @@ class DateTimeInput(BaseElement):
         return {'hour': random.randint(min_hour, max_hour), 'minute': random.randint(min_minute, max_minute)}
 
 
-class NumberInput(BaseElement):
+class NumberInput(BaseHTML5Element):
     label_needed = True
 
     @property
-    def tag(self):
-        return 'input'
+    def label(self):
+        return 'numberselector'
 
-    def generate_html_attributes(self):
-        super().generate_html_attributes()
+    def __init__(self):
+        super().__init__()
+        self.tag = 'input'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
         specific_attributes = {
             'type': 'number'
         }
         self.html_attributes.update(specific_attributes)
         precision = random.randint(0, 5)
-        min = round(random.random() * 1000, precision)
-        max = random.randint(round(min * 100), 100000) / 100
-        value = random.randint(round(min * 100), round(max * 100)) / 100
-        step = random.randint(0, round(max) * 1000) / 1000
-        self.add_unnecessary_html_attribute('min', min, 50)
-        self.add_unnecessary_html_attribute('max', max, 50)
+        min_value = round(random.random() * 1000, precision)
+        max_value = random.randint(round(min_value * 100), 100000) / 100
+        value = random.randint(round(min_value * 100), round(max_value * 100)) / 100
+        step = random.randint(0, round(max_value) * 1000) / 1000
+        self.add_unnecessary_html_attribute('min', min_value, 50)
+        self.add_unnecessary_html_attribute('max', max_value, 50)
         self.add_unnecessary_html_attribute('value', value, 80)
         self.add_unnecessary_html_attribute('step', step, 80)
 
@@ -466,3 +596,16 @@ class HTML5Builder(BaseHTMLBuilder):
     @property
     def framework_name(self):
         return 'html5'
+
+    def _generate_text(self, html_text):
+        body = ""
+        for i in range(self._elements_on_page):
+            element_class = random.choice(self.__class__.elements)
+            break_line = random.randint(0, 10) > 8
+            if break_line:
+                body += f'''<div style="border: 2px solid black; display: block;">
+                                {element_class().element_markup()}</div>'''
+            else:
+                body += element_class().element_markup()
+        output_text = html_text.replace("%BODY%", body)
+        return output_text

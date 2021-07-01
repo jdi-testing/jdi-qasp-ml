@@ -1,5 +1,4 @@
 import random
-import string
 from abc import abstractmethod, ABC
 from os import path
 from pathlib import Path
@@ -52,12 +51,7 @@ class BaseHTMLBuilder(ABC):
         body = ""
         for i in range(self._elements_on_page):
             element_class = random.choice(self.__class__.elements)
-            break_line = random.randint(0, 10) > 8
-            if break_line:
-                body += f'''<div style="border: 2px solid black; display: block;">
-                        {element_class().element_markup()}</div>'''
-            else:
-                body += element_class().element_markup()
+            body += element_class().element_markup()
         output_text = html_text.replace("%BODY%", body)
         return output_text
 
@@ -67,79 +61,33 @@ class BaseElement(ABC):
     is stored in instance's attribute html_attributes and can be modified in inherited classes"""
     self_closing_tag = False
     label_needed = False
+    nested_elements = []
 
     def __init__(self):
         self.style_attributes = {}
         self.html_attributes = {}
-        self._tag = ''
-        self.generate_html_attributes()
+        self.tag = ''
+
+    @abstractmethod
+    def element_markup(self):
+        """Defines full element markup with all specified attributes"""
+        pass
+
+    @abstractmethod
+    def randomize_styling(self):
+        """Generates default CSS properties"""
+        pass
+
+    @abstractmethod
+    def add_specific_attributes(self):
+        """Adds element specific HTML attributes"""
+        pass
 
     @property
     @abstractmethod
-    def tag(self):
-        """Stores tag of element"""
-        return self._tag
-
-    def element_markup(self):
-        """Defines full element markup with all specified attributes"""
-        if self.label_needed:
-            return self.generate_markup_with_label()
-        else:
-            return self.generate_standard_markup()
-
-    def generate_standard_markup(self):
-        return f"""<{self.tag} 
-        {self.generate_html_attributes_string()}
-        style="{self.generate_style_string()}"
-        {"/>" if self.self_closing_tag else
-        f">{self.html_attributes['inner_value'] if 'inner_value' in self.html_attributes else ''}</{self.tag}>"}"""
-
-    def generate_markup_with_label(self):
-        if random.randint(0, 10) > 5:  # with or without label
-            return self.generate_standard_markup()
-        else:
-            element_markup_text = self.generate_standard_markup()
-            label_text = self.generate_label()
-            return f'''<div>{''.join(random.sample([label_text, element_markup_text], 2))}</div>'''
-
-    def generate_style_attributes(self):
-        """Generates default CSS properties"""
-        self.style_attributes = {
-            'color': fake.color(hue=random.choice(['blue', 'monochrome', 'red', 'green']),
-                                luminosity='dark'),
-            'font-size': f"{random.randint(14, 28)}px",
-        }
-
-    def generate_html_attributes(self):
-        """Generates default HTML attributes"""
-        self.html_attributes = {
-            'class': ''.join(random.choices(string.ascii_lowercase + string.digits, k=8)),
-            'id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=8)),
-            'name': ''.join(random.choices(string.ascii_lowercase + string.digits, k=8)),
-        }
-        self.add_unnecessary_html_attribute('disabled', True, 30)
-
-    def generate_style_string(self):
-        """Generates string using specified CSS properties"""
-        self.generate_style_attributes()
-        style = ''
-        for k, v in self.style_attributes.items():
-            style += f'{k}:{v}; '
-        return style.strip()
-
-    def generate_html_attributes_string(self):
-        """Generates string that can be pasted in element markup with specified HTML attributes"""
-        attrs = ''
-        shuffled_keys = self.html_attributes.keys()
-        for k in random.sample(self.html_attributes.keys(), len(self.html_attributes.keys())):
-            if k in attributes_without_value:
-                if self.html_attributes[k]:
-                    attrs += ' ' + k
-            elif k == 'inner_value':  # value between opening and closing tag
-                continue
-            else:
-                attrs += f' {k}="{self.html_attributes[k]}"'
-        return attrs.strip()
+    def label(self):
+        """Returns a label according to dataset/classes.txt"""
+        pass
 
     def add_unnecessary_html_attribute(self, name: str, value, chance: int):
         """
@@ -151,17 +99,25 @@ class BaseElement(ABC):
         if random.randint(0, 100) < chance:
             self.html_attributes[name] = value
 
-    def generate_label(self):
-        """Generates random label for element"""
-        return f'''<label for="{self.html_attributes["id"]}">
-                            {fake.sentence(nb_words=random.randint(5, 15))}
-                         </label>'''
+    def generate_html_attributes_string(self):
+        """Generates string that can be pasted in element markup with specified HTML attributes"""
+        attrs = ''
+        self.html_attributes['style'] = self.generate_style_string()
+        self.html_attributes['data-label'] = self.label
+        for k in random.sample(self.html_attributes.keys(), len(self.html_attributes.keys())):
+            if k in attributes_without_value:
+                if self.html_attributes[k]:
+                    attrs += ' ' + k
+            elif k == 'inner_value':  # value between opening and closing tag
+                continue
+            else:
+                attrs += f' {k}="{self.html_attributes[k]}"'
+        return attrs.strip()
 
-    @staticmethod
-    def generate_options():
-        """Generates list of options with randomized value"""
-        options_text = ''
-        for i in range(random.randint(3, 10)):
-            value = fake.word()
-            options_text += f'''<option value="{value}">{value}</option>\n'''
-        return options_text
+    def generate_style_string(self):
+        """Generates string using specified CSS properties"""
+        self.randomize_styling()
+        style = ''
+        for k, v in self.style_attributes.items():
+            style += f'{k}:{v}; '
+        return style.strip()

@@ -421,7 +421,7 @@ class Datalist(BaseHTML5Element):
     def element_markup(self):
         label = self.generate_label()
         options = self.generate_options()
-        input_markup = f'''<input {self.generate_html_attributes_string()} style={self.generate_style_string()}">'''
+        input_markup = f'''<input {self.generate_html_attributes_string()} style="{self.generate_style_string()}"/>'''
         datalist = f'''
         <datalist id=datalist-{self.html_attributes["id"]}>
             {options}

@@ -1,7 +1,6 @@
 import argh
 
-from HTMLbuilders.html5_builder import HTML5Builder
-from HTMLbuilders.bootstrap_builder import BootstrapBuilder
+from HTMLgenerator.HTMLbuilders.html5_builder import HTML5Builder
 
 builders = (HTML5Builder, )
 

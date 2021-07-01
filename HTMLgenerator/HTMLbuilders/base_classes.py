@@ -34,7 +34,13 @@ class BaseHTMLBuilder(ABC):
         """Generation of .html file based on template from /templates folder"""
         output_file_path = path.join(self._output_path, self.framework_name)
         Path(output_file_path).mkdir(parents=True, exist_ok=True)
-        with open(f"templates/{self.framework_name}.html", "r") as template:
+
+        if path.exists(f'HTMLgenerator/templates/{self.framework_name}.html'):
+            template_file_path = f'HTMLgenerator/templates/{self.framework_name}.html'
+        else:
+            template_file_path = f'templates/{self.framework_name}.html'
+
+        with open(template_file_path, "r") as template:
             html_text = template.read()
         for i in range(self._num_of_pages):
             output_text = self._generate_text(html_text)

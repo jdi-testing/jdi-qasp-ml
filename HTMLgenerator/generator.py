@@ -1,8 +1,9 @@
 import argh
 
-from HTMLgenerator.HTMLbuilders.html5_builder import HTML5Builder
+from HTMLgenerator.builders.html5_builder import HTML5Builder
+from HTMLgenerator.builders.bootstrap_builder import BootstrapBuilder
 
-builders = (HTML5Builder, )
+builders = (HTML5Builder, BootstrapBuilder)
 
 
 def main(output='output', num_of_pages=1, elements_on_page=50):

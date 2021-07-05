@@ -5,6 +5,8 @@ from pathlib import Path
 
 import faker
 
+from HTMLgenerator.service import generate_uuid
+
 fake = faker.Faker()
 
 attributes_without_value = ('disabled', 'multiple', 'required',
@@ -34,7 +36,6 @@ class BaseHTMLBuilder(ABC):
         """Generation of .html file based on template from /templates folder"""
         output_file_path = path.join(self._output_path, self.framework_name)
         Path(output_file_path).mkdir(parents=True, exist_ok=True)
-
         if path.exists(f'HTMLgenerator/templates/{self.framework_name}.html'):
             template_file_path = f'HTMLgenerator/templates/{self.framework_name}.html'
         else:
@@ -57,7 +58,7 @@ class BaseHTMLBuilder(ABC):
         body = ""
         for i in range(self._elements_on_page):
             element_class = random.choice(self.__class__.elements)
-            body += element_class().element_markup()
+            body += element_class().markup()
         output_text = html_text.replace("%BODY%", body)
         return output_text
 
@@ -67,17 +68,35 @@ class BaseElement(ABC):
     is stored in instance's attribute html_attributes and can be modified in inherited classes"""
     self_closing_tag = False
     label_needed = False
-    nested_elements = []
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.style_attributes = {}
         self.html_attributes = {}
         self.tag = ''
+        self._label = None
+        self.nested_elements = []
 
-    @abstractmethod
-    def element_markup(self):
-        """Defines full element markup with all specified attributes"""
-        pass
+        self.html_attributes['id'] = generate_uuid()
+        self.html_attributes['name'] = generate_uuid()
+        self.html_attributes['class'] = generate_uuid()
+        self.html_attributes['name'] = generate_uuid()
+
+        if 'label' in kwargs:
+            self._label = kwargs['label']
+
+        # Names 'for' and 'class' are forbidden for parameter
+        if 'attr_for' in kwargs:
+            kwargs['for'] = kwargs['attr_for']
+            del kwargs['for']
+        if 'attr_class' in kwargs:
+            kwargs['class'] = kwargs['attr_class']
+            del kwargs['attr_class']
+        self.html_attributes.update(kwargs)
+
+        self.label_element = None
+        self.label_first = False
+
+        self.randomize_styling()
 
     @abstractmethod
     def randomize_styling(self):
@@ -127,3 +146,32 @@ class BaseElement(ABC):
         for k, v in self.style_attributes.items():
             style += f'{k}:{v}; '
         return style.strip()
+
+    def markup(self, label_margin=None):
+        """Defines full element markup with all specified attributes and nested elements"""
+        if self.nested_elements:
+            nested_markup_list = []
+            for element in self.nested_elements:
+                if isinstance(element, BaseElement):
+                    nested_markup_list.append(element.markup())
+                elif isinstance(element, str):
+                    nested_markup_list.append(element)
+            inner_value = '\n'.join(nested_markup_list)
+            inner_value = f"\n{inner_value}\n"
+        else:
+            try:
+                inner_value = f"\n{self.html_attributes['inner_value']}\n"
+            except KeyError:
+                inner_value = ''
+        tag_ending = "/>\n" if self.self_closing_tag else f">\t{inner_value}</{self.tag}>\n"
+        label_text = ''
+        if self.label_element is not None:
+            if self.label_first and label_margin:
+                self.style_attributes['margin-left'] = label_margin
+            label_text = self.label_element.markup()
+        element_markup = f"""<{self.tag} {self.generate_html_attributes_string()} {tag_ending}"""
+
+        if self.label_first:
+            return ''.join([label_text, element_markup])
+        else:
+            return ''.join([element_markup, label_text])

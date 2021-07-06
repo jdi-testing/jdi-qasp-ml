@@ -51,6 +51,7 @@ class BootstrapBaseElement(BaseElement):
         })
 
     def generate_class_name(self):
+        """Generates class name using main_class and available_classes"""
         classes = [self.main_class, generate_uuid()]
 
         for k, v in self.available_classes.items():

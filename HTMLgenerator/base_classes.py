@@ -1,3 +1,5 @@
+import logging
+import os
 import random
 from abc import abstractmethod, ABC
 from os import path
@@ -34,6 +36,7 @@ class BaseHTMLBuilder(ABC):
 
     def generate(self):
         """Generation of .html file based on template from /templates folder"""
+        logging.info(f'Started generation of HTML files using {self.framework_name} framework.')
         output_file_path = path.join(self._output_path, self.framework_name)
         Path(output_file_path).mkdir(parents=True, exist_ok=True)
         if path.exists(f'HTMLgenerator/templates/{self.framework_name}.html'):
@@ -45,8 +48,12 @@ class BaseHTMLBuilder(ABC):
             html_text = template.read()
         for i in range(self._num_of_pages):
             output_text = self._generate_text(html_text)
-            with open(path.join(output_file_path, f"{i}.html"), "w") as output:
+            file_name = path.join(output_file_path, f"{i}.html")
+            with open(file_name, "w") as output:
                 output.write(output_text)
+            logging.info(f'File {file_name} generated.')
+        full_path = path.join(os.getcwd(), output_file_path)
+        logging.info(f'Generation of {self.framework_name} finished. {self._num_of_pages} files generated at {full_path}.')
 
     def _generate_text(self, html_text):
         """

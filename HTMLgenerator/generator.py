@@ -1,3 +1,5 @@
+import logging
+
 import argh
 
 from HTMLgenerator.builders.html5_builder import HTML5Builder
@@ -15,5 +17,6 @@ def main(output='output', num_of_pages=1, elements_on_page=50):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S', level=logging.INFO)
     argh.dispatch_command(main)
 

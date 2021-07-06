@@ -12,7 +12,7 @@ from HTMLgenerator.service import generate_uuid
 fake = faker.Faker()
 
 attributes_without_value = ('disabled', 'multiple', 'required',
-                            'checked')
+                            'checked', 'readonly')
 
 
 class BaseHTMLBuilder(ABC):
@@ -94,7 +94,7 @@ class BaseElement(ABC):
         # Names 'for' and 'class' are forbidden for parameter
         if 'attr_for' in kwargs:
             kwargs['for'] = kwargs['attr_for']
-            del kwargs['for']
+            del kwargs['attr_for']
         if 'attr_class' in kwargs:
             kwargs['class'] = kwargs['attr_class']
             del kwargs['attr_class']

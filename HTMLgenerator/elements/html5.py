@@ -689,6 +689,21 @@ class Header(HTML5BaseElement):
         self.html_attributes['inner_value'] = fake.sentence(nb_words=random.randint(5, 12))
 
 
+class Option(HTML5BaseElement):
+
+    @property
+    def label(self):
+        return 'n/a'
+
+    def __init__(self, randomize_styling=True, **kwargs):
+        super().__init__(randomize_styling, **kwargs)
+        self.tag = 'option'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.html_attributes['inner_value'] = fake.sentence(nb_words=random.randint(1, 3))
+
+
 elements = [
     RadioButtons,
     Button,

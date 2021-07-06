@@ -1,1 +1,0 @@
-python generator.py -o output -n 2 -e 50

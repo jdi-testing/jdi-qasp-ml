@@ -4,7 +4,7 @@ import string
 import faker
 
 from HTMLgenerator.base_classes import BaseElement
-from HTMLgenerator.elements.html5 import Button as HTML5Button, Span, Form, Input, HorizontalLine, Header
+from HTMLgenerator.elements.html5 import Button as HTML5Button, Span, Form, Input, HorizontalLine, Header, Option
 from HTMLgenerator.elements.html5 import Paragraph, Label, Link, OrderedList, ListItem, Div, UnorderedList
 from HTMLgenerator.service import generate_uuid, border_properties, bootstrap_button_styles
 
@@ -194,29 +194,29 @@ class FormCheckInput(BootstrapBaseElement):
         self.label_element = Label(attr_for=self.html_attributes['id'], label=self.label)
 
 
-class Checkbox(FormCheckInput):
+class FormCheckbox(FormCheckInput):
     @property
     def label(self):
         return 'checkbox'
 
     def add_specific_attributes(self):
-        super(Checkbox, self).add_specific_attributes()
+        super().add_specific_attributes()
         self.html_attributes['type'] = 'checkbox'
         self.add_unnecessary_html_attribute('checked', True, 30)
 
 
-class RadioButton(FormCheckInput):
+class FormRadioButton(FormCheckInput):
     @property
     def label(self):
         return 'radiobutton'
 
     def add_specific_attributes(self):
-        super(RadioButton, self).add_specific_attributes()
+        super(FormRadioButton, self).add_specific_attributes()
         self.html_attributes['type'] = 'radio'
 
 
 def form_check_inputs():
-    return Checkbox, RadioButton
+    return FormCheckbox, FormRadioButton
 
 
 class CheckList(BootstrapBaseElement):
@@ -714,7 +714,8 @@ class DropdownButton(BootstrapBaseElement):
     def markup(self):
         direction = random.choice(['dropup', 'dropright', 'dropleft', ''])
         if self.splitted:
-            return f'<div class="btn-group {direction}">{self.button.markup()}\n{super().markup()}\n{self.dropdown_menu.markup()}</div>'
+            return f'<div class="btn-group {direction}">{self.button.markup()}\n{super().markup()}' \
+                   f'\n{self.dropdown_menu.markup()}</div>'
         else:
             return f'<div class="dropdown {direction}">{super().markup()}\n{self.dropdown_menu.markup()}</div>'
 
@@ -780,22 +781,167 @@ class ScrollSpy(BootstrapBaseElement):
         return f'{self.list_anchors.markup()}\n{super().markup()}'
 
 
+class BootstrapForm(BootstrapBaseElement):
+    available_tags = ['form']
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        for _ in range(2, 7):
+            self.nested_elements.append(FormGroup())
+
+    def randomize_styling(self):
+        self.style_attributes.update(border_properties())
+
+
+class FormGroup(BootstrapBaseElement):
+    available_tags = ['div']
+
+    main_class = 'form-group'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        class_of_element = random.choice(form_controls)
+        self.element = class_of_element()
+        self.nested_elements.append(self.element)
+        generate_tooltip = random.randint(0, 10) < 4
+        if generate_tooltip:
+            self.nested_elements.append(Small())
+
+    def randomize_styling(self):
+        super().randomize_styling()
+        self.style_attributes.update(border_properties())
+
+
+class FormControl(BootstrapBaseElement):
+    main_class = 'form-control'
+    available_classes = {
+        ('sizing', 50): ['form-control-lg', 'form-control-sm']
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.label_element = Label(attr_for=self.html_attributes['id'])
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.add_unnecessary_html_attribute('readonly', True, 30)
+
+
+class Small(BootstrapBaseElement):
+    available_tags = ['small']
+    main_class = 'form-text text-muted'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.html_attributes['inner_value'] = fake.sentence(nb_words=random.randint(3, 12))
+
+
+class FormSelect(FormControl):
+    available_tags = ['select']
+
+    @property
+    def label(self):
+        return 'selector'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        for _ in range(random.randint(1, 5)):
+            self.nested_elements.append(Option())
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.add_unnecessary_html_attribute('multiple', True, 40)
+
+
+class FormTextfield(FormControl):
+    available_tags = ['input']
+    self_closing_tag = True
+
+    @property
+    def label(self):
+        return 'textfield'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.html_attributes['type'] = random.choice(['email', 'password'])
+        self.add_unnecessary_html_attribute('placeholder', fake.sentence(nb_words=random.randint(1, 3)), 60)
+
+
+class FormTextArea(BootstrapBaseElement):
+    available_tags = ['textarea']
+    main_class = 'form-control'
+
+    @property
+    def label(self):
+        return 'textarea'
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.html_attributes['rows'] = random.randint(1, 5)
+        self.html_attributes['cols'] = random.randint(5, 20)
+
+
+class FormRange(FormControl):
+    main_class = 'form-control-range'
+    available_tags = ['input']
+
+    @property
+    def label(self):
+        return 'range'
+
+    def __init__(self, **kwargs):
+        self.min = random.randint(0, 90)
+        self.max = random.randint(self.min + 1, 100)
+        self.value = random.randint(self.min, self.max)
+        super().__init__(**kwargs)
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.html_attributes['type'] = 'range'
+        self.add_unnecessary_html_attribute('min', self.min, 60)
+        self.add_unnecessary_html_attribute('max', self.max, 60)
+        self.add_unnecessary_html_attribute('value', self.value, 60)
+        self.add_unnecessary_html_attribute('step', random.randint(1, 10) / 10, 50)
+
+
+class FileBrowser(BootstrapBaseElement):
+    available_tags = ['input']
+    main_class = 'custom-file-input'
+
+    @property
+    def label(self):
+        return 'fileinput'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.label_element = Label(attr_for=self.html_attributes['id'], attr_class='custom-file-label', label=self.label)
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        self.html_attributes['type'] = 'file'
+
+    def markup(self):
+        return f'<div class="custom-file">{super().markup()}</div>'
+
+
+form_controls = [FormTextfield, FormCheck, FormSelect, FormTextArea, FormRange, FileBrowser]
 elements = [
-    Button,
-    FormCheck,
-    CheckList,
-    CustomControlSwitch,
-    Alert,
-    Breadcrumb,
-    Navigation,
-    NavBar,
-    Pagination,
-    Progress,
-    Jumbotron,
-    Collapse,
-    DropdownButton,
-    Range,
-    InputGroup,
-    Spinner,
-    ScrollSpy
+    # Button,
+    # FormCheck,
+    # CheckList,
+    # CustomControlSwitch,
+    # Alert,
+    # Breadcrumb,
+    # Navigation,
+    # NavBar,
+    # Pagination,
+    # Progress,
+    # Jumbotron,
+    # Collapse,
+    # DropdownButton,
+    # Range,
+    # InputGroup,
+    # Spinner,
+    # ScrollSpy,
+    BootstrapForm,
 ]

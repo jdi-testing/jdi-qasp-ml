@@ -4,6 +4,8 @@
 
 import os
 import gc
+import json
+import concurrent.futures
 from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
 import datetime as dt
 
@@ -14,6 +16,7 @@ from tqdm.auto import trange
 from torch.utils.data import DataLoader
 import logging
 import pickle
+import robula
 
 UPLOAD_DIRECTORY = "dataset/df"
 MODEL_VERSION_DIRECTORY = "model/version"
@@ -186,6 +189,27 @@ def predict():
 
     # Return 201 CREATED
     # return jsonify({'status': 'OK', 'filename': filename})
+
+
+@api.route('/generate_xpath/', methods=['POST'])
+def generate_xpath():
+    data = json.loads(request.data)
+    page = json.loads(data['document'])
+    xpaths = list(set(data['xpaths']))
+    result = {}
+    workers = os.cpu_count()
+    print(f'Workers - {workers}')
+
+    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
+        future_to_xpath = {pool.submit(robula.generate_xpath, xpath, page): xpath for xpath in xpaths}
+        for future in concurrent.futures.as_completed(future_to_xpath):
+            xpath = future_to_xpath[future]
+            try:
+                result[xpath] = future.result()
+            except Exception as exc:
+                print('%r generated an exception: %s' % (xpath, exc))
+
+    return json.dumps(result)
 
 
 # Start Flask server

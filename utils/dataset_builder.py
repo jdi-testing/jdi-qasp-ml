@@ -1,3 +1,4 @@
+import sys
 
 import pandas as pd
 
@@ -115,13 +116,17 @@ class DatasetBuilder:
 
         # to prevent "I'm not a robot" check, we have to add next option:
         self.options.add_argument('--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36")') # noqa
-        self.options.set_capability("platformName", "windows")
+        if sys.platform != 'darwin':
+            self.options.set_capability("platformName", "windows")
         # self.options.add_argument("--start-maximized")
         if self.headless:
             self.options.add_argument('--headless')
 
         logger.info('Creating driver')
-        chrome_driver_path = os.path.join(os.getcwd(), 'chromedriver.exe')
+        if sys.platform == 'darwin':
+            chrome_driver_path = '/usr/local/bin/chromedriver'
+        else:
+            chrome_driver_path = os.path.join(os.getcwd(), 'chromedriver.exe')
         if os.path.exists(chrome_driver_path):
             self.driver = selenium.webdriver.Chrome(
                 executable_path=chrome_driver_path, options=self.options)

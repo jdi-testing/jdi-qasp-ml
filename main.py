@@ -10,13 +10,12 @@ from flask import Flask, request, abort, jsonify, send_from_directory, json, ren
 import datetime as dt
 
 import pandas as pd
-from utils import JDNDataset
+from utils import JDNDataset, robula
 import torch
 from tqdm.auto import trange
 from torch.utils.data import DataLoader
 import logging
 import pickle
-import robula
 
 UPLOAD_DIRECTORY = "dataset/df"
 MODEL_VERSION_DIRECTORY = "model/version"

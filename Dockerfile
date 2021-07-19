@@ -25,6 +25,7 @@ COPY model model
 COPY utils utils
 COPY templates templates
 COPY main.py ${HOME}/main.py
+COPY robula.py ${HOME}/robula.py
 
 USER root
 RUN echo "#!/bin/bash" >> /entrypoint.sh

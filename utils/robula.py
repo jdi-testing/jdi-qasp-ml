@@ -140,7 +140,7 @@ class RobulaPlus:
     def transf_add_text(self, xpath):
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
-        ancestor_text_content = str(ancestor.text_content())
+        ancestor_text_content = str(ancestor.text_content()).replace("'", "&quot;")
         if (not ancestor_text_content.isspace()
                 and not xpath.head_has_position_predicate()
                 and not xpath.head_has_text_predicate() \

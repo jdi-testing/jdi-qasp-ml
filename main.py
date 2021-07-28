@@ -194,19 +194,18 @@ def predict():
 def generate_xpath():
     data = json.loads(request.data)
     page = json.loads(data['document'])
-    xpaths = list(set(data['xpaths']))
+    ids = list(set(data['ids']))
     result = {}
     workers = os.cpu_count()
-    print(f'Workers - {workers}')
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
-        future_to_xpath = {pool.submit(robula.generate_xpath, xpath, page): xpath for xpath in xpaths}
+        future_to_xpath = {pool.submit(robula.generate_xpath, f"//*[@jdn-hash='{id}']", page): id for id in ids}
         for future in concurrent.futures.as_completed(future_to_xpath):
-            xpath = future_to_xpath[future]
+            id = future_to_xpath[future]
             try:
-                result[xpath] = future.result()
+                result[id] = future.result()
             except Exception as exc:
-                print('%r generated an exception: %s' % (xpath, exc))
+                print('%r generated an exception: %s' % (id, exc))
 
     return json.dumps(result)
 

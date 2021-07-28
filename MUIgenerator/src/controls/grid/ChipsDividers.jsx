@@ -32,26 +32,26 @@ export default function MiddleDividers() {
   return (
     <div className={classes.root}>
       <div className={classes.section1}>
-        <Grid container alignItems="center">
-          <Grid item xs>
-            <Typography gutterBottom variant="h4">
+        <Grid data-label="grid" container alignItems="center">
+          <Grid data-label="grid" item xs>
+            <Typography data-label="typography" gutterBottom variant="h4">
               Toothbrush
             </Typography>
           </Grid>
-          <Grid item>
-            <Typography gutterBottom variant="h6">
+          <Grid data-label="grid" item>
+            <Typography data-label="typography" gutterBottom variant="h6">
               $4.50
             </Typography>
           </Grid>
         </Grid>
-        <Typography color="textSecondary" variant="body2">
+        <Typography data-label="typography" color="textSecondary" variant="body2">
           Pinstriped cornflower blue cotton blouse takes you on a walk to the park or just down the
           hall.
         </Typography>
       </div>
       <Divider variant="middle" />
       <div className={classes.section2}>
-        <Typography gutterBottom variant="body1">
+        <Typography data-label="typography" gutterBottom variant="body1">
           Select type
         </Typography>
         <div>
@@ -62,7 +62,7 @@ export default function MiddleDividers() {
         </div>
       </div>
       <div className={classes.section3}>
-        <Button color="primary">Add to cart</Button>
+        <Button data-label="button"  color="primary">Add to cart</Button>
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export default function ClippedDrawer() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <Drawer
+      <Drawer data-label="drawer" 
         className={classes.drawer}
         variant="permanent"
         classes={{
@@ -57,7 +57,7 @@ export default function ClippedDrawer() {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-          <List>
+          <List data-label="list" >
             {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
               <ListItem button key={text}>
                 <ListItemIcon>{index % 2 === 0 ? <InboxIcon  data-label="icon" /> : <MailIcon  data-label="icon" />}</ListItemIcon>
@@ -66,7 +66,7 @@ export default function ClippedDrawer() {
             ))}
           </List>
           <Divider data-label="divider" />
-          <List>
+          <List data-label="list" >
             {['All mail', 'Trash', 'Spam'].map((text, index) => (
               <ListItem button key={text}>
                 <ListItemIcon>{index % 2 === 0 ? <InboxIcon  data-label="icon" /> : <MailIcon  data-label="icon" />}</ListItemIcon>

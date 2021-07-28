@@ -170,13 +170,13 @@ const EnhancedTableToolbar = (props) => {
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton aria-label="delete">
+          <IconButton data-label="button" aria-label="delete">
             <DeleteIcon  data-label="icon" />
           </IconButton>
         </Tooltip>
       ) : (
         <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
+          <IconButton data-label="button" aria-label="filter list">
             <FilterListIcon  data-label="icon" />
           </IconButton>
         </Tooltip>
@@ -276,7 +276,7 @@ export default function EnhancedTable() {
 
   return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
+      <Paper data-label="paper"  className={classes.paper}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table  data-label="table"
@@ -346,7 +346,7 @@ export default function EnhancedTable() {
         />
       </Paper>
       <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
+        control={<Switch data-label="switch"  checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       />
     </div>

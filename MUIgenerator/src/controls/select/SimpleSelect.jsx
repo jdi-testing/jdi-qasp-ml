@@ -28,7 +28,7 @@ export default function JDISimpleSelect({ type, open }) {
         <div>
             {(type === 0) && <FormControl className={classes.formControl}>
                 <InputLabel id="demo-simple-select-label">Age</InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                 MenuProps={{
                     disableScrollLock: true,
                 }}
@@ -44,7 +44,7 @@ export default function JDISimpleSelect({ type, open }) {
             </FormControl>}
             {(type === 1) && <FormControl className={classes.formControl}>
                 <InputLabel id="demo-simple-select-helper-label">Age</InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                 MenuProps={{
                     disableScrollLock: true,
                 }}
@@ -64,7 +64,7 @@ export default function JDISimpleSelect({ type, open }) {
             </FormControl>
             }
             {(type === 2) && <FormControl className={classes.formControl}>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                     MenuProps={{
                         disableScrollLock: true,
                     }}
@@ -88,7 +88,7 @@ export default function JDISimpleSelect({ type, open }) {
                 <InputLabel shrink id="demo-simple-select-placeholder-label-label">
                     Age
                 </InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                 MenuProps={{
                     disableScrollLock: true,
                 }}
@@ -111,7 +111,7 @@ export default function JDISimpleSelect({ type, open }) {
             }
             {(type === 4) && <FormControl className={classes.formControl} error>
                 <InputLabel id="demo-simple-select-error-label">Name</InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                 MenuProps={{
                     disableScrollLock: true,
                 }}

@@ -85,10 +85,10 @@ function ConfirmationDialogRaw(props) {
         </RadioGroup>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleCancel} color="primary">
+        <Button data-label="button"  autoFocus onClick={handleCancel} color="primary">
           Cancel
         </Button>
-        <Button onClick={handleOk} color="primary">
+        <Button data-label="button"  onClick={handleOk} color="primary">
           Ok
         </Button>
       </DialogActions>
@@ -133,7 +133,7 @@ export default function ConfirmationDialog() {
 
   return (
     <div className={classes.root}>
-      <List component="div" role="list">
+      <List data-label="list" component="div" role="list">
         <ListItem button divider disabled role="listitem">
           <ListItemText primary="Interruptions" />
         </ListItem>

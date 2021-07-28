@@ -18,7 +18,7 @@ export default function JDIBackdrop({open, ...rest}) {
     return (
         <div>
             <Backdrop data-label="backdrop" className={classes.backdrop} open={true} onClick={() => {}}>
-                <CircularProgress color="inherit" />
+                <CircularProgress data-label="progress"  color="inherit" />
             </Backdrop>
         </div>
     );

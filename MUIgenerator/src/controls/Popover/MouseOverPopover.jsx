@@ -17,7 +17,7 @@ export default function MouseOverPopover() {
 
     return (
         <div>
-            <Popover
+            <Popover data-label="popover" 
             style={{ position: 'absolute' }}
                 disableScrollLock
                 id="mouse-over-popover"
@@ -26,7 +26,6 @@ export default function MouseOverPopover() {
                     paper: classes.paper,
                 }}
                 open={true}
-                anchorEl={document.getElementById("popoverContainer")}
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'left',

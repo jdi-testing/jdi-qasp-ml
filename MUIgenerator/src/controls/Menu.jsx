@@ -2,17 +2,8 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core';
-
-const useStyles = makeStyles((theme) => ({
-    popover: {
-        position: 'relative !important',
-    },
-}));
 
 export default function JDIMenu() {
-    const classes = useStyles();
-
     const handleClick = (event) => {
     };
 
@@ -21,12 +12,11 @@ export default function JDIMenu() {
 
     return (
         <div id="menuDiv">
-            <Button aria-controls="simple-menu" onClick={handleClick}>
+            <Button data-label="button"  aria-controls="simple-menu" onClick={handleClick}>
                 Open Menu
             </Button>
             <Menu
                 id="simple-menu"
-                anchorEl={document.getElementById("menuDiv")}
                 keepMounted
                 open
                 onClose={handleClose}
@@ -38,6 +28,7 @@ export default function JDIMenu() {
                     }
                 }}
                 MenuListProps={{
+                    ["data-label"]: "menu",
                     style: {
                         padding: 0,
                     },

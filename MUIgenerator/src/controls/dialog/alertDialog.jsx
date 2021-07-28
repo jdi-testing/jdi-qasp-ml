@@ -10,7 +10,7 @@ export default function AlertDialog() {
 
     return (
         <div>
-            <Dialog
+            <Dialog data-label="dialog" 
                 open={true}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
@@ -27,10 +27,10 @@ export default function AlertDialog() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => { }} color="primary">
+                    <Button data-label="button"  onClick={() => { }} color="primary">
                         Disagree
                     </Button>
-                    <Button onClick={() => { }} color="primary" autoFocus>
+                    <Button data-label="button"  onClick={() => { }} color="primary" autoFocus>
                         Agree
                     </Button>
                 </DialogActions>

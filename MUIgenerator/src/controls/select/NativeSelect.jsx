@@ -36,7 +36,7 @@ export default function JDINativeSelects({ type, open }) {
             {
                 type === 0 && <FormControl className={classes.formControl}>
                     <InputLabel htmlFor="age-native-simple">Age</InputLabel>
-                    <Select open={open}
+                    <Select data-label="select"  open={open}
                         MenuProps={{
                             disableScrollLock: true,
                         }}
@@ -121,7 +121,7 @@ export default function JDINativeSelects({ type, open }) {
             {type === 4 &&
                 <FormControl variant="filled" className={classes.formControl}>
                     <InputLabel htmlFor="filled-age-native-simple">Age</InputLabel>
-                    <Select open={open}
+                    <Select data-label="select"  open={open}
                         MenuProps={{
                             disableScrollLock: true,
                         }}

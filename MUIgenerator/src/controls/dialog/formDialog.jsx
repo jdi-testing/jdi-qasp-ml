@@ -17,7 +17,7 @@ export default function FormDialog() {
 
     return (
         <div>
-            <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+            <Button data-label="button"  variant="outlined" color="primary" onClick={handleClickOpen}>
                 Open form dialog
             </Button>
             <Dialog open={true} onClose={handleClose} aria-labelledby="form-dialog-title" hideBackdrop={true}
@@ -31,7 +31,7 @@ export default function FormDialog() {
                         To subscribe to this website, please enter your email address here. We will send updates
                         occasionally.
                     </DialogContentText>
-                    <TextField
+                    <TextField data-label="text-field" 
                         autoFocus
                         margin="dense"
                         id="name"
@@ -41,10 +41,10 @@ export default function FormDialog() {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button data-label="button"  onClick={handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleClose} color="primary">
+                    <Button data-label="button"  onClick={handleClose} color="primary">
                         Subscribe
                     </Button>
                 </DialogActions>

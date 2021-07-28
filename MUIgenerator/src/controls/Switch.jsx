@@ -16,13 +16,13 @@ export default function JDISwitch({ type }) {
     return (
         <FormGroup row>
             {(type === 0) && <FormControlLabel
-                control={<Switch checked={state.checkedA} onChange={handleChange} name="checkedA" />}
+                control={<Switch data-label="switch"  checked={state.checkedA} onChange={handleChange} name="checkedA" />}
                 label="Secondary"
             />}
             {(type === 1) && 
             <FormControlLabel
                 control={
-                    <Switch
+                    <Switch data-label="switch" 
                         checked={state.checkedB}
                         onChange={handleChange}
                         name="checkedB"
@@ -31,9 +31,9 @@ export default function JDISwitch({ type }) {
                 }
                 label="Primary"
             />}
-            {(type === 2) && <FormControlLabel control={<Switch />} label="Uncontrolled" />}
-            {(type === 3) && <FormControlLabel disabled control={<Switch />} label="Disabled" />}
-            {(type === 4) && <FormControlLabel disabled control={<Switch checked />} label="Disabled" />}
+            {(type === 2) && <FormControlLabel control={<Switch data-label="switch"  />} label="Uncontrolled" />}
+            {(type === 3) && <FormControlLabel disabled control={<Switch data-label="switch"  />} label="Disabled" />}
+            {(type === 4) && <FormControlLabel disabled control={<Switch data-label="switch"  checked />} label="Disabled" />}
         </FormGroup>
     );
 }

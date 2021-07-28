@@ -17,14 +17,14 @@ export default function JDILink({ type }) {
     const preventDefault = (event) => event.preventDefault();
 
     return (
-        <Typography className={classes.root}>
-            {(type === 0) && <Link href="#" onClick={preventDefault}>
+        <Typography data-label="typography" className={classes.root}>
+            {(type === 0) && <Link data-label="link"  href="#" onClick={preventDefault}>
                 Link
             </Link>}
-            {(type === 1) && <Link href="#" onClick={preventDefault} color="inherit">
+            {(type === 1) && <Link data-label="link"  href="#" onClick={preventDefault} color="inherit">
                 {'color="inherit"'}
             </Link>}
-            {(type === 2) && <Link href="#" onClick={preventDefault} variant="body2">
+            {(type === 2) && <Link data-label="link"  href="#" onClick={preventDefault} variant="body2">
                 {'variant="body2"'}
             </Link>}
         </Typography>

@@ -31,14 +31,14 @@ export default function ControlledAccordions() {
 
   return (
     <div className={classes.root}>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+      <Accordion data-label="accordion"  expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon data-label="icon" />}
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography className={classes.heading}>General settings</Typography>
-          <Typography className={classes.secondaryHeading}>I am an accordion</Typography>
+          <Typography data-label="typography" className={classes.heading}>General settings</Typography>
+          <Typography data-label="typography" className={classes.secondaryHeading}>I am an accordion</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -47,14 +47,14 @@ export default function ControlledAccordions() {
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+      <Accordion data-label="accordion"  expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon data-label="icon" />}
           aria-controls="panel2bh-content"
           id="panel2bh-header"
         >
-          <Typography className={classes.heading}>Users</Typography>
-          <Typography className={classes.secondaryHeading}>
+          <Typography data-label="typography" className={classes.heading}>Users</Typography>
+          <Typography data-label="typography" className={classes.secondaryHeading}>
             You are currently not an owner
           </Typography>
         </AccordionSummary>
@@ -65,14 +65,14 @@ export default function ControlledAccordions() {
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+      <Accordion data-label="accordion"  expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon data-label="icon" />}
           aria-controls="panel3bh-content"
           id="panel3bh-header"
         >
-          <Typography className={classes.heading}>Advanced settings</Typography>
-          <Typography className={classes.secondaryHeading}>
+          <Typography data-label="typography" className={classes.heading}>Advanced settings</Typography>
+          <Typography data-label="typography" className={classes.secondaryHeading}>
             Filtering has been entirely disabled for whole web server
           </Typography>
         </AccordionSummary>
@@ -83,13 +83,13 @@ export default function ControlledAccordions() {
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
+      <Accordion data-label="accordion"  expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon data-label="icon" />}
           aria-controls="panel4bh-content"
           id="panel4bh-header"
         >
-          <Typography className={classes.heading}>Personal data</Typography>
+          <Typography data-label="typography" className={classes.heading}>Personal data</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>

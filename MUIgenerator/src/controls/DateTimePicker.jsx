@@ -18,10 +18,10 @@ export default function JDIDateTimePicker({ type }) {
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container justifyContent="space-around">
+            <Grid data-label="grid" container justifyContent="space-around">
                 {
                     type === 0 ?
-                        <KeyboardDatePicker
+                        <KeyboardDatePicker data-label="datetime-picker" 
                             disableToolbar
                             variant="static"
                             format="MM/dd/yyyy"
@@ -38,7 +38,7 @@ export default function JDIDateTimePicker({ type }) {
                 }
                 {
                     type === 1 ?
-                        <KeyboardDatePicker
+                        <KeyboardDatePicker data-label="datetime-picker" 
                             variant="static"
                             margin="normal"
                             id="date-picker-dialog"
@@ -54,7 +54,7 @@ export default function JDIDateTimePicker({ type }) {
                 }
                 {
                     type === 2 ?
-                        <KeyboardTimePicker
+                        <KeyboardTimePicker data-label="datetime-picker" 
                             variant="static"
                             margin="normal"
                             id="time-picker"

@@ -23,12 +23,12 @@ export default function JDIPopper({ type }) {
 
     return (
         <div id="popperContainer" className={classes.root}>
-            {(type === 0) && <Popper open anchorEl={document.getElementById("popperContainer")} placement="bottom-end" transition>
-                <Paper>
-                    <Typography className={classes.typography}>The content of the Popper.</Typography>
+            {(type === 0) && <Popper data-label="popper"  open anchorEl={document.getElementById("popperContainer")} placement="bottom-end" transition>
+                <Paper data-label="paper" >
+                    <Typography data-label="typography" className={classes.typography}>The content of the Popper.</Typography>
                 </Paper>
             </Popper>}
-            {(type === 1) && <Popper open={true} anchorEl={document.getElementById("popperContainer")} placement="left-end">
+            {(type === 1) && <Popper data-label="popper"  open={true} anchorEl={document.getElementById("popperContainer")} placement="left-end">
                 <div className={classes.paper}>The content of the Popper.</div>
             </Popper>}
         </div>

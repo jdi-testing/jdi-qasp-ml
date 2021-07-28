@@ -17,29 +17,29 @@ export default function JDITextField({ type }) {
     return (
         <form className={classes.root} noValidate autoComplete="off">
             <div>
-                {(type === 0) && <TextField required id="standard-required" label="Required" defaultValue="Hello World" />}
-                {(type === 1) && <TextField disabled id="standard-disabled" label="Disabled" defaultValue="Hello World" />}
-                {(type === 2) && <TextField
+                {(type === 0) && <TextField data-label="text-field"  required id="standard-required" label="Required" defaultValue="Hello World" />}
+                {(type === 1) && <TextField data-label="text-field"  disabled id="standard-disabled" label="Disabled" defaultValue="Hello World" />}
+                {(type === 2) && <TextField data-label="text-field" 
                     id="standard-password-input"
                     label="Password"
                     type="password"
                     autoComplete="current-password"
                 />}
-                {(type === 3) && <TextField
+                {(type === 3) && <TextField data-label="text-field" 
                     required
                     id="filled-required"
                     label="Required"
                     defaultValue="Hello World"
                     variant="filled"
                 />}
-                {(type === 4) && <TextField
+                {(type === 4) && <TextField data-label="text-field" 
                     disabled
                     id="filled-disabled"
                     label="Disabled"
                     defaultValue="Hello World"
                     variant="filled"
                 />}
-                {(type === 5) && <TextField
+                {(type === 5) && <TextField data-label="text-field" 
                     id="filled-number"
                     label="Number"
                     type="number"
@@ -48,14 +48,14 @@ export default function JDITextField({ type }) {
                     }}
                     variant="filled"
                 />}
-                {(type === 6) && <TextField
+                {(type === 6) && <TextField data-label="text-field" 
                     error
                     id="filled-error"
                     label="Error"
                     defaultValue="Hello World"
                     variant="filled"
                 />}
-                {(type === 7) && <TextField
+                {(type === 7) && <TextField data-label="text-field" 
                     error
                     id="filled-error-helper-text"
                     label="Error"

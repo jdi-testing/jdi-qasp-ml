@@ -180,7 +180,7 @@ export default function JDIstepper({ steps, type, orientation, activeStep, alter
     };
 
     const steppers = [
-         <Stepper data-label="slider" activeStep={activeStep} {...{ alternativeLabel, orientation }}>
+         <Stepper data-label="stepper" activeStep={activeStep} {...{ alternativeLabel, orientation }}>
             {steps.map((label, index) => {
                 const stepProps = {};
                 const labelProps = {};
@@ -197,21 +197,21 @@ export default function JDIstepper({ steps, type, orientation, activeStep, alter
                 );
             })}
         </Stepper>,
-         <Stepper data-label="slider" activeStep={activeStep} {...{ alternativeLabel, orientation }}>
+         <Stepper data-label="stepper" activeStep={activeStep} {...{ alternativeLabel, orientation }}>
             {steps.map((label) => (
                 <Step key={label}>
                     <StepLabel>{label}</StepLabel>
                 </Step>
             ))}
         </Stepper>,
-         <Stepper data-label="slider" activeStep={activeStep} connector={<QontoConnector />} {...{ alternativeLabel, orientation }}>
+         <Stepper data-label="stepper" activeStep={activeStep} connector={<QontoConnector />} {...{ alternativeLabel, orientation }}>
             {steps.map((label) => (
                 <Step key={label}>
                     <StepLabel StepIconComponent={QontoStepIcon}>{label}</StepLabel>
                 </Step>
             ))}
         </Stepper>,
-         <Stepper data-label="slider" activeStep={activeStep} connector={<ColorlibConnector />} {...{ alternativeLabel, orientation }}>
+         <Stepper data-label="stepper" activeStep={activeStep} connector={<ColorlibConnector />} {...{ alternativeLabel, orientation }}>
             {steps.map((label) => (
                 <Step key={label}>
                     <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>

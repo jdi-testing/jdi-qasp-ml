@@ -45,10 +45,10 @@ export default function JDICard({ variant, header, content, actionText, action }
     };
 
     const actions = [
-        <IconButton aria-label="add to favorites">
+        <IconButton data-label="button" aria-label="add to favorites">
             <FavoriteIcon data-label="icon" />
         </IconButton>,
-        <IconButton aria-label="share">
+        <IconButton data-label="button" aria-label="share">
             <ShareIcon  data-label="icon"/>
         </IconButton>,
         <IconButton
@@ -61,7 +61,7 @@ export default function JDICard({ variant, header, content, actionText, action }
         >
             <ExpandMoreIcon data-label="icon" />
         </IconButton>,
-        <Button size="small">{actionText}</Button>
+        <Button data-label="button"  size="small">{actionText}</Button>
     ]
 
     return (

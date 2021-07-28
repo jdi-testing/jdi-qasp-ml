@@ -42,7 +42,7 @@ export default function PermanentDrawerLeft() {
     return (
         <div className={classes.root} id="drawer-container">
             <CssBaseline />
-            <Drawer
+            <Drawer data-label="drawer" 
                 className={classes.drawer}
                 variant="permanent"
                 classes={{
@@ -58,7 +58,7 @@ export default function PermanentDrawerLeft() {
             >
                 <div className={classes.toolbar} />
                 <Divider data-label="divider" />
-                <List>
+                <List data-label="list" >
                     {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
                         <ListItem button key={text}>
                             <ListItemIcon>{index % 2 === 0 ? <InboxIcon  data-label="icon" /> : <MailIcon  data-label="icon" />}</ListItemIcon>
@@ -67,7 +67,7 @@ export default function PermanentDrawerLeft() {
                     ))}
                 </List>
                 <Divider data-label="divider" />
-                <List>
+                <List data-label="list" >
                     {['All mail', 'Trash', 'Spam'].map((text, index) => (
                         <ListItem button key={text}>
                             <ListItemIcon>{index % 2 === 0 ? <InboxIcon  data-label="icon" /> : <MailIcon  data-label="icon" />}</ListItemIcon>

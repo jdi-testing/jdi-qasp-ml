@@ -39,7 +39,7 @@ export default function JDITabs({ tabs, icons, ...rest }) {
     };
 
     return (
-        <Paper square className={classes.root}>
+        <Paper data-label="paper"  square className={classes.root}>
             <Tabs data-label="tabs"
                 onChange={() => {}}                                
                 indicatorColor="primary"

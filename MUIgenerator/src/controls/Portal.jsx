@@ -19,7 +19,7 @@ export default function JDIPortal() {
       <div className={classes.alert}>
         It looks like I will render here.
         {true ? (
-          <Portal container={container.current}>
+          <Portal data-label="portal"  container={container.current}>
             <span>But I actually render here!</span>
           </Portal>
         ) : null}

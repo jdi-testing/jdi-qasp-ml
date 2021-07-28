@@ -21,13 +21,13 @@ export default function SimpleAccordion() {
 
   return (
     <div className={classes.root}>
-      <Accordion>
+      <Accordion data-label="accordion" >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon data-label="icon" />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className={classes.heading}>Accordion 1</Typography>
+          <Typography data-label="typography" className={classes.heading}>Accordion 1</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -36,13 +36,13 @@ export default function SimpleAccordion() {
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion>
+      <Accordion data-label="accordion" >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon data-label="icon" />}
           aria-controls="panel2a-content"
           id="panel2a-header"
         >
-          <Typography className={classes.heading}>Accordion 2</Typography>
+          <Typography data-label="typography" className={classes.heading}>Accordion 2</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -51,13 +51,13 @@ export default function SimpleAccordion() {
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion disabled>
+      <Accordion data-label="accordion"  disabled>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon data-label="icon" />}
           aria-controls="panel3a-content"
           id="panel3a-header"
         >
-          <Typography className={classes.heading}>Disabled Accordion</Typography>
+          <Typography data-label="typography" className={classes.heading}>Disabled Accordion</Typography>
         </AccordionSummary>
       </Accordion>
     </div>

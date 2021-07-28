@@ -27,43 +27,43 @@ export default function JDIBreadcrumbs({type}) {
     return (
         <React.Fragment>
             {(type === 0) && <div className={classes.root}>
-                <Breadcrumbs separator="›" aria-label="breadcrumb">
-                    <Link color="inherit" href="/" onClick={handleClick}>
+                <Breadcrumbs data-label="breadcrumbs"  separator="›" aria-label="breadcrumb">
+                    <Link data-label="link"  color="inherit" href="/" onClick={handleClick}>
                         Material-UI
                     </Link>
-                    <Link color="inherit" href="/getting-started/installation/" onClick={handleClick}>
+                    <Link data-label="link"  color="inherit" href="/getting-started/installation/" onClick={handleClick}>
                         Core
                     </Link>
-                    <Typography color="textPrimary">Breadcrumb</Typography>
+                    <Typography data-label="typography" color="textPrimary">Breadcrumb</Typography>
                 </Breadcrumbs>
-                <Breadcrumbs separator="-" aria-label="breadcrumb">
-                    <Link color="inherit" href="/" onClick={handleClick}>
+                <Breadcrumbs data-label="breadcrumbs"  separator="-" aria-label="breadcrumb">
+                    <Link data-label="link"  color="inherit" href="/" onClick={handleClick}>
                         Material-UI
                     </Link>
-                    <Link color="inherit" href="/getting-started/installation/" onClick={handleClick}>
+                    <Link data-label="link"  color="inherit" href="/getting-started/installation/" onClick={handleClick}>
                         Core
                     </Link>
-                    <Typography color="textPrimary">Breadcrumb</Typography>
+                    <Typography data-label="typography" color="textPrimary">Breadcrumb</Typography>
                 </Breadcrumbs>
-                <Breadcrumbs separator={<NavigateNextIcon data-label="icon" fontSize="small" />} aria-label="breadcrumb">
-                    <Link color="inherit" href="/" onClick={handleClick}>
+                <Breadcrumbs data-label="breadcrumbs"  separator={<NavigateNextIcon data-label="icon" fontSize="small" />} aria-label="breadcrumb">
+                    <Link data-label="link"  color="inherit" href="/" onClick={handleClick}>
                         Material-UI
                     </Link>
-                    <Link color="inherit" href="/getting-started/installation/" onClick={handleClick}>
+                    <Link data-label="link"  color="inherit" href="/getting-started/installation/" onClick={handleClick}>
                         Core
                     </Link>
-                    <Typography color="textPrimary">Breadcrumb</Typography>
+                    <Typography data-label="typography" color="textPrimary">Breadcrumb</Typography>
                 </Breadcrumbs>
             </div>}
             {(type === 1) &&
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="inherit" href="/" onClick={handleClick}>
+                    <Link data-label="link"  color="inherit" href="/" onClick={handleClick}>
                         Material-UI
                     </Link>
-                    <Link color="inherit" href="/getting-started/installation/" onClick={handleClick}>
+                    <Link data-label="link"  color="inherit" href="/getting-started/installation/" onClick={handleClick}>
                         Core
                     </Link>
-                    <Link
+                    <Link data-label="link" 
                         color="textPrimary"
                         href="/components/breadcrumbs/"
                         onClick={handleClick}
@@ -75,11 +75,11 @@ export default function JDIBreadcrumbs({type}) {
             }
             {(type === 2) &&
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="inherit" href="/" onClick={handleClick} className={classes.link}>
+                    <Link data-label="link"  color="inherit" href="/" onClick={handleClick} className={classes.link}>
                         <HomeIcon data-label="icon" className={classes.icon} />
                         Material-UI
                     </Link>
-                    <Link
+                    <Link data-label="link" 
                         color="inherit"
                         href="/getting-started/installation/"
                         onClick={handleClick}
@@ -88,7 +88,7 @@ export default function JDIBreadcrumbs({type}) {
                         <WhatshotIcon data-label="icon" className={classes.icon} />
                         Core
                     </Link>
-                    <Typography color="textPrimary" className={classes.link}>
+                    <Typography data-label="typography" color="textPrimary" className={classes.link}>
                         <GrainIcon data-label="icon" className={classes.icon} />
                         Breadcrumb
                     </Typography>

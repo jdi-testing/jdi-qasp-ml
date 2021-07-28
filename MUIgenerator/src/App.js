@@ -32,6 +32,8 @@ import JDILink from "./controls/Link";
 import JDIMenu from "./controls/Menu";
 import JDITextField from "./controls/TextField";
 import { JDIBox } from "./controls/Box";
+import JDIBadge from "./controls/Badge";
+import JDISnackbar from "./controls/Snackbar";
 
 const controlParams = JSON.parse(process.env.REACT_APP_NOT_SECRET_CODE);
 
@@ -44,6 +46,7 @@ function App() {
       <JDIAppBar {...controlParams.AppBar} />
       <JDIAvatar {...controlParams.Avatar} />
       <JDIBackdrop {...controlParams.Backdrop} />
+      <JDIBadge {...controlParams.Badge} />
       <JDIButtonGroup {...controlParams.ButtonGroup} />
       <JDIBreadcrumbs {...controlParams.Breadcrumbs} />
       <JDIBottomNavigation {...controlParams.BottomNavigation} />
@@ -68,6 +71,7 @@ function App() {
       <JDISelect {...controlParams.Select} />
       <JDIstepper {...controlParams.Stepper} />
       <JDISlider {...controlParams.Slider} />
+      <JDISnackbar {...controlParams.Snackbar} />
       <JDISwitch {...controlParams.Switch} />
       <JDITabs {...controlParams.Tabs} />
       <JDITable {...controlParams.Table} />

@@ -85,13 +85,13 @@ export default function JDIAppBar({ type, header }) {
         const basic = [
             <AppBar data-label="app-bar"   position="static">
                 <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                    <IconButton data-label="button" edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
                         <MenuIcon data-label="icon" />
                     </IconButton>
                     <Typography data-label="typography" variant="h6" className={classes.title}>
                         {header}
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    <Button data-label="button"  color="inherit">Login</Button>
                 </Toolbar>
             </AppBar>,
             <AppBar data-label="app-bar"   position="static">
@@ -122,13 +122,13 @@ export default function JDIAppBar({ type, header }) {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <IconButton aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="secondary">
+                        <IconButton data-label="button" aria-label="show 4 new mails" color="inherit">
+                            <Badge data-label="badge" badgeContent={4} color="secondary">
                                 <MailIcon data-label="icon" />
                             </Badge>
                         </IconButton>
-                        <IconButton aria-label="show 17 new notifications" color="inherit">
-                            <Badge badgeContent={17} color="secondary">
+                        <IconButton data-label="button" aria-label="show 17 new notifications" color="inherit">
+                            <Badge data-label="badge" badgeContent={17} color="secondary">
                                 <NotificationsIcon data-label="icon" />
                             </Badge>
                         </IconButton>
@@ -184,7 +184,7 @@ export default function JDIAppBar({ type, header }) {
             </AppBar>,
             <AppBar data-label="app-bar"   position="static">
                 <Toolbar variant="dense">
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                    <IconButton data-label="button" edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
                         <MenuIcon />
                     </IconButton>
                     <Typography data-label="typography" variant="h6" color="inherit">

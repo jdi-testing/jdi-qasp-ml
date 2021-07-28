@@ -21,6 +21,7 @@ const structure = JSON.stringify(
         AppBar: appBar(),
         Avatar: avatar(),
         Backdrop: { width: random(1000), height: random(1000), top: random(500), left: random(500), open: randomBool() },
+        Badge: { type: random(5) },
         ButtonGroup: { type: random(6) },
         Breadcrumbs: { type: random(3) },
         BottomNavigation: { type: random(2) },
@@ -44,6 +45,7 @@ const structure = JSON.stringify(
         Radio: radio(),
         Select: { type: [random(3), random(5)] },
         Slider: slider(),
+        Snackbar: ({ text: lorem.generateSentences(1) }),
         Stepper: stepper(),
         Switch: { type: random(5) },
         Tabs: tabs(),
@@ -54,5 +56,9 @@ const structure = JSON.stringify(
 process.env.REACT_APP_NOT_SECRET_CODE = structure;
 process.env.PUBLIC_URL = ".";
 
-exec("npm run start");
+require('child_process').exec("npm run build", function(err, stdout, stderr) { 
+    err && console.log(err); 
+    stdout && console.log(stdout); 
+    stderr && console.log(stderr); 
+});
 

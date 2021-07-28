@@ -19,44 +19,44 @@ export default function JDIButtonGroup({type}) {
 
     return (
         <div className={classes.root}>
-            {(type === 0) && <ButtonGroup color="primary" aria-label="outlined primary button group">
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
+            {(type === 0) && <ButtonGroup data-label="button-group" color="primary" aria-label="outlined primary button group">
+                <Button data-label="button" >One</Button>
+                <Button data-label="button" >Two</Button>
+                <Button data-label="button" >Three</Button>
             </ButtonGroup>}
-            {(type === 1) && <ButtonGroup color="secondary" aria-label="outlined secondary button group">
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
+            {(type === 1) && <ButtonGroup data-label="button-group" color="secondary" aria-label="outlined secondary button group">
+                <Button data-label="button" >One</Button>
+                <Button data-label="button" >Two</Button>
+                <Button data-label="button" >Three</Button>
             </ButtonGroup>}
-            {(type === 2) && <ButtonGroup size="large" color="primary" aria-label="large outlined primary button group">
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
+            {(type === 2) && <ButtonGroup data-label="button-group" size="large" color="primary" aria-label="large outlined primary button group">
+                <Button data-label="button" >One</Button>
+                <Button data-label="button" >Two</Button>
+                <Button data-label="button" >Three</Button>
             </ButtonGroup>}
-            {(type === 3) && <ButtonGroup
+            {(type === 3) && <ButtonGroup data-label="button" Group
                 orientation="vertical"
                 color="primary"
                 aria-label="vertical contained primary button group"
                 variant="contained"
             >
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
+                <Button data-label="button" >One</Button>
+                <Button data-label="button" >Two</Button>
+                <Button data-label="button" >Three</Button>
             </ButtonGroup>}
-            {(type === 4) && <ButtonGroup
+            {(type === 4) && <ButtonGroup data-label="button" Group
                 orientation="vertical"
                 color="primary"
                 aria-label="vertical contained primary button group"
                 variant="text"
             >
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
+                <Button data-label="button" >One</Button>
+                <Button data-label="button" >Two</Button>
+                <Button data-label="button" >Three</Button>
             </ButtonGroup>}
-            {(type === 5) && <ButtonGroup disableElevation variant="contained" color="primary">
-                <Button>One</Button>
-                <Button>Two</Button>
+            {(type === 5) && <ButtonGroup data-label="button-group" disableElevation variant="contained" color="primary">
+                <Button data-label="button" >One</Button>
+                <Button data-label="button" >Two</Button>
             </ButtonGroup>}
         </div>
     );

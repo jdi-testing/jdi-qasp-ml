@@ -77,8 +77,8 @@ export default function CircularIntegration({ type }) {
     return (
         <React.Fragment>
             <div className={classes.root}>
-                {(type === 0) && <CircularProgress variant="determinate" value={75} />}
-                {(type === 1) && <CircularProgress color="secondary" />}
+                {(type === 0) && <CircularProgress data-label="progress"  variant="determinate" value={75} />}
+                {(type === 1) && <CircularProgress data-label="progress"  color="secondary" />}
                 {(type === 2) && <div className={classes.wrapper}>
                     <Fab
                         aria-label="save"
@@ -88,10 +88,10 @@ export default function CircularIntegration({ type }) {
                     >
                         {success ? <CheckIcon data-label="icon" /> : <SaveIcon data-label="icon" />}
                     </Fab>
-                    <CircularProgress size={68} className={classes.fabProgress} />
+                    <CircularProgress data-label="progress"  size={68} className={classes.fabProgress} />
                 </div>}
                 {(type === 3) && <div className={classes.wrapper}>
-                    <Button
+                    <Button data-label="button" 
                         variant="contained"
                         color="primary"
                         className={buttonClassname}
@@ -100,12 +100,12 @@ export default function CircularIntegration({ type }) {
                     >
                         Accept terms
                     </Button>
-                    <CircularProgress size={24} className={classes.buttonProgress} />
+                    <CircularProgress data-label="progress"  size={24} className={classes.buttonProgress} />
                 </div>}
             </div>
             <div className={classes.roo1}>
-                {(type === 4) && <LinearProgress />}
-                {(type === 5) && <LinearProgress color="secondary" />}
+                {(type === 4) && <LinearProgress data-label="progress"  />}
+                {(type === 5) && <LinearProgress data-label="progress"  color="secondary" />}
             </div>
         </React.Fragment>
     );

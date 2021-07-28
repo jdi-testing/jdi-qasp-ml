@@ -47,7 +47,7 @@ function Row(props) {
     <React.Fragment>
       <TableRow className={classes.root}>
         <TableCell>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+          <IconButton data-label="button" aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon  data-label="icon" /> : <KeyboardArrowDownIcon  data-label="icon" />}
           </IconButton>
         </TableCell>
@@ -62,7 +62,7 @@ function Row(props) {
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
+            <Box data-label="box" margin={1}>
               <Typography data-label="typography" variant="h6" gutterBottom component="div">
                 History
               </Typography>

@@ -15,12 +15,11 @@ export default function SimplePopover() {
 
     return (
         <div ref={containerRef}>
-            <Popover
+            <Popover data-label="popover" 
                 style={{ position: 'absolute' }}
                 disableScrollLock
                 id="simple-popover"
                 open
-                anchorEl={document.getElementById("popoverContainer")}
                 onClose={() => { }}
                 anchorOrigin={{
                     vertical: 'bottom',
@@ -31,7 +30,7 @@ export default function SimplePopover() {
                     horizontal: 'center',
                 }}
             >
-                <Typography className={classes.typography}>The content of the Popover.</Typography>
+                <Typography data-label="typography" className={classes.typography}>The content of the Popover.</Typography>
             </Popover>
         </div>
     );

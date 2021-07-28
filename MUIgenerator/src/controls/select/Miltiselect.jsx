@@ -74,7 +74,7 @@ export default function JDIMultipleSelect({ type, open }) {
         <div>
             {(type === 0) && <FormControl className={classes.formControl}>
                 <InputLabel id="demo-mutiple-name-label">Name</InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                     MenuProps={{
                         disableScrollLock: true,
                     }}
@@ -95,7 +95,7 @@ export default function JDIMultipleSelect({ type, open }) {
             }
             {(type === 1) && <FormControl className={classes.formControl}>
                 <InputLabel id="demo-mutiple-checkbox-label">Tag</InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                     MenuProps={{
                         disableScrollLock: true,
                     }}
@@ -118,7 +118,7 @@ export default function JDIMultipleSelect({ type, open }) {
             }
             {(type === 2) && <FormControl className={classes.formControl}>
                 <InputLabel id="demo-mutiple-chip-label">Chip</InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                     MenuProps={{
                         disableScrollLock: true,
                     }}
@@ -145,7 +145,7 @@ export default function JDIMultipleSelect({ type, open }) {
             </FormControl>
             }
             {(type === 3) && <FormControl className={clsx(classes.formControl, classes.noLabel)}>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                     MenuProps={{
                         disableScrollLock: true,
                     }}
@@ -179,7 +179,7 @@ export default function JDIMultipleSelect({ type, open }) {
                 <InputLabel shrink htmlFor="select-multiple-native">
                     Native
                 </InputLabel>
-                <Select open={open}
+                <Select data-label="select"  open={open}
                     MenuProps={{
                         disableScrollLock: true,
                     }}

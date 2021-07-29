@@ -14,51 +14,60 @@ const tabs = require('./src/generator/controls/tabs');
 const lorem = require('./src/generator/loremIpsum');
 const { random, randomBool } = require('./src/generator/utils');
 
-const structure = JSON.stringify(
-    {
-        Accordion: { type: random(3) },
-        Alert: { type: random(4), text: lorem.generateSentences(1) },
-        AppBar: appBar(),
-        Avatar: avatar(),
-        Backdrop: { width: random(1000), height: random(1000), top: random(500), left: random(500), open: randomBool() },
-        Badge: { type: random(5) },
-        ButtonGroup: { type: random(6) },
-        Breadcrumbs: { type: random(3) },
-        BottomNavigation: { type: random(2) },
-        Box: {},
-        Card: card(),
-        Checkbox: checkboxGenerator(),
-        Chip: chip(),
-        Circular: { type: random(6) },
-        Container: container(),
-        DateTimePicker: { type: random(3) },
-        Dialog: { type: random(5) },
-        Divider: { type: random(5) },
-        Drawer: { type: random(3) },
-        Grid: { type: random(2) },
-        Link: { type: random(3) },
-        List: { type: random(3) },
-        Menu: {},
-        Popover: { type: random(2) },
-        Popper: { type: random(2) },
-        Portal: {},
-        Radio: radio(),
-        Select: { type: [random(3), random(5)] },
-        Slider: slider(),
-        Snackbar: ({ text: lorem.generateSentences(1) }),
-        Stepper: stepper(),
-        Switch: { type: random(5) },
-        Tabs: tabs(),
-        Table: { type: random(6) },
-        TextArea: { type: random(3) },
-        TextField: { type: random(8) },
-    });
-process.env.REACT_APP_NOT_SECRET_CODE = structure;
+const controls =
+    [
+        () => ({ key: "Accordion", value: { type: random(3) } }),
+        () => ({ key: "Alert", value: { type: random(4), text: lorem.generateSentences(1) } }),
+        () => ({ key: "AppBar", value: appBar() }),
+        () => ({ key: "Avatar", value: avatar() }),
+        () => ({ key: "Backdrop", value: { width: random(1000), height: random(1000), top: random(500), left: random(500), open: randomBool() } }),
+        () => ({ key: "Badge", value: { type: random(5) } }),
+        () => ({ key: "ButtonGroup", value: { type: random(6) } }),
+        () => ({ key: "Breadcrumbs", value: { type: random(3) } }),
+        () => ({ key: "BottomNavigation", value: { type: random(2) } }),
+        () => ({ key: "Box", value: {} }),
+        () => ({ key: "Card", value: card() }),
+        () => ({ key: "Checkbox", value: checkboxGenerator() }),
+        () => ({ key: "Chip", value: chip() }),
+        () => ({ key: "Circular", value: { type: random(6) } }),
+        () => ({ key: "Container", value: container() }),
+        () => ({ key: "DateTimePicker", value: { type: random(3) } }),
+        () => ({ key: "Dialog", value: { type: random(5) } }),
+        () => ({ key: "Divider", value: { type: random(5) } }),
+        () => ({ key: "Drawer", value: { type: random(3) } }),
+        () => ({ key: "Grid", value: { type: random(2) } }),
+        () => ({ key: "Link", value: { type: random(3) } }),
+        () => ({ key: "List", value: { type: random(3) } }),
+        () => ({ key: "Menu", value: {} }),
+        () => ({ key: "Popover", value: { type: random(2) } }),
+        () => ({ key: "Popper", value: { type: random(2) } }),
+        () => ({ key: "Portal", value: {} }),
+        () => ({ key: "Radio", value: radio() }),
+        () => ({ key: "Select", value: { type: [random(3), random(5)] } }),
+        () => ({ key: "Slider", value: slider() }),
+        () => ({ key: "Snackbar", value: ({ text: lorem.generateSentences(1) }) }),
+        () => ({ key: "Stepper", value: stepper() }),
+        () => ({ key: "Switch", value: { type: random(5) } }),
+        () => ({ key: "Tabs", value: tabs() }),
+        () => ({ key: "Table", value: { type: random(6) } }),
+        () => ({ key: "TextArea", value: { type: random(3) } }),
+        () => ({ key: "TextField", value: { type: random(8) } }),
+    ];
+
+const getRandomStructure = () => {
+    const randomControls = [];
+    for (let index = 0; index < 50; index++) {
+        randomControls.push((controls[random(controls.length)])());
+    }
+    return JSON.stringify(randomControls);
+}
+
+process.env.REACT_APP_GENERATED_STRUCTURE = getRandomStructure();
 process.env.PUBLIC_URL = ".";
 
-require('child_process').exec("npm run build", function(err, stdout, stderr) { 
-    err && console.log(err); 
-    stdout && console.log(stdout); 
-    stderr && console.log(stderr); 
+require('child_process').exec("npm run build", function (err, stdout, stderr) {
+    err && console.log(err);
+    stdout && console.log(stdout);
+    stderr && console.log(stderr);
 });
 

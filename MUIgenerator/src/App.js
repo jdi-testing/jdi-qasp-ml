@@ -35,48 +35,59 @@ import { JDIBox } from "./controls/Box";
 import JDIBadge from "./controls/Badge";
 import JDISnackbar from "./controls/Snackbar";
 
-const controlParams = JSON.parse(process.env.REACT_APP_NOT_SECRET_CODE);
+const controlParams = JSON.parse(process.env.REACT_APP_GENERATED_STRUCTURE);
 
 function App() {
-  console.log(controlParams);
+  const renderControls = () => {
+    const controls = [];
+    controlParams.forEach(({ key, value }) => {
+      const control =
+        (key === 'Accordion' && <JDIAccordeon {...value} />) ||
+        (key === "Alert" && <JDIAlert {...value} />) ||
+        (key === "AppBar" && <JDIAppBar {...value} />) ||
+        (key === "Avatar" && <JDIAvatar {...value} />) ||
+        (key === "Backdrop" && <JDIBackdrop {...value} />) ||
+        (key === "Badge" && <JDIBadge {...value} />) ||
+        (key === "ButtonGroup" && <JDIButtonGroup {...value} />) ||
+        (key === "Breadcrumbs" && <JDIBreadcrumbs {...value} />) ||
+        (key === "BottomNavigation" && <JDIBottomNavigation {...value} />) ||
+        (key === "Box" && <JDIBox />) ||
+        (key === "Card" && <JDICard {...value} />) ||
+        (key === "Circular" && <JDICircular {...value} />) ||
+        (key === "Checkbox" && <JDICheckbox {...value} />) ||
+        (key === "Chip" && <JDIchips {...value} />) ||
+        (key === "Container" && <JDIContainer {...value} />) ||
+        (key === "DateTimePicker" && <JDIDateTimePickers {...value} />) ||
+        (key === "Dialog" && <JDIDialog {...value} />) ||
+        (key === "Divider" && <JDIDivider {...value} />) ||
+        (key === "Drawer" && <JDIDrawer {...value} />) ||
+        (key === "Grid" && <JDIGrid {...value} />) ||
+        (key === "Link" && <JDILink {...value} />) ||
+        (key === "List" && <JDIList {...value} />) ||
+        (key === "Menu" && <JDIMenu {...value} />) ||
+        (key === "Portal" && <JDIPortal />) ||
+        (key === "Popover" && <JDIPopover {...value} />) ||
+        (key === "Popper" && <JDIPopper {...value} />) ||
+        (key === "Radio" && <JDIradio {...value} />) ||
+        (key === "Select" && <JDISelect {...value} />) ||
+        (key === "Stepper" && <JDIstepper {...value} />) ||
+        (key === "Slider" && <JDISlider {...value} />) ||
+        (key === "Snackbar" && <JDISnackbar {...value} />) ||
+        (key === "Switch" && <JDISwitch {...value} />) ||
+        (key === "Tabs" && <JDITabs {...value} />) ||
+        (key === "Table" && <JDITable {...value} />) ||
+        (key === "TextArea" && <JDITextarea {...value} />) ||
+        (key === "TextField" && <JDITextField {...value} />);
+      controls.push(control);
+    })
+    return controls;
+  }
+
   return (
     <div>
-      <JDIAccordeon {...controlParams.Accordion} />
-      <JDIAlert {...controlParams.Alert} />
-      <JDIAppBar {...controlParams.AppBar} />
-      <JDIAvatar {...controlParams.Avatar} />
-      <JDIBackdrop {...controlParams.Backdrop} />
-      <JDIBadge {...controlParams.Badge} />
-      <JDIButtonGroup {...controlParams.ButtonGroup} />
-      <JDIBreadcrumbs {...controlParams.Breadcrumbs} />
-      <JDIBottomNavigation {...controlParams.BottomNavigation} />
-      <JDIBox />
-      <JDICard {...controlParams.Card} />
-      <JDICircular {...controlParams.Circular} />
-      <JDICheckbox {...controlParams.Checkbox} />
-      <JDIchips {...controlParams.Chip} />
-      <JDIContainer {...controlParams.Container} />
-      <JDIDateTimePickers {...controlParams.DateTimePicker} />
-      <JDIDialog {...controlParams.Dialog} />
-      <JDIDivider {...controlParams.Divider} />
-      <JDIDrawer {...controlParams.Drawer} />
-      <JDIGrid {...controlParams.Grid} />
-      <JDILink {...controlParams.Link} />
-      <JDIList {...controlParams.List} />
-      <JDIMenu {...controlParams.Menu} />
-      <JDIPortal />
-      <JDIPopover {...controlParams.Popover} />
-      <JDIPopper {...controlParams.Popper} />
-      <JDIradio {...controlParams.Radio} />
-      <JDISelect {...controlParams.Select} />
-      <JDIstepper {...controlParams.Stepper} />
-      <JDISlider {...controlParams.Slider} />
-      <JDISnackbar {...controlParams.Snackbar} />
-      <JDISwitch {...controlParams.Switch} />
-      <JDITabs {...controlParams.Tabs} />
-      <JDITable {...controlParams.Table} />
-      <JDITextarea {...controlParams.TextArea} />
-      <JDITextField {...controlParams.TextField} />
+      {
+        renderControls()
+      }
     </div>
   );
 }

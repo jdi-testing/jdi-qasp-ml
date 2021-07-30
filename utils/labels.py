@@ -51,6 +51,9 @@ def assign_labels(df: pd.DataFrame, annotations_file_path: str, img_width: int =
         - get dummy_value from dataset/classes.txt
 
     """
+
+    os.makedirs('dataset/cache-labels', exist_ok=True)
+
     ds_name = re.split(r'[/\\]+', re.sub(r'\.txt$', '', annotations_file_path))[-1]
     logger.info(f' Dataset: {ds_name}, assign labels from annotation file: {annotations_file_path}')
 

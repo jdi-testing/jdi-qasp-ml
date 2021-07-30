@@ -64,9 +64,10 @@ class RobulaPlus:
             'maxlength',
             'jdn-hash',
             'xml:space',
+            'fill',
         ]
 
-        self.forbidden_tags = ['svg']
+        self.forbidden_tags = ['svg', 'rect']
         self.element = element
         self.document = document
         self.path_list = p_list

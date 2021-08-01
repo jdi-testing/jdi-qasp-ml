@@ -131,7 +131,7 @@ if __name__ == "__main__":
 
     if os.path.exists('model/model.pth'):
         print('WARNING: load saved model weights')
-        model = torch.load('model/model.pth')
+        model = torch.load('model/model.pth', map_location='cpu').to(DEVICE)
         best_accuracy = evaluate(model=model, dataset=test_dataset)
     else:
         print('WARNING: Create brand new model')
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         # torch.save(model, f'model/model-{epoch}.pth')
         early_stopping_steps -= 1
         test_accuracy = evaluate(model=model, dataset=test_dataset)
-        if test_accuracy >= best_accuracy:
+        if test_accuracy > best_accuracy:
             best_accuracy = test_accuracy
             logger.info(f'SAVING MODEL WITH THE BEST ACCUCACY: {best_accuracy}')
             torch.save(model, 'model/model.pth')

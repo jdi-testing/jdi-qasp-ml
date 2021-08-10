@@ -2,7 +2,7 @@ import re
 from copy import copy
 from itertools import chain, combinations
 
-from lxml import html
+from lxml import html, etree
 
 
 class XPath:
@@ -49,7 +49,7 @@ class XPath:
 
 
 class RobulaPlus:
-    def __init__(self, element, document, p_list):
+    def __init__(self, element, document):
         self.attribute_priorization_list = ['name', 'class', 'title', 'alt', 'value']
         self.attribute_black_list = [
             'href',
@@ -70,14 +70,13 @@ class RobulaPlus:
         self.forbidden_tags = ['svg', 'rect']
         self.element = element
         self.document = document
-        self.path_list = p_list
 
     def get_robust_xpath(self):
         x_path_list = [XPath('//*')]
         while len(x_path_list) > 0:
             x_path = x_path_list.pop(0)
             temp = []
-            # if convert star in the beginnig generated xpaths invalid in browser
+
             temp.extend(self.transf_convert_star(x_path))
             temp.extend(self.transf_add_id(x_path))
             temp.extend(self.transf_add_text(x_path))
@@ -91,6 +90,9 @@ class RobulaPlus:
                 if self.uniquely_locate(el.get_value()):
                     return el.get_value()
                 x_path_list.append(el)
+
+            if len(x_path_list) > 1500:  # approximately 5 sec of equations
+                return None
 
     def get_ancestor(self, index):
         output = self.element
@@ -119,7 +121,7 @@ class RobulaPlus:
     def transf_convert_star(self, xpath):
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
-        if (xpath.starts_with('//*') and ancestor.tag.lower() not in self.forbidden_tags):
+        if xpath.starts_with('//*') and ancestor.tag.lower() not in self.forbidden_tags:
             output.append(XPath('//' + ancestor.tag.lower() + xpath.substring(3)))
         return output
 
@@ -258,6 +260,7 @@ def generate_xpath(xpath, page):
             or len(element) == 0:
         return "Document does not contain given element!"
     element = element[0]
-    path_l = path_list(xpath)
-    robula = RobulaPlus(element, document, path_l)
-    return robula.get_robust_xpath()
+    tree = etree.ElementTree(document)
+    robula = RobulaPlus(element, document)
+    robust_path = robula.get_robust_xpath()
+    return robust_path if robust_path is not None else tree.getpath(element)  # return absolute xpath if robust doesn't found

@@ -35,6 +35,8 @@ import { MatTableModule } from "@angular/material/table";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatTreeModule } from "@angular/material/tree";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 import { DragDropModule } from "@angular/cdk/drag-drop";
 
@@ -88,8 +90,14 @@ import { TableStickyComponent } from "./table/table-sticky/table-sticky.componen
 import { TabsComponent } from "./tabs/tabs.component";
 import { ToolbarComponent } from "./toolbar/toolbar.component";
 import { TreeComponent } from "./tree/tree.component";
-import { TreeFlatComponent } from './tree/tree-flat/tree-flat.component';
-import { TreeCheckboxesComponent } from './tree/tree-checkboxes/tree-checkboxes.component';
+import { TreeFlatComponent } from "./tree/tree-flat/tree-flat.component";
+import { TreeCheckboxesComponent } from "./tree/tree-checkboxes/tree-checkboxes.component";
+import { BottomSheetComponent } from "./bottom-sheet/bottom-sheet.component";
+import { DialogComponent } from "./dialog/dialog.component";
+import { MenuComponent } from "./menu/menu.component";
+import { SelectComponent } from "./select/select.component";
+import { SidenavComponent } from "./sidenav/sidenav.component";
+import { SnackbarComponent } from "./snackbar/snackbar.component";
 
 @NgModule({
   declarations: [
@@ -145,6 +153,12 @@ import { TreeCheckboxesComponent } from './tree/tree-checkboxes/tree-checkboxes.
     TreeComponent,
     TreeFlatComponent,
     TreeCheckboxesComponent,
+    BottomSheetComponent,
+    DialogComponent,
+    MenuComponent,
+    SelectComponent,
+    SidenavComponent,
+    SnackbarComponent,
   ],
   imports: [
     BrowserModule,
@@ -182,7 +196,9 @@ import { TreeCheckboxesComponent } from './tree/tree-checkboxes/tree-checkboxes.
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
-    MatTreeModule
+    MatTreeModule,
+    MatSidenavModule,
+    MatSnackBarModule,
   ],
   providers: [MatDatepickerModule],
   bootstrap: [AppComponent],

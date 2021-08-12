@@ -13,7 +13,7 @@ fs.writeFile('src/generationStructure.txt', JSON.stringify(structure), (err) => 
   console.log('The file is rewritten!');
 });
 
-require('child_process').exec("npm run start", function (err, stdout, stderr) {
+require('child_process').exec("npm run build --prod --base-href ./", function (err, stdout, stderr) {
     err && console.log(err);
     stdout && console.log(stdout);
     stderr && console.log(stderr);

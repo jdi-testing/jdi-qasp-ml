@@ -190,13 +190,14 @@ def predict():
     # return jsonify({'status': 'OK', 'filename': filename})
 
 
-@api.route('/generate_xpath/', methods=['POST'])
+@api.route('/generate_xpath', methods=['POST'])
 def generate_xpath():
     data = json.loads(request.data)
     page = json.loads(data['document'])
+
     ids = list(set(data['ids']))
     result = {}
-    workers = os.cpu_count()
+    workers = min(os.cpu_count(), len(ids))
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
         future_to_xpath = {pool.submit(robula.generate_xpath, f"//*[@jdn-hash='{id}']", page): id for id in ids}
@@ -205,7 +206,7 @@ def generate_xpath():
             try:
                 result[id] = future.result()
             except Exception as exc:
-                print('%r generated an exception: %s' % (id, exc))
+                api.logger.info('%r generated an exception: %s' % (id, exc))
 
     return json.dumps(result)
 

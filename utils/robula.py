@@ -1,8 +1,14 @@
+import datetime
 import re
 from copy import copy
 from itertools import chain, combinations
 
 from lxml import html, etree
+from lxml.etree import XPathEvalError
+
+
+class XPathEvaluationTimeExceeded(Exception):
+    pass
 
 
 class XPath:
@@ -65,13 +71,18 @@ class RobulaPlus:
             'jdn-hash',
             'xml:space',
             'fill',
+            'xmlns'
         ]
 
         self.forbidden_tags = ['svg', 'rect']
+        self.maximum_evaluation_time_in_seconds = 5
+        self.maximum_length_of_text = 1000
+
         self.element = element
         self.document = document
 
     def get_robust_xpath(self):
+        start_time = datetime.datetime.now()
         x_path_list = [XPath('//*')]
         while len(x_path_list) > 0:
             x_path = x_path_list.pop(0)
@@ -87,12 +98,15 @@ class RobulaPlus:
 
             temp = remove_duplicates(temp)
             for el in temp:
-                if self.uniquely_locate(el.get_value()):
-                    return el.get_value()
-                x_path_list.append(el)
+                if (datetime.datetime.now() - start_time).total_seconds() > self.maximum_evaluation_time_in_seconds:
+                    raise XPathEvaluationTimeExceeded
 
-            if len(x_path_list) > 1500:  # approximately 5 sec of equations
-                return None
+                try:
+                    if self.uniquely_locate(el.get_value()):
+                        return el.get_value()
+                    x_path_list.append(el)
+                except XPathEvalError:
+                    pass
 
     def get_ancestor(self, index):
         output = self.element
@@ -144,10 +158,14 @@ class RobulaPlus:
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
         ancestor_text_content = str(ancestor.text_content()).replace("'", "&quot;")
+        ancestor_text_content = str(ancestor.text_content()).replace(b'\xc2\xa0'.decode("utf-8"), " ")  # NBSP
+        ancestor_text_content = str(ancestor.text_content()).replace(b'\xe2\x80\x89'.decode("utf-8"), " ")  # THSP
+
         if (not ancestor_text_content.isspace()
                 and not xpath.head_has_position_predicate()
-                and not xpath.head_has_text_predicate() \
-                and b'\xc2\xa0'.decode("utf-8") not in ancestor_text_content):  # avoid texts with non-breaking spaces
+                and not xpath.head_has_text_predicate()
+                and len(ancestor_text_content) < self.maximum_length_of_text):
+
             new_x_path = XPath(xpath.get_value())
             new_x_path.add_predicate_to_head(f"[contains(text(), '{ancestor_text_content}')]")
             output.append(new_x_path)
@@ -262,5 +280,11 @@ def generate_xpath(xpath, page):
     element = element[0]
     tree = etree.ElementTree(document)
     robula = RobulaPlus(element, document)
-    robust_path = robula.get_robust_xpath()
-    return robust_path if robust_path is not None else tree.getpath(element)  # return absolute xpath if robust doesn't found
+
+    try:
+        robust_path = robula.get_robust_xpath()
+    except XPathEvaluationTimeExceeded:
+        pass
+        return tree.getpath(element)
+
+    return robust_path

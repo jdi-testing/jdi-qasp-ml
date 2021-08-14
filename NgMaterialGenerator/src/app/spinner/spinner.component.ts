@@ -1,5 +1,5 @@
 
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 
@@ -12,6 +12,7 @@ import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
   styleUrls: ['./spinner.component.css']
 })
 export class SpinnerComponent {
+  @Input() type?: number;
   color: ThemePalette = 'primary';
   mode: ProgressSpinnerMode = 'determinate';
   value = 50;

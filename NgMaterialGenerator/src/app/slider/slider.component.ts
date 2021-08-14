@@ -1,14 +1,15 @@
-import {Component} from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 /**
  * @title Configurable slider
  */
- @Component({
-  selector: 'app-slider',
-  templateUrl: './slider.component.html',
-  styleUrls: ['./slider.component.css']
+@Component({
+  selector: "app-slider",
+  templateUrl: "./slider.component.html",
+  styleUrls: ["./slider.component.css"],
 })
 export class SliderComponent {
+  @Input() type?: number;
   autoTicks = false;
   disabled = false;
   invert = false;
@@ -21,9 +22,9 @@ export class SliderComponent {
   vertical = false;
   tickInterval = 1;
 
-  getSliderTickInterval(): number | 'auto' {
+  getSliderTickInterval(): number | "auto" {
     if (this.showTicks) {
-      return this.autoTicks ? 'auto' : this.tickInterval;
+      return this.autoTicks ? "auto" : this.tickInterval;
     }
 
     return 0;

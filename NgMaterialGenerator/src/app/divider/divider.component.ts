@@ -1,5 +1,5 @@
 
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * @title Basic divider
@@ -9,4 +9,6 @@ import {Component} from '@angular/core';
   templateUrl: './divider.component.html',
   styleUrls: ['./divider.component.css']
 })
-export class DividerComponent {}
+export class DividerComponent {
+  @Input() type?: number;
+}

@@ -1,5 +1,5 @@
 
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * @title Stepper overview
@@ -10,5 +10,5 @@ import {Component} from '@angular/core';
   styleUrls: ['./stepper.component.css']
 })
 export class StepperComponent {
-
+  @Input() type?: number;
 }

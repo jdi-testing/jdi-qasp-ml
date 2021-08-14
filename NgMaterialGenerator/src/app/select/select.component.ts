@@ -1,6 +1,5 @@
-
-import {Component} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import { Component, Input } from "@angular/core";
+import { FormControl, FormGroup } from "@angular/forms";
 
 interface Food {
   value: string;
@@ -20,22 +19,23 @@ interface Food {
 /**
  * @title Basic select
  */
- @Component({
-  selector: 'app-select',
-  templateUrl: './select.component.html',
-  styleUrls: ['./select.component.css']
+@Component({
+  selector: "app-select",
+  templateUrl: "./select.component.html",
+  styleUrls: ["./select.component.css"],
 })
 export class SelectComponent {
+  @Input() type?: number;
   form: FormGroup;
   foods: Food[] = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'}
+    { value: "steak-0", viewValue: "Steak" },
+    { value: "pizza-1", viewValue: "Pizza" },
+    { value: "tacos-2", viewValue: "Tacos" },
   ];
   cars: Car[] = [
-    {value: 'volvo', viewValue: 'Volvo'},
-    {value: 'saab', viewValue: 'Saab'},
-    {value: 'mercedes', viewValue: 'Mercedes'}
+    { value: "volvo", viewValue: "Volvo" },
+    { value: "saab", viewValue: "Saab" },
+    { value: "mercedes", viewValue: "Mercedes" },
   ];
   foodControl = new FormControl(this.foods[2].value);
   carControl = new FormControl(this.cars[1].value);
@@ -43,7 +43,7 @@ export class SelectComponent {
   constructor() {
     this.form = new FormGroup({
       food: this.foodControl,
-      car: this.carControl
+      car: this.carControl,
     });
   }
 }

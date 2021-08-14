@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 export interface Section {
   name: string;
@@ -14,6 +14,7 @@ export interface Section {
   styleUrls: ['./list.component.css']
 })
 export class ListComponent {
+  @Input() type?: number;
   folders: Section[] = [
     {
       name: 'Photos',

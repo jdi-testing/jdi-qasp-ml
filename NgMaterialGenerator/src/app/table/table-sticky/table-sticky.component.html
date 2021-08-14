@@ -1,5 +1,5 @@
 <div class="example-container mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource">
+    <table mat-table data-label="table" [dataSource]="dataSource">
   
       <!-- Name Column -->
       <ng-container matColumnDef="name" sticky>
@@ -29,7 +29,7 @@
       <ng-container matColumnDef="star" stickyEnd>
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element">
-          <mat-icon>more_vert</mat-icon>
+          <mat-icon data-label="icon">more_vert</mat-icon>
         </td>
       </ng-container>
   

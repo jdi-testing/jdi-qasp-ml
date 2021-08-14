@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-button-toggle',
@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./button-toggle.component.css']
 })
 export class ButtonToggleComponent implements OnInit {
+  @Input() type?: number;
 
   constructor() { }
 

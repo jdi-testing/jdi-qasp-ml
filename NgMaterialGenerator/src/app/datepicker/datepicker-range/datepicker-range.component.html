@@ -1,4 +1,4 @@
-<mat-form-field class="example-form-field" appearance="fill">
+<mat-form-field data-label="formField" class="example-form-field" appearance="fill">
     <mat-label>First campaign</mat-label>
     <mat-date-range-input
       [formGroup]="campaignOne"
@@ -9,10 +9,10 @@
       <input matEndDate placeholder="End date" formControlName="end">
     </mat-date-range-input>
     <mat-datepicker-toggle matSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
-    <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
+    <mat-date-range-picker data-label="datepicker"  #campaignOnePicker></mat-date-range-picker>
   </mat-form-field>
   
-  <mat-form-field class="example-form-field" appearance="fill">
+  <mat-form-field data-label="formField" class="example-form-field" appearance="fill">
     <mat-label>Second campaign</mat-label>
     <mat-date-range-input
       [formGroup]="campaignTwo"
@@ -23,6 +23,6 @@
       <input matEndDate placeholder="End date" formControlName="end">
     </mat-date-range-input>
     <mat-datepicker-toggle matSuffix [for]="campaignTwoPicker"></mat-datepicker-toggle>
-    <mat-date-range-picker #campaignTwoPicker></mat-date-range-picker>
+    <mat-date-range-picker data-label="datepicker" #campaignTwoPicker></mat-date-range-picker>
   </mat-form-field>
   

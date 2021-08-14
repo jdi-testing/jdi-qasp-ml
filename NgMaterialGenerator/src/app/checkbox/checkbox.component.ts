@@ -1,5 +1,5 @@
 
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 
 export interface Task {
@@ -18,6 +18,7 @@ export interface Task {
   styleUrls: ['./checkbox.component.css']
 })
 export class CheckboxComponent {
+  @Input() type?: number;
   task: Task = {
     name: 'Indeterminate',
     completed: false,

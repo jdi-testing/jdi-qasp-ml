@@ -44,7 +44,6 @@ import { AutocompleteHighlightComponent } from "./autocomplete/autocomplete-high
 import { AutocompleteFilterComponent } from "./autocomplete/autocomplete-filter/autocomplete-filter.component";
 import { AutocompleteGroupsComponent } from "./autocomplete/autocomplete-groups/autocomplete-groups.component";
 import { AutocompletePlainInputComponent } from "./autocomplete/autocomplete-plain-input/autocomplete-plain-input.component";
-import { BadgeComponent } from "./badge/badge.component";
 import { AutocompleteComponent } from "./autocomplete/autocomplete.component";
 import { ButtonComponent } from "./button/button.component";
 import { ButtonToggleComponent } from "./button-toggle/button-toggle.component";
@@ -106,7 +105,6 @@ import { SnackbarComponent } from "./snackbar/snackbar.component";
     AutocompleteFilterComponent,
     AutocompleteGroupsComponent,
     AutocompletePlainInputComponent,
-    BadgeComponent,
     AutocompleteComponent,
     ButtonComponent,
     ButtonToggleComponent,

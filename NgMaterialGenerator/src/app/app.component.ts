@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import structure from '../generationStructure.json';
 
 @Component({
   selector: 'app-root',
@@ -9,12 +10,7 @@ export class AppComponent {
   structure?: any = {};
 
   constructor() {
-    fetch('generationStructure.txt')
-      .then((response) => response.text())
-      .then((data) => {    
-        this.structure = JSON.parse(data);
-        console.log(this.structure);
-      });
+    this.structure = structure;
   }
   title = 'NgMaterialGenerator';
 }

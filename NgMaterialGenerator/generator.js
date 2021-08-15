@@ -1,6 +1,6 @@
-const lorem = require('./src/generator/loremIpsum');
 const { random } = require('./src/generator/utils');
 const fs = require('fs');
+const process = require('process');
 
 const structure = {
   autocomplete: random(4),
@@ -39,10 +39,13 @@ const structure = {
 
 fs.writeFile('src/generationStructure.json', JSON.stringify(structure), (err) => {
   if (err) throw err;
-  console.log('The file is rewritten!');
+  console.log('generationStructure.json is updated');
 });
 
-require('child_process').exec("npm run build", function (err, stdout, stderr) {
+const outputPath = process.argv[2];
+console.log('Build to ' + outputPath);
+
+require('child_process').exec("ng build --output-path=" + outputPath, function (err, stdout, stderr) {
   err && console.log(err);
   stdout && console.log(stdout);
   stderr && console.log(stderr);

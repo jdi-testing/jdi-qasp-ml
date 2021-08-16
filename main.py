@@ -4,11 +4,13 @@
 
 import os
 import gc
+import json
+import concurrent.futures
 from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
 import datetime as dt
 
 import pandas as pd
-from utils import JDNDataset
+from utils import JDNDataset, robula
 import torch
 from tqdm.auto import trange
 from torch.utils.data import DataLoader
@@ -186,6 +188,27 @@ def predict():
 
     # Return 201 CREATED
     # return jsonify({'status': 'OK', 'filename': filename})
+
+
+@api.route('/generate_xpath', methods=['POST'])
+def generate_xpath():
+    data = json.loads(request.data)
+    page = json.loads(data['document'])
+
+    ids = list(set(data['ids']))
+    result = {}
+    workers = min(os.cpu_count(), len(ids))
+
+    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
+        future_to_xpath = {pool.submit(robula.generate_xpath, f"//*[@jdn-hash='{id}']", page): id for id in ids}
+        for future in concurrent.futures.as_completed(future_to_xpath):
+            id = future_to_xpath[future]
+            try:
+                result[id] = future.result()
+            except Exception as exc:
+                api.logger.info('%r generated an exception: %s' % (id, exc))
+
+    return json.dumps(result)
 
 
 # Start Flask server

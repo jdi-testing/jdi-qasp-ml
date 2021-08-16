@@ -284,7 +284,6 @@ def generate_xpath(xpath, page):
     try:
         robust_path = robula.get_robust_xpath()
     except XPathEvaluationTimeExceeded:
-        pass
         return tree.getpath(element)
 
     return robust_path

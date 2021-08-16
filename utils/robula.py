@@ -157,9 +157,7 @@ class RobulaPlus:
     def transf_add_text(self, xpath):
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
-        ancestor_text_content = str(ancestor.text_content()).replace("'", "&quot;")
-        ancestor_text_content = str(ancestor.text_content()).replace(b'\xc2\xa0'.decode("utf-8"), " ")  # NBSP
-        ancestor_text_content = str(ancestor.text_content()).replace(b'\xe2\x80\x89'.decode("utf-8"), " ")  # THSP
+        ancestor_text_content = self.remove_invalid_characters(str(ancestor.text_content()))
 
         if (not ancestor_text_content.isspace()
                 and not xpath.head_has_position_predicate()
@@ -180,7 +178,8 @@ class RobulaPlus:
                 for attribute in ancestor.attrib.items():
                     if attribute[0] == priority_attribute:
                         new_xpath = XPath(xpath.get_value())
-                        new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute[1]}']")
+                        attribute_value = self.remove_invalid_characters(attribute[1])
+                        new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute_value}']")
                         output.append(new_xpath)
                         break
 
@@ -188,7 +187,8 @@ class RobulaPlus:
         for attribute in ancestor.attrib.items():
             if attribute[0] not in self.attribute_black_list and attribute[0] not in self.attribute_priorization_list:
                 new_xpath = XPath(xpath.get_value())
-                new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute[1]}']")
+                attribute_value = self.remove_invalid_characters(attribute[1])
+                new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute_value}']")
                 output.append(new_xpath)
         return output
 
@@ -220,9 +220,9 @@ class RobulaPlus:
 
             # convert to predicate
             for attr_set in attribute_power_set:
-                predicate = f"[@{attr_set[0][0]}='{attr_set[0][1]}'"
+                predicate = f"[@{attr_set[0][0]}='{self.remove_invalid_characters(attr_set[0][1])}'"
                 for i in range(1, len(attr_set)):
-                    predicate += f" and @{attr_set[i][0]}='{attr_set[i][1]}'"
+                    predicate += f" and @{attr_set[i][0]}='{self.remove_invalid_characters(attr_set[i][1])}'"
                 predicate += ']'
                 new_xpath = XPath(xpath.get_value())
                 new_xpath.add_predicate_to_head(predicate)
@@ -254,6 +254,16 @@ class RobulaPlus:
         if len(xpath) - 1 < self.get_ancestor_count():
             output.append(XPath('//*' + xpath.substring(1)))
         return output
+
+    def remove_invalid_characters(self, s: str):
+        valid_string = s[:]
+        chars_to_remove = ["'",
+                           '\t',
+                           '\n',
+                           b'\xc2\xa0'.decode("utf-8"),  #NBSP
+                           b'\xe2\x80\x89'.decode("utf-8")]  #THSP
+        valid_string = valid_string.translate({ord(ch): '' for ch in chars_to_remove})
+        return valid_string
 
 
 def path_list(xpath):

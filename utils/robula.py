@@ -103,7 +103,10 @@ class RobulaPlus:
 
                 try:
                     if self.uniquely_locate(el.get_value()):
-                        return el.get_value()
+                        if self.uniquely_locate(self.delete_redundant_levels(el.get_value())):
+                            return self.delete_redundant_levels(el.get_value())
+                        else:
+                            return el.get_value()
                     x_path_list.append(el)
                 except XPathEvalError:
                     pass
@@ -264,6 +267,10 @@ class RobulaPlus:
                            b'\xe2\x80\x89'.decode("utf-8")]  #THSP
         valid_string = valid_string.translate({ord(ch): '' for ch in chars_to_remove})
         return valid_string
+
+    def delete_redundant_levels(self, value):
+        normalized_value = re.sub(r'(\/\*){2,}', '//*', value)
+        return normalized_value
 
 
 def path_list(xpath):

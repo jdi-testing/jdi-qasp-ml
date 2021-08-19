@@ -75,7 +75,7 @@ class RobulaPlus:
         ]
 
         self.forbidden_tags = ['svg', 'rect']
-        self.maximum_evaluation_time_in_seconds = 5
+        self.maximum_evaluation_time_in_seconds = 10
         self.maximum_length_of_text = 1000
 
         self.element = element
@@ -85,31 +85,38 @@ class RobulaPlus:
         start_time = datetime.datetime.now()
         x_path_list = [XPath('//*')]
         while len(x_path_list) > 0:
-            x_path = x_path_list.pop(0)
-            temp = []
+            current_xpath = x_path_list.pop(0)
+            temp = self.generate_xpaths_for_current_level(current_xpath)
 
-            temp.extend(self.transf_convert_star(x_path))
-            temp.extend(self.transf_add_id(x_path))
-            temp.extend(self.transf_add_text(x_path))
-            temp.extend(self.transf_add_attribute(x_path))
-            temp.extend(self.transf_add_attribute_set(x_path))
-            temp.extend(self.transf_add_position(x_path))
-            temp.extend(self.transf_add_level(x_path))
-
-            temp = remove_duplicates(temp)
             for el in temp:
                 if (datetime.datetime.now() - start_time).total_seconds() > self.maximum_evaluation_time_in_seconds:
                     raise XPathEvaluationTimeExceeded
-
                 try:
-                    if self.uniquely_locate(el.get_value()):
-                        if self.uniquely_locate(self.delete_redundant_levels(el.get_value())):
-                            return self.delete_redundant_levels(el.get_value())
-                        else:
-                            return el.get_value()
+                    if (self.uniquely_locate(el.get_value())
+                            and self.xpath_is_valid(el, current_xpath)):
+                        return self.clean_xpath(el.get_value())
                     x_path_list.append(el)
                 except XPathEvalError:
                     pass
+
+    def generate_xpaths_for_current_level(self, x_path):
+        """ Returns array of xpaths possible for current level """
+        temp = []
+        temp.extend(self.transf_convert_star(x_path))
+        temp.extend(self.transf_add_id(x_path))
+        temp.extend(self.transf_add_text(x_path))
+        temp.extend(self.transf_add_attribute(x_path))
+        temp.extend(self.transf_add_attribute_set(x_path))
+        temp.extend(self.transf_add_level(x_path))
+        temp = remove_duplicates(temp)
+        return temp
+
+    def clean_xpath(self, value):
+        """ Removes redundant symbols from xpath if it's possible """
+        if self.uniquely_locate(self.remove_redundant_levels(value)):
+            return self.remove_redundant_levels(value)
+        else:
+            return value
 
     def get_ancestor(self, index):
         output = self.element
@@ -143,6 +150,7 @@ class RobulaPlus:
         return output
 
     def transf_add_id(self, xpath):
+        """ Generates xpath with id of element """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
         try:
@@ -158,6 +166,7 @@ class RobulaPlus:
         return output
 
     def transf_add_text(self, xpath):
+        """ Generates xpath with element's inner text (text of this element and all children) """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
         ancestor_text_content = self.remove_invalid_characters(str(ancestor.text_content()))
@@ -166,13 +175,13 @@ class RobulaPlus:
                 and not xpath.head_has_position_predicate()
                 and not xpath.head_has_text_predicate()
                 and len(ancestor_text_content) < self.maximum_length_of_text):
-
             new_x_path = XPath(xpath.get_value())
             new_x_path.add_predicate_to_head(f"[contains(text(), '{ancestor_text_content}')]")
             output.append(new_x_path)
         return output
 
     def transf_add_attribute(self, xpath):
+        """ Generates list of xpaths with all valid attributes """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
         if not xpath.head_has_any_predicates():
@@ -196,6 +205,7 @@ class RobulaPlus:
         return output
 
     def transf_add_attribute_set(self, xpath):
+        """ Generates xpaths with all possible permutations of attributes with len > 2 """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
 
@@ -233,6 +243,7 @@ class RobulaPlus:
         return output
 
     def transf_add_position(self, xpath):
+        """ Generates xpath with attribute's position index """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
 
@@ -259,27 +270,28 @@ class RobulaPlus:
         return output
 
     def remove_invalid_characters(self, s: str):
+        """ Removes characters which can't be used in xpath """
         valid_string = s[:]
         chars_to_remove = ["'",
                            '\t',
                            '\n',
-                           b'\xc2\xa0'.decode("utf-8"),  #NBSP
-                           b'\xe2\x80\x89'.decode("utf-8")]  #THSP
+                           b'\xc2\xa0'.decode("utf-8"),  # NBSP
+                           b'\xe2\x80\x89'.decode("utf-8")]  # THSP
+
         valid_string = valid_string.translate({ord(ch): '' for ch in chars_to_remove})
         return valid_string
 
-    def delete_redundant_levels(self, value):
+    def remove_redundant_levels(self, value):
+        """ Replaces repeating levels (\\*) in xpath with //* """
         normalized_value = re.sub(r'(\/\*){2,}', '//*', value)
         return normalized_value
 
+    def xpath_is_valid(self, xpath, parent_xpath):
+        converted_star = self.transf_convert_star(parent_xpath)
+        if len(xpath) == 1 and len(converted_star) and xpath.get_value() == converted_star[0].get_value():
+            return False
 
-def path_list(xpath):
-    temp = xpath.replace("//", "")
-    elements = temp.split("/")
-    if temp[-1] == "/":
-        elements.pop()
-
-    return elements
+        return True
 
 
 def remove_duplicates(seq):

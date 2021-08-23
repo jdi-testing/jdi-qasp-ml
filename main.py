@@ -193,14 +193,21 @@ def predict():
 @api.route('/generate_xpath', methods=['POST'])
 def generate_xpath():
     data = json.loads(request.data)
-    page = json.loads(data['document'])
 
+    page = json.loads(data['document'])
     ids = list(set(data['ids']))
+
+    config = robula.get_default_config()
+    try:
+        config.update(data['config'])
+    except KeyError:
+        pass
+
     result = {}
     workers = min(os.cpu_count(), len(ids))
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
-        future_to_xpath = {pool.submit(robula.generate_xpath, f"//*[@jdn-hash='{id}']", page): id for id in ids}
+        future_to_xpath = {pool.submit(robula.generate_xpath, f"//*[@jdn-hash='{id}']", page, config): id for id in ids}
         for future in concurrent.futures.as_completed(future_to_xpath):
             id = future_to_xpath[future]
             try:

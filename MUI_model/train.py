@@ -4,14 +4,18 @@
 import os, gc
 from tqdm.auto import trange
 import pandas as pd
+import re
 
 import torch
 from torch.utils.data import DataLoader
 
-from utils.config import logger
-from utils.dataset import JDNDataset
-from utils.model import JDIModel
-from utils.common import accuracy
+# WORKING_DIR = re.sub('jdi-qasp-ml.*$','',os.path.normpath(os.getcwd())) + 'jdi-qasp-ml' + '\\MUI_model'
+# os.chdir(WORKING_DIR)
+
+from utils import logger
+from utils import JDNDataset
+from utils import JDIModel
+from utils import accuracy
 
 from multiprocessing import freeze_support
 from terminaltables import DoubleTable
@@ -22,7 +26,7 @@ n_datasets = 120
 
 DATASET_NAMES = [f'mui-site{i}' for i in range (1,n_datasets+1)]
 
-ds_files = [f'MUI_model/dataset/df/{fn}.parquet' for fn in DATASET_NAMES]
+ds_files = [f'dataset/df/{fn}.parquet' for fn in DATASET_NAMES]
 
 train_names= DATASET_NAMES[:100]
 test_names = DATASET_NAMES[100:]
@@ -78,9 +82,9 @@ if __name__ == "__main__":
     IN_FEATURES = next(iter(train_dataloader))[0][0].shape[0]
     OUT_FEATURES = len(train_dataset.classes_dict)
 
-    if os.path.exists('MUI_model/model/model.pth'):
+    if os.path.exists('model/model.pth'):
         print('WARNING: load saved model weights')
-        model = torch.load('MUI_model/model/model.pth', map_location='cpu').to(DEVICE)
+        model = torch.load('model/model.pth', map_location='cpu').to(DEVICE)
         best_accuracy = evaluate(model=model, dataset=test_dataset)
     else:
         print('WARNING: Create brand new model')
@@ -143,7 +147,7 @@ if __name__ == "__main__":
         if test_accuracy > best_accuracy:
             best_accuracy = test_accuracy
             logger.info(f'SAVING MODEL WITH THE BEST ACCUCACY: {best_accuracy}')
-            torch.save(model, 'MUI_model/model/model.pth')
+            torch.save(model, 'model/model.pth')
             early_stopping_steps = EARLY_STOPPING_THRESHOLD
 
         train_metrics.append({

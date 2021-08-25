@@ -2,7 +2,7 @@ import os
 # from IPython.display import display
 import pandas as pd
 import numpy as np
-from utils.config import logger
+from .config import logger
 # from .common import iou_xywh
 from tqdm.auto import tqdm
 from collections import defaultdict

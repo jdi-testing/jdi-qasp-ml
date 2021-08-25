@@ -4,15 +4,16 @@ import numba
 import pandas as pd
 import numpy as np
 
-# from .dataset import build_children_features
-# from .dataset import followers_features 
-# from .dataset import build_tree_features
-# from utils.common import build_elements_dict  # noqa
-from utils.common import build_tree_dict
 
-from utils.hidden import build_is_hidden
+from .dataset import build_children_features
+from .dataset import followers_features 
+from .dataset import build_tree_features
+# from utils.common import build_elements_dict  # noqa
+from .common import build_tree_dict
+
+from .hidden import build_is_hidden
 from tqdm.auto import trange
-from utils.config import logger
+from .config import logger
 
 # from scipy.sparse import csc_matrix, csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -21,153 +22,7 @@ from scipy.sparse.csr import csr_matrix
 from collections import Counter, defaultdict
 import pickle
 
-@numba.jit(forceobj=True)
-def get_parents_list(tree_dict: dict, element_id: str, paternts_list: list = None) -> list:
-    """
-        returns ordered list of parent for a element
-        starting from root which is the <html/> tag
-    """
-    if paternts_list is None:
-        paternts_list = []
 
-    parent_id = tree_dict.get(element_id)
-    if parent_id is None:
-        return paternts_list
-    else:
-        paternts_list.append(parent_id)
-        return get_parents_list(tree_dict, element_id=parent_id, paternts_list=paternts_list)
-
-
-
-def build_children_features(df: pd.DataFrame):
-    from collections import Counter
-
-    logger.info('select all leafs (nodes which are not parents)')
-    leafs_set = set(df.element_id.values) - set(df.parent_id.values)
-    logger.info(
-        f'Leafs set size: {len(leafs_set)} (nodes which have no children)')
-    df['is_leaf'] = df.element_id.apply(lambda x: 1 if x in leafs_set else 0)
-
-    logger.info('count number of references to leafs')
-    num_leafs_dict = Counter(
-        df[df.element_id.isin(leafs_set)].parent_id.values)
-    logger.info(
-        f'Nodes with leafs as children set size: {len(num_leafs_dict)} (nodes which have leafs as children)')
-    df['num_leafs'] = df.element_id.map(num_leafs_dict).fillna(0.0)
-
-    logger.info('count num children for each node')
-    num_children_dict = Counter(df.parent_id.values)
-    logger.info(f"Nodes with children: {len(num_children_dict)}")
-    df['num_children'] = df.element_id.map(num_children_dict).fillna(0.0)
-
-    logger.info('sum of children widths, heights, counts')
-    stats_df = df.groupby('parent_id').agg(
-        {'width': 'sum', 'height': 'sum', 'parent_id': 'count'})
-    stats_df.columns = ['sum_children_widths',
-                        'sum_children_heights', 'num_children']
-    stats_df.reset_index(inplace=True)
-
-    logger.info('Sum of children widths')
-    children_widths_dict = dict(
-        stats_df[['parent_id', 'sum_children_widths']].values)
-    df['sum_children_widths'] = df.element_id.map(
-        children_widths_dict).fillna(0.0)
-
-    logger.info('Sum of children hights')
-    children_heights_dict = dict(
-        stats_df[['parent_id', 'sum_children_heights']].values)
-    df['sum_children_hights'] = df.element_id.map(
-        children_heights_dict).fillna(0.0)
-
-    # return  {'leafs':leafs_set, 'num_leafs':num_leafs_dict, 'num_children': num_children_dict } # noqa
-    return df
-
-
-
-def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> pd.DataFrame:
-    """
-        Build feature: "children_tags" and max reverse depth ( depth from leafs) # noqa
-        Concatenate all children tag_names into a string filed 'children_tags'
-    """
-    # get leafs (nodes without children)
-    if followers_set is None:
-        level = 0
-        followers_set = set(df.element_id.values) - set(df.parent_id.values)
-        followers_tags_df = \
-            df[df.element_id.isin(followers_set)][['parent_id', 'tag_name']]\
-            .groupby('parent_id')['tag_name']\
-            .apply(lambda x: ','.join(x))\
-            .reset_index()
-        followers_tags_dict = dict(followers_tags_df.values)
-        df['followers_tags'] = df.element_id.map(
-            followers_tags_dict).fillna('')
-
-        # create max_depth field
-        df['max_depth'] = 0
-        df.max_depth = df.max_depth + \
-            df.element_id.isin(set(followers_tags_dict.keys())).astype(int)
-
-        # recursive call
-        followers_features(df=df, followers_set=set(
-            followers_tags_dict.keys()), level=level + 1)
-
-    elif len(followers_set) > 0:
-        # print(f'level: {level}')
-        followers_tags_df = \
-            df[df.element_id.isin(followers_set)][['parent_id', 'tag_name']]\
-            .groupby('parent_id')['tag_name']\
-            .apply(lambda x: ','.join(x))\
-            .reset_index()
-        followers_tags_dict = dict(followers_tags_df.values)
-        df['followers_tags'] = df.followers_tags + ',' + \
-            df.element_id.map(followers_tags_dict).fillna('')
-
-        # increase max_depth
-        df.max_depth = df.max_depth + \
-            df.element_id.isin(set(followers_tags_dict.keys())).astype(int)
-
-        # recursive call
-        followers_features(df=df, followers_set=set(
-            followers_tags_dict.keys()), level=level + 1)
-
-    df['followers_tags'] = df['followers_tags'].apply(
-        lambda x: re.sub('\\s+', ' ', x.replace(',', ' ')).lower().strip())
-    return df
-
-
-def build_tree_features(elements_df: pd.DataFrame) -> pd.DataFrame:
-    """
-        Walk on elements tree and build tree-features:
-           - chilren_tags
-           - folloer_counters
-    """
-
-    def empty_string():
-        return ''
-
-    tree_dict = build_tree_dict(elements_df)
-
-    # Build paths
-    followers_counter = Counter()
-    # level_dict = defaultdict(int)
-    children_tags_dict = defaultdict(empty_string)
-
-    with trange(elements_df.shape[0]) as tbar:
-        tbar.set_description('Build tree features')
-        for i, r in elements_df.iterrows():
-            list_of_parents = get_parents_list(
-                tree_dict=tree_dict, element_id=r.element_id)
-            children_tags_dict[r.parent_id] += r.tag_name.lower() + ' '
-            # print(list_of_parents)
-            # calculate number of followers
-            followers_counter.update(list_of_parents)
-            tbar.update(1)
-
-    elements_df['children_tags'] = elements_df.element_id.map(
-        children_tags_dict).fillna('')
-    elements_df['num_followers'] = elements_df.element_id.map(
-        followers_counter)
-    return elements_df
 
 
 def build_siblings_dict(df: pd.DataFrame):
@@ -331,14 +186,6 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def attributes_list(file_path='MUI_model/dataset/EXTRACT_ATTRIBUTES_LIST.pkl'):
-    with open(file_path, 'rb') as f:
-        EXTRACT_ATTRIBUTES_LIST = pickle.load(f)
-    return EXTRACT_ATTRIBUTES_LIST
-
-
-EXTRACT_ATTRIBUTES_LIST = attributes_list()
-
 
 def build_attributes_feature(df: pd.DataFrame, colname='attributes') -> pd.DataFrame:
     """
@@ -350,6 +197,9 @@ def build_attributes_feature(df: pd.DataFrame, colname='attributes') -> pd.DataF
     """
     logger.info(f'used column: {colname}')
     attributes = []
+    with open('MUI_model/dataset/EXTRACT_ATTRIBUTES_LIST.pkl', 'rb') as f:
+        EXTRACT_ATTRIBUTES_LIST = pickle.load(f)
+
 
     with trange(df.shape[0]) as bar:
         bar.set_description('Extract "attributes"')

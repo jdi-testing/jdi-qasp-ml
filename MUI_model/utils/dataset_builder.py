@@ -8,9 +8,9 @@ import re
 import os
 
 from time import sleep
-from utils.common import maximize_window
+# from .common import maximize_window
 
-from utils.config import logger
+from .config import logger
 
 
 def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> pd.DataFrame:

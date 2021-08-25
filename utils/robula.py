@@ -11,11 +11,15 @@ class XPathEvaluationTimeExceeded(Exception):
     pass
 
 
+class XPathCantFindPath(Exception):
+    pass
+
+
 class XPath:
     def __init__(self, value) -> None:
         self.value = value
 
-    def get_value(self):
+    def get_value(self) -> str:
         return self.value
 
     def starts_with(self, value):
@@ -40,6 +44,44 @@ class XPath:
         split_xpath[2] += predicate
         self.value = '/'.join(split_xpath)
 
+    def first_not_a_star_level(self):
+        levels = filter(None, self.get_value().split('/'))
+        for index, level in enumerate(levels):
+            if level and level != '*':
+                return index
+
+    def positions_with_index(self):
+        """ Returns positions with indexes """
+        positions = []
+        levels = filter(None, self.get_value().split('/'))
+        for index, level in enumerate(levels):
+            pattern = re.compile(r'\[\d+\]')
+            if pattern.search(level):
+                positions.append(index)
+        return positions
+
+    def starts_with_index(self):
+        """ Checks whether xpath starts with index or not (stars in the beginning are ignored) """
+        if self.first_not_a_star_level() in self.positions_with_index():
+            return True
+        return False
+
+    def contains_index_in_the_middle(self):
+        """ Checks whether xpath contains index in the middle """
+        positions = self.positions_with_index()
+        if self.first_not_a_star_level() in positions:
+            del positions[positions.index(self.first_not_a_star_level())]
+        if len(self) - 1 in positions:
+            del positions[positions.index(len(self) - 1)]
+
+        return len(positions)
+
+    def ends_with_index(self):
+        """ Checks whether xpath ends with index or not """
+        if len(self) - 1 in self.positions_with_index():
+            return True
+        return False
+
     def __len__(self):
         length = 0
         for el in self.value.split('/'):
@@ -55,7 +97,7 @@ class XPath:
 
 
 class RobulaPlus:
-    def __init__(self, element, document):
+    def __init__(self, element, document, config):
         self.attribute_priorization_list = ['name', 'class', 'title', 'alt', 'value']
         self.attribute_black_list = [
             'href',
@@ -73,9 +115,12 @@ class RobulaPlus:
             'fill',
             'xmlns'
         ]
-
         self.forbidden_tags = ['svg', 'rect']
-        self.maximum_evaluation_time_in_seconds = 5
+
+        self.maximum_generation_time_in_seconds = config['maximum_generation_time']
+        self.allow_indexes_at_the_beginning = config['allow_indexes_at_the_beginning']
+        self.allow_indexes_in_the_middle = config['allow_indexes_in_the_middle']
+        self.allow_indexes_at_the_end = config['allow_indexes_at_the_end']
         self.maximum_length_of_text = 1000
 
         self.element = element
@@ -85,28 +130,44 @@ class RobulaPlus:
         start_time = datetime.datetime.now()
         x_path_list = [XPath('//*')]
         while len(x_path_list) > 0:
-            x_path = x_path_list.pop(0)
-            temp = []
+            current_xpath = x_path_list.pop(0)
+            temp = self.generate_xpaths_for_current_level(current_xpath)
 
-            temp.extend(self.transf_convert_star(x_path))
-            temp.extend(self.transf_add_id(x_path))
-            temp.extend(self.transf_add_text(x_path))
-            temp.extend(self.transf_add_attribute(x_path))
-            temp.extend(self.transf_add_attribute_set(x_path))
-            temp.extend(self.transf_add_position(x_path))
-            temp.extend(self.transf_add_level(x_path))
-
-            temp = remove_duplicates(temp)
             for el in temp:
-                if (datetime.datetime.now() - start_time).total_seconds() > self.maximum_evaluation_time_in_seconds:
+                if (datetime.datetime.now() - start_time).total_seconds() > self.maximum_generation_time_in_seconds:
                     raise XPathEvaluationTimeExceeded
 
                 try:
-                    if self.uniquely_locate(el.get_value()):
+                    el = self.clean_xpath(el)
+                    if (self.xpath_is_valid(el, current_xpath)
+                            and self.uniquely_locate(el.get_value())):
                         return el.get_value()
                     x_path_list.append(el)
                 except XPathEvalError:
                     pass
+        raise XPathCantFindPath
+
+    def generate_xpaths_for_current_level(self, xpath):
+        """ Returns array of xpaths possible for current level """
+        temp = []
+        temp.extend(self.transf_convert_star(xpath))
+        temp.extend(self.transf_add_id(xpath))
+        temp.extend(self.transf_add_text(xpath))
+        temp.extend(self.transf_add_attribute(xpath))
+        temp.extend(self.transf_add_attribute_set(xpath))
+        temp.extend(self.transf_add_position(xpath))
+        temp.extend(self.transf_add_level(xpath))
+        temp = remove_duplicates(temp)
+        return temp
+
+    def clean_xpath(self, xpath: XPath):
+        """ Removes redundant symbols from xpath if it's possible """
+        value = xpath.get_value()
+        cleaned_path = self.remove_redundant_levels(value)
+        if self.uniquely_locate(cleaned_path):
+            return XPath(cleaned_path)
+        else:
+            return xpath
 
     def get_ancestor(self, index):
         output = self.element
@@ -140,6 +201,7 @@ class RobulaPlus:
         return output
 
     def transf_add_id(self, xpath):
+        """ Generates xpath with id of element """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
         try:
@@ -155,23 +217,22 @@ class RobulaPlus:
         return output
 
     def transf_add_text(self, xpath):
+        """ Generates xpath with element's inner text (text of this element and all children) """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
-        ancestor_text_content = str(ancestor.text_content()).replace("'", "&quot;")
-        ancestor_text_content = str(ancestor.text_content()).replace(b'\xc2\xa0'.decode("utf-8"), " ")  # NBSP
-        ancestor_text_content = str(ancestor.text_content()).replace(b'\xe2\x80\x89'.decode("utf-8"), " ")  # THSP
+        ancestor_text_content = self.remove_invalid_characters(str(ancestor.text_content()))
 
         if (not ancestor_text_content.isspace()
                 and not xpath.head_has_position_predicate()
                 and not xpath.head_has_text_predicate()
                 and len(ancestor_text_content) < self.maximum_length_of_text):
-
             new_x_path = XPath(xpath.get_value())
             new_x_path.add_predicate_to_head(f"[contains(text(), '{ancestor_text_content}')]")
             output.append(new_x_path)
         return output
 
     def transf_add_attribute(self, xpath):
+        """ Generates list of xpaths with all valid attributes """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
         if not xpath.head_has_any_predicates():
@@ -180,7 +241,8 @@ class RobulaPlus:
                 for attribute in ancestor.attrib.items():
                     if attribute[0] == priority_attribute:
                         new_xpath = XPath(xpath.get_value())
-                        new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute[1]}']")
+                        attribute_value = self.remove_invalid_characters(attribute[1])
+                        new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute_value}']")
                         output.append(new_xpath)
                         break
 
@@ -188,11 +250,13 @@ class RobulaPlus:
         for attribute in ancestor.attrib.items():
             if attribute[0] not in self.attribute_black_list and attribute[0] not in self.attribute_priorization_list:
                 new_xpath = XPath(xpath.get_value())
-                new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute[1]}']")
+                attribute_value = self.remove_invalid_characters(attribute[1])
+                new_xpath.add_predicate_to_head(f"[@{attribute[0]}='{attribute_value}']")
                 output.append(new_xpath)
         return output
 
     def transf_add_attribute_set(self, xpath):
+        """ Generates xpaths with all possible permutations of attributes with len > 2 """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
 
@@ -220,9 +284,9 @@ class RobulaPlus:
 
             # convert to predicate
             for attr_set in attribute_power_set:
-                predicate = f"[@{attr_set[0][0]}='{attr_set[0][1]}'"
+                predicate = f"[@{attr_set[0][0]}='{self.remove_invalid_characters(attr_set[0][1])}'"
                 for i in range(1, len(attr_set)):
-                    predicate += f" and @{attr_set[i][0]}='{attr_set[i][1]}'"
+                    predicate += f" and @{attr_set[i][0]}='{self.remove_invalid_characters(attr_set[i][1])}'"
                 predicate += ']'
                 new_xpath = XPath(xpath.get_value())
                 new_xpath.add_predicate_to_head(predicate)
@@ -230,10 +294,11 @@ class RobulaPlus:
         return output
 
     def transf_add_position(self, xpath):
+        """ Generates xpath with attribute's position index """
         output = []
         ancestor = self.get_ancestor(len(xpath) - 1)
 
-        if not xpath.head_has_position_predicate():
+        if not xpath.head_has_position_predicate() and ancestor.getparent() is not None:
             position = 1
             if xpath.starts_with('//*'):
                 position = ancestor.getparent().index(ancestor) + 1
@@ -255,14 +320,49 @@ class RobulaPlus:
             output.append(XPath('//*' + xpath.substring(1)))
         return output
 
+    @staticmethod
+    def remove_invalid_characters(s: str):
+        """ Removes characters which can't be used in xpath """
+        valid_string = s[:]
+        chars_to_remove = ["'",
+                           '\t',
+                           '\n',
+                           b'\xc2\xa0'.decode("utf-8"),  # NBSP
+                           b'\xe2\x80\x89'.decode("utf-8")]  # THSP
 
-def path_list(xpath):
-    temp = xpath.replace("//", "")
-    elements = temp.split("/")
-    if temp[-1] == "/":
-        elements.pop()
+        valid_string = valid_string.translate({ord(ch): '' for ch in chars_to_remove})
+        return valid_string
 
-    return elements
+    @staticmethod
+    def remove_redundant_levels(value):
+        """ Replaces repeating levels (\\*) in xpath with //* """
+        normalized_value = re.sub(r'(\/\*){2,}', '//*', value)
+        return normalized_value
+
+    def xpath_is_valid(self, xpath: XPath, parent_xpath: XPath):
+        if self.xpath_contains_only_tag(xpath, parent_xpath):
+            return False
+
+        if (not self.allow_indexes_at_the_beginning
+                and xpath.starts_with_index()):
+            return False
+
+        if (not self.allow_indexes_at_the_end
+                and xpath.ends_with_index()):
+            return False
+
+        if (not self.allow_indexes_in_the_middle
+                and xpath.contains_index_in_the_middle()):
+            return False
+
+        return True
+
+    def xpath_contains_only_tag(self, xpath: XPath, parent_xpath: XPath):
+        """ Returns true if xpath consists only of a tag e.g. '//select' """
+        converted_star = self.transf_convert_star(parent_xpath)
+        if len(xpath) == 1 and len(converted_star) and xpath.get_value() == converted_star[0].get_value():
+            return True
+        return False
 
 
 def remove_duplicates(seq):
@@ -271,7 +371,16 @@ def remove_duplicates(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def generate_xpath(xpath, page):
+def get_default_config():
+    return {
+        'maximum_generation_time': 10,
+        'allow_indexes_at_the_beginning': False,
+        'allow_indexes_in_the_middle': False,
+        'allow_indexes_at_the_end': True
+    }
+
+
+def generate_xpath(xpath, page, config):
     document = html.fromstring(page)
     element = document.xpath(xpath)
     if element is None \
@@ -279,11 +388,11 @@ def generate_xpath(xpath, page):
         return "Document does not contain given element!"
     element = element[0]
     tree = etree.ElementTree(document)
-    robula = RobulaPlus(element, document)
+    robula = RobulaPlus(element, document, config)
 
     try:
         robust_path = robula.get_robust_xpath()
-    except XPathEvaluationTimeExceeded:
+    except (XPathEvaluationTimeExceeded, XPathCantFindPath):
         return tree.getpath(element)
 
     return robust_path

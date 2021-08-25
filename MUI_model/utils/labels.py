@@ -2,7 +2,7 @@ import os
 # from IPython.display import display
 import pandas as pd
 import numpy as np
-from .config import logger
+from MUI_model.utils.config import logger
 # from .common import iou_xywh
 from tqdm.auto import tqdm
 from collections import defaultdict
@@ -12,7 +12,7 @@ from collections import defaultdict
 
 
 def assign_labels(df: pd.DataFrame, 
-                  classes_file_path: str = 'MUI_model/dataset/classes.txt', verbose=False) -> pd.DataFrame:
+                  classes_file_path: str = 'dataset/classes.txt', verbose=False) -> pd.DataFrame:
 
     with open(classes_file_path, 'r') as f:
         lines = f.readlines()

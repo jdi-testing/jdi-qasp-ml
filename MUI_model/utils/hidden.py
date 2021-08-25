@@ -1,8 +1,8 @@
 import numba
 import pandas as pd
 # import numba
-from .config import logger
-from .common import iou_xywh
+from MUI_model.utils.config import logger
+from MUI_model.utils.common import iou_xywh
 
 
 FIELDS_SET = set(['x', 'y', 'width', 'height', 'displayed', 'tag_name'])

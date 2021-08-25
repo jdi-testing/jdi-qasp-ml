@@ -1,16 +1,17 @@
 import pandas as pd
 import numpy as np
-from .config import logger
+from MUI_model.utils.config import logger
 from scipy.sparse.csr import csr_matrix
 from scipy.sparse import hstack
 
-from .features_builder import build_attributes_feature
-from .features_builder import build_class_feature
-from .features_builder import build_role_feature
-from .features_builder import build_tag_name_feature
-from .features_builder import build_type_feature
-from .features_builder import build_children_tags
-from .features_builder import build_followers_tags
+
+from MUI_model.utils.features_builder import build_attributes_feature
+from MUI_model.utils.features_builder import build_class_feature
+from MUI_model.utils.features_builder import build_role_feature
+from MUI_model.utils.features_builder import build_tag_name_feature
+from MUI_model.utils.features_builder import build_type_feature
+from MUI_model.utils.features_builder import build_children_tags
+from MUI_model.utils.features_builder import build_followers_tags
 
 
 COLS = ['element_id', 'tag_name', 'attributes', 'displayed', 'is_hidden']

@@ -11,7 +11,7 @@ logger = logging.getLogger(UTILS_LOGGER)
 logger.setLevel(logging.DEBUG)
 
 
-formatter = logging.Formatter('%(asctime)s -%(levelname)s - %(module)s:%(filename)s:%(lineno)d - %(message)s')
+formatter = logging.Formatter('%(asctime)s -%(levelname)s - %(filename)s:%(lineno)d - %(message)s')
 
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)

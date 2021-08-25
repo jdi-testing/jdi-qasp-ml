@@ -6,19 +6,19 @@ import pandas as pd
 import numpy as np
 import logging
 from tqdm.auto import trange
-from .dataset_collector import collect_dataset
-from .features_builder import build_features
-from .common import build_tree_dict
+from MUI_model.utils.dataset_collector import collect_dataset
+from MUI_model.utils.features_builder import build_features
+from MUI_model.utils.common import build_tree_dict
 
-from .common import iou_xywh # noqa
-from .labels import assign_labels
+from MUI_model.utils.common import iou_xywh # noqa
+from MUI_model.utils.labels import assign_labels
 
 
 from collections import Counter, defaultdict
 from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
 from glob import glob
-from .config import logger
+from MUI_model.utils.config import logger
 from IPython.display import display  # noqa
 
 
@@ -38,7 +38,6 @@ def get_parents_list(tree_dict: dict, element_id: str, paternts_list: list = Non
     else:
         paternts_list.append(parent_id)
         return get_parents_list(tree_dict, element_id=parent_id, paternts_list=paternts_list)
-
 
 
 def build_children_features(df: pd.DataFrame):
@@ -81,9 +80,7 @@ def build_children_features(df: pd.DataFrame):
     df['sum_children_hights'] = df.element_id.map(
         children_heights_dict).fillna(0.0)
 
-    # return  {'leafs':leafs_set, 'num_leafs':num_leafs_dict, 'num_children': num_children_dict } # noqa
     return df
-
 
 
 def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> pd.DataFrame:
@@ -175,7 +172,7 @@ def build_tree_features(elements_df: pd.DataFrame) -> pd.DataFrame:
 def rebalance(y: np.ndarray):
     logger.info('Rebalance dataset')
 
-    with open('MUI_model/dataset/classes.txt', 'r') as f:
+    with open('dataset/classes.txt', 'r') as f:
         decoder_dict = {i: v.strip() for i, v in enumerate(f.readlines())}
 
     proportion_df = pd.DataFrame([
@@ -213,18 +210,18 @@ class JDNDataset(Dataset):
         super(JDNDataset, self).__init__()
         self.rebalance_and_suffle = rebalance_and_shuffle
 
-        with open('MUI_model/dataset/classes.txt', 'r') as f:
+        with open('dataset/classes.txt', 'r') as f:
             lines = f.readlines()
             self.classes_dict = {v.strip(): i for i, v in enumerate(lines)}
             self.classes_reverse_dict = {i: v.strip() for i, v in enumerate(lines)}
 
         if datasets_list is None:
             logger.info('Will use all available datasets')
-            ds_files = glob('MUI_model/dataset/df/*.parquet')
+            ds_files = glob('dataset/df/*.parquet')
 #             ds_files = [(fn, 'dataset/annotations/' + re.split(r'[/\\]', re.sub(r'\.parquet$', '', fn))[-1] + '.txt')
 #                         for fn in ds_files]
         else:
-            ds_files = [(f'MUI_model/dataset/df/{fn}.parquet') for fn in datasets_list]
+            ds_files = [(f'dataset/df/{fn}.parquet') for fn in datasets_list]
              
 
         # display(ds_files)

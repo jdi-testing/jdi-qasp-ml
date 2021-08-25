@@ -1,5 +1,5 @@
 import torch
-from .config import logger
+from MUI_model.utils.config import logger
 
 
 class JDIModel(torch.nn.Module):

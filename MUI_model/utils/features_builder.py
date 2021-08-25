@@ -5,15 +5,15 @@ import pandas as pd
 import numpy as np
 
 
-from .dataset import build_children_features
-from .dataset import followers_features 
-from .dataset import build_tree_features
+from MUI_model.utils.dataset import build_children_features
+from MUI_model.utils.dataset import followers_features 
+from MUI_model.utils.dataset import build_tree_features
 # from utils.common import build_elements_dict  # noqa
-from .common import build_tree_dict
+from MUI_model.utils.common import build_tree_dict
 
-from .hidden import build_is_hidden
+from MUI_model.utils.hidden import build_is_hidden
 from tqdm.auto import trange
-from .config import logger
+from MUI_model.utils.config import logger
 
 # from scipy.sparse import csc_matrix, csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -87,7 +87,7 @@ def get_siblings(siblings_dict: dict, tree_dict: dict, index_dict: dict, element
     return index_dict.get(up), index_dict.get(dn)
 
 def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix:
-    model_file_path = 'MUI_model/model/tfidf_children_tags.pkl'
+    model_file_path = 'model/tfidf_children_tags.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -123,7 +123,7 @@ def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix
 
 
 def build_followers_tags(df: pd.DataFrame, colname='followers_tags') -> csr_matrix:
-    model_file_path = 'MUI_model/model/tfidf_followers_tags.pkl'
+    model_file_path = 'model/tfidf_followers_tags.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -197,7 +197,7 @@ def build_attributes_feature(df: pd.DataFrame, colname='attributes') -> pd.DataF
     """
     logger.info(f'used column: {colname}')
     attributes = []
-    with open('MUI_model/dataset/EXTRACT_ATTRIBUTES_LIST.pkl', 'rb') as f:
+    with open('dataset/EXTRACT_ATTRIBUTES_LIST.pkl', 'rb') as f:
         EXTRACT_ATTRIBUTES_LIST = pickle.load(f)
 
 
@@ -233,7 +233,7 @@ def build_class_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
         containing attributes ("attributes", "attributes_parent", "attributes_up_sibling"...)
         default columns: "attributes"
     """
-    model_file_path = 'MUI_model/model/tfidf_attr_class.pkl'
+    model_file_path = 'model/tfidf_attr_class.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -273,7 +273,7 @@ def build_tag_name_feature(df: pd.DataFrame, colname='tag_name') -> csr_matrix:
     """
         colname should be one of ['tag_name', 'tag_name_parent', 'tag_name_up_sibling', 'tag_name_dn_sibling']
     """
-    model_file_path = 'MUI_model/model/ohe_tag_name.pkl'
+    model_file_path = 'model/ohe_tag_name.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -296,7 +296,7 @@ def build_tag_name_feature(df: pd.DataFrame, colname='tag_name') -> csr_matrix:
 
 
 def build_role_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
-    model_file_path = 'MUI_model/model/ohe_role.pkl'
+    model_file_path = 'model/ohe_role.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -324,7 +324,7 @@ def build_role_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
 
 
 def build_type_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
-    model_file_path = 'MUI_model/model/ohe_type.pkl'
+    model_file_path = 'model/ohe_type.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):

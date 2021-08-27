@@ -5,9 +5,7 @@ import pandas as pd
 import numpy as np
 
 
-from MUI_model.utils.dataset import build_children_features
-from MUI_model.utils.dataset import followers_features 
-from MUI_model.utils.dataset import build_tree_features
+
 # from utils.common import build_elements_dict  # noqa
 from MUI_model.utils.common import build_tree_dict
 
@@ -87,7 +85,7 @@ def get_siblings(siblings_dict: dict, tree_dict: dict, index_dict: dict, element
     return index_dict.get(up), index_dict.get(dn)
 
 def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix:
-    model_file_path = 'model/tfidf_children_tags.pkl'
+    model_file_path = 'MUI_model/model/tfidf_children_tags.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -123,7 +121,7 @@ def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix
 
 
 def build_followers_tags(df: pd.DataFrame, colname='followers_tags') -> csr_matrix:
-    model_file_path = 'model/tfidf_followers_tags.pkl'
+    model_file_path = 'MUI_model/model/tfidf_followers_tags.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -158,12 +156,217 @@ def build_followers_tags(df: pd.DataFrame, colname='followers_tags') -> csr_matr
     return model.transform(foll_tags_series.values)
 
 
+@numba.jit(forceobj=True)
+def get_parents_list(tree_dict: dict, element_id: str, paternts_list: list = None) -> list:
+    """
+        returns ordered list of parent for a element
+        starting from root which is the <html/> tag
+    """
+    if paternts_list is None:
+        paternts_list = []
+
+    parent_id = tree_dict.get(element_id)
+    if parent_id is None:
+        return paternts_list
+    else:
+        paternts_list.append(parent_id)
+        return get_parents_list(tree_dict, element_id=parent_id, paternts_list=paternts_list)
+
+
+def build_children_features(df: pd.DataFrame):
+    from collections import Counter
+
+    logger.info('select all leafs (nodes which are not parents)')
+    leafs_set = set(df.element_id.values) - set(df.parent_id.values)
+    logger.info(
+        f'Leafs set size: {len(leafs_set)} (nodes which have no children)')
+    df['is_leaf'] = df.element_id.apply(lambda x: 1 if x in leafs_set else 0)
+
+    logger.info('count number of references to leafs')
+    num_leafs_dict = Counter(
+        df[df.element_id.isin(leafs_set)].parent_id.values)
+    logger.info(
+        f'Nodes with leafs as children set size: {len(num_leafs_dict)} (nodes which have leafs as children)')
+    df['num_leafs'] = df.element_id.map(num_leafs_dict).fillna(0.0)
+
+    logger.info('count num children for each node')
+    num_children_dict = Counter(df.parent_id.values)
+    logger.info(f"Nodes with children: {len(num_children_dict)}")
+    df['num_children'] = df.element_id.map(num_children_dict).fillna(0.0)
+
+    logger.info('sum of children widths, heights, counts')
+    stats_df = df.groupby('parent_id').agg(
+        {'width': 'sum', 'height': 'sum', 'parent_id': 'count'})
+    stats_df.columns = ['sum_children_widths',
+                        'sum_children_heights', 'num_children']
+    stats_df.reset_index(inplace=True)
+
+    logger.info('Sum of children widths')
+    children_widths_dict = dict(
+        stats_df[['parent_id', 'sum_children_widths']].values)
+    df['sum_children_widths'] = df.element_id.map(
+        children_widths_dict).fillna(0.0)
+
+    logger.info('Sum of children hights')
+    children_heights_dict = dict(
+        stats_df[['parent_id', 'sum_children_heights']].values)
+    df['sum_children_hights'] = df.element_id.map(
+        children_heights_dict).fillna(0.0)
+
+    return df
+
+
+def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> pd.DataFrame:
+    """
+        Build feature: "children_tags" and max reverse depth ( depth from leafs) # noqa
+        Concatenate all children tag_names into a string filed 'children_tags'
+    """
+    # get leafs (nodes without children)
+    if followers_set is None:
+        level = 0
+        followers_set = set(df.element_id.values) - set(df.parent_id.values)
+        followers_tags_df = \
+            df[df.element_id.isin(followers_set)][['parent_id', 'tag_name']]\
+            .groupby('parent_id')['tag_name']\
+            .apply(lambda x: ','.join(x))\
+            .reset_index()
+        followers_tags_dict = dict(followers_tags_df.values)
+        df['followers_tags'] = df.element_id.map(
+            followers_tags_dict).fillna('')
+
+        # create max_depth field
+        df['max_depth'] = 0
+        df.max_depth = df.max_depth + \
+            df.element_id.isin(set(followers_tags_dict.keys())).astype(int)
+
+        # recursive call
+        followers_features(df=df, followers_set=set(
+            followers_tags_dict.keys()), level=level + 1)
+
+    elif len(followers_set) > 0:
+        # print(f'level: {level}')
+        followers_tags_df = \
+            df[df.element_id.isin(followers_set)][['parent_id', 'tag_name']]\
+            .groupby('parent_id')['tag_name']\
+            .apply(lambda x: ','.join(x))\
+            .reset_index()
+        followers_tags_dict = dict(followers_tags_df.values)
+        df['followers_tags'] = df.followers_tags + ',' + \
+            df.element_id.map(followers_tags_dict).fillna('')
+
+        # increase max_depth
+        df.max_depth = df.max_depth + \
+            df.element_id.isin(set(followers_tags_dict.keys())).astype(int)
+
+        # recursive call
+        followers_features(df=df, followers_set=set(
+            followers_tags_dict.keys()), level=level + 1)
+
+    df['followers_tags'] = df['followers_tags'].apply(
+        lambda x: re.sub('\\s+', ' ', x.replace(',', ' ')).lower().strip())
+    return df
+
+
+def get_ancestors(tag, r, child, grand, great, tree_dict):
+    if r.tag_name == tag:
+        parent_id = tree_dict.get(r.element_id)
+
+        if r.tag_name:
+            child[parent_id] += r.element_id + ' '
+
+        grandparent_id = tree_dict.get(parent_id)
+        if grandparent_id is not None:
+            if r.element_id not in grand[grandparent_id].split(' '):
+                grand[grandparent_id] += r.element_id + ' '
+        great_grandparent_id = tree_dict.get(grandparent_id)
+        if great_grandparent_id is not None:
+            if r.element_id not in great[great_grandparent_id].split(' '):
+                great[great_grandparent_id] += r.element_id + ' '
+
+
+def get_input_a_descendants(df):
+    def empty_string():
+        return ''
+    
+    tree_dict = build_tree_dict(df)
+    
+    in_children_dict = defaultdict(empty_string)
+    in_grandchildren_dict = defaultdict(empty_string)
+    in_great_grandchildren_dict = defaultdict(empty_string)
+    
+    a_children_dict = defaultdict(empty_string)
+    a_grandchildren_dict = defaultdict(empty_string)
+    a_great_grandchildren_dict = defaultdict(empty_string)
+    
+    with trange(df.shape[0]) as tbar:
+        tbar.set_description('Build descendants features')
+        
+        for i, r in df.iterrows():
+            
+            get_ancestors('INPUT', r, in_children_dict, in_grandchildren_dict, in_great_grandchildren_dict,tree_dict)
+            get_ancestors('A', r, a_children_dict, a_grandchildren_dict, a_great_grandchildren_dict,tree_dict)
+
+            tbar.update(1)
+
+    df['input_children'] = df.element_id.map(
+        in_children_dict).fillna('')
+    df['input_grandchildren'] = df.element_id.map(
+        in_grandchildren_dict).fillna('')
+    df['input_great-grandchildren'] = df.element_id.map(
+        in_great_grandchildren_dict).fillna('')
+    
+    df['a_children'] = df.element_id.map(
+        a_children_dict).fillna('')
+    df['a_grandchildren'] = df.element_id.map(
+        a_grandchildren_dict).fillna('')
+    df['a_great-grandchildren'] = df.element_id.map(
+        a_great_grandchildren_dict).fillna('')
+
+    return df
+
+
+def build_tree_features(elements_df: pd.DataFrame) -> pd.DataFrame:
+    """
+        Walk on elements tree and build tree-features:
+           - chilren_tags
+           - folloer_counters
+    """
+
+    def empty_string():
+        return ''
+
+    tree_dict = build_tree_dict(elements_df)
+
+    # Build paths
+    followers_counter = Counter()
+    # level_dict = defaultdict(int)
+    children_tags_dict = defaultdict(empty_string)
+
+    with trange(elements_df.shape[0]) as tbar:
+        tbar.set_description('Build tree features')
+        for i, r in elements_df.iterrows():
+            list_of_parents = get_parents_list(
+                tree_dict=tree_dict, element_id=r.element_id)
+            children_tags_dict[r.parent_id] += r.tag_name.lower() + ' '
+            # print(list_of_parents)
+            # calculate number of followers
+            followers_counter.update(list_of_parents)
+            tbar.update(1)
+
+    elements_df['children_tags'] = elements_df.element_id.map(
+        children_tags_dict).fillna('')
+    elements_df['num_followers'] = elements_df.element_id.map(
+        followers_counter)
+    return elements_df
+
+
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
 
     build_is_hidden(df)
     followers_features(df)
     build_children_features(df)
     build_tree_features(df)
+    get_input_a_descendants(df)
     siblings_dict = build_siblings_dict(df)
     index_dict = {idx: r.element_id for idx,
                   r in df.iterrows() if r.element_id != r.parent_id}
@@ -197,7 +400,7 @@ def build_attributes_feature(df: pd.DataFrame, colname='attributes') -> pd.DataF
     """
     logger.info(f'used column: {colname}')
     attributes = []
-    with open('dataset/EXTRACT_ATTRIBUTES_LIST.pkl', 'rb') as f:
+    with open('MUI_model/dataset/EXTRACT_ATTRIBUTES_LIST.pkl', 'rb') as f:
         EXTRACT_ATTRIBUTES_LIST = pickle.load(f)
 
 
@@ -233,7 +436,7 @@ def build_class_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
         containing attributes ("attributes", "attributes_parent", "attributes_up_sibling"...)
         default columns: "attributes"
     """
-    model_file_path = 'model/tfidf_attr_class.pkl'
+    model_file_path = 'MUI_model/model/tfidf_attr_class.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -273,7 +476,7 @@ def build_tag_name_feature(df: pd.DataFrame, colname='tag_name') -> csr_matrix:
     """
         colname should be one of ['tag_name', 'tag_name_parent', 'tag_name_up_sibling', 'tag_name_dn_sibling']
     """
-    model_file_path = 'model/ohe_tag_name.pkl'
+    model_file_path = 'MUI_model/model/ohe_tag_name.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -296,7 +499,7 @@ def build_tag_name_feature(df: pd.DataFrame, colname='tag_name') -> csr_matrix:
 
 
 def build_role_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
-    model_file_path = 'model/ohe_role.pkl'
+    model_file_path = 'MUI_model/model/ohe_role.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):
@@ -324,7 +527,7 @@ def build_role_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
 
 
 def build_type_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
-    model_file_path = 'model/ohe_type.pkl'
+    model_file_path = 'MUI_model/model/ohe_type.pkl'
     logger.info(f'used column: {colname}')
 
     if os.path.exists(model_file_path):

@@ -2,8 +2,8 @@ import logging
 import sys
 import os
 
-UTILS_LOGGER = 'utils.dataset'
-LOG_FILE_PATH = 'tmp/log.txt'
+UTILS_LOGGER = 'MUI_model.utils.dataset'
+LOG_FILE_PATH = 'MUI_model/tmp/log.txt'
 
 os.makedirs(name='tmp', exist_ok=True)
 

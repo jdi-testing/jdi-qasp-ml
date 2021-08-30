@@ -134,7 +134,9 @@ class RobulaPlus:
             temp = self.generate_xpaths_for_current_level(current_xpath)
 
             for el in temp:
-                if (datetime.datetime.now() - start_time).total_seconds() > self.maximum_generation_time_in_seconds:
+                evaluation_time_in_seconds = (datetime.datetime.now() - start_time).total_seconds()
+                if (self.maximum_generation_time_in_seconds is not None
+                        and evaluation_time_in_seconds > self.maximum_generation_time_in_seconds):
                     raise XPathEvaluationTimeExceeded
 
                 try:
@@ -373,7 +375,7 @@ def remove_duplicates(seq):
 
 def get_default_config():
     return {
-        'maximum_generation_time': 10,
+        'maximum_generation_time': None,
         'allow_indexes_at_the_beginning': False,
         'allow_indexes_in_the_middle': False,
         'allow_indexes_at_the_end': True

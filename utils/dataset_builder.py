@@ -70,7 +70,7 @@ class DatasetBuilder:
 
     headless = True
 
-    def __init__(self, url: str, dataset_name: str = 'dummy', headless=True):
+    def __init__(self, url: str, dataset_name: str = 'dummy', headless=True, dataset_root_path='./dataset/'):
 
         if dataset_name == 'dummy':
             logger.warning('The default dataset name "dummy" will be used')
@@ -83,18 +83,19 @@ class DatasetBuilder:
         self.logger = logger
         self.dataset_name = dataset_name
         self.headless = headless
+        self.root_path = dataset_root_path.strip('/')
 
         logger.info('Create directories to save the dataset')
         # logger.info('dataset/images')
-        os.makedirs('dataset/images', exist_ok=True)
+        os.makedirs(f'{self.root_path}/images', exist_ok=True)
         # logger.info('dataset/df')
-        os.makedirs('dataset/df', exist_ok=True)
+        os.makedirs(f'{self.root_path}/df', exist_ok=True)
         # logger.info('dataset/annotations')
-        os.makedirs('dataset/annotations', exist_ok=True)
+        os.makedirs(f'{self.root_path}/annotations', exist_ok=True)
         # logger.info('dataset/html')
-        os.makedirs('dataset/html', exist_ok=True)
+        os.makedirs(f'{self.root_path}/html', exist_ok=True)
         # logger.info('dataset/cache-labels')
-        os.makedirs('dataset/cache-labels', exist_ok=True)
+        os.makedirs(f'{self.root_path}/cache-labels', exist_ok=True)
 
         self.__enter__()
 
@@ -135,7 +136,7 @@ class DatasetBuilder:
 
         logger.info('Chrome web driver is created')
         self.setUp(self.driver)
-        scr = f'dataset/images/{self.dataset_name}.png'
+        scr = f'{self.root_path}/images/{self.dataset_name}.png'
         logger.info(f'save scrinshot: {scr}')
         self.driver.save_screenshot(scr)
         self.build_dataset()
@@ -188,8 +189,8 @@ class DatasetBuilder:
         self.dataset = pd.DataFrame(self.dataset_json)
 
         # Save HTML source
-        logger.info(f'Save html to dataset/html/{self.dataset_name}.html')
-        with open(f'dataset/html/{self.dataset_name}.html', 'wb') as f:
+        logger.info(f'Save html to {self.root_path}/html/{self.dataset_name}.html')
+        with open(f'{self.root_path}/html/{self.dataset_name}.html', 'wb') as f:
             f.write(self.driver.page_source.encode())
             f.flush()
 
@@ -198,13 +199,13 @@ class DatasetBuilder:
         self.dataset.onmouseenter = self.dataset.onmouseenter.apply(
             lambda x: 'true' if x is not None else None)
 
-        logger.info(f'Save parquet to dataset/df/{self.dataset_name}.parquet')
+        logger.info(f'Save parquet to {self.root_path}/df/{self.dataset_name}.pkl')
 
         logger.info("No attributes: " + str(self.dataset[self.dataset.attributes == {}].shape))
 
         self.dataset.attributes = self.dataset.attributes.apply(lambda x: None if x == {} else x)
 
-        self.dataset.to_parquet(f'dataset/df/{self.dataset_name}.parquet')
+        self.dataset.to_pickle(f'{self.root_path}/df/{self.dataset_name}.pkl')
 
         return self.dataset
 

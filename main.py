@@ -112,7 +112,7 @@ def predict():
         fp.write(request.data)
         fp.flush()
 
-    filename = filename.replace('.json', '.parquet')
+    filename = filename.replace('.json', '.pkl')
     api.logger.info(f'saving {filename}')
     df = pd.DataFrame(json.loads(request.data))
 
@@ -125,7 +125,10 @@ def predict():
         pickle.dump(df, f)
         f.flush()
 
+    df.to_pickle(f'dataset/df/{filename}')
+    filename = filename.replace('.pkl', '.parquet')
     df.to_parquet(f'dataset/df/{filename}')
+
 
     api.logger.info('Creating JDNDataset')
     dataset = JDNDataset(datasets_list=[filename.split('.')[0]], rebalance_and_shuffle=False)

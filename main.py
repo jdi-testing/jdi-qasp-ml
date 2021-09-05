@@ -5,12 +5,13 @@
 import os
 import gc
 import json
-import concurrent.futures
+
+from celery import Celery
 from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
 import datetime as dt
 
 import pandas as pd
-from utils import JDNDataset, robula
+from utils import JDNDataset
 import torch
 from tqdm.auto import trange
 from torch.utils.data import DataLoader
@@ -25,6 +26,13 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 api = Flask(__name__)
 api.logger.setLevel(logging.DEBUG)
+
+
+redis_address = 'redis://localhost'
+celery = Celery(api.name, broker=redis_address, backend=redis_address, task_track_started=True)
+celery.autodiscover_tasks(['tasks'], force=True)
+
+import robula_api
 
 
 @api.route("/build")
@@ -188,34 +196,6 @@ def predict():
 
     # Return 201 CREATED
     # return jsonify({'status': 'OK', 'filename': filename})
-
-
-@api.route('/generate_xpath', methods=['POST'])
-def generate_xpath():
-    data = json.loads(request.data)
-
-    page = json.loads(data['document'])
-    ids = list(set(data['ids']))
-
-    config = robula.get_default_config()
-    try:
-        config.update(data['config'])
-    except KeyError:
-        pass
-
-    result = {}
-    workers = min(os.cpu_count(), len(ids))
-
-    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
-        future_to_xpath = {pool.submit(robula.generate_xpath, f"//*[@jdn-hash='{id}']", page, config): id for id in ids}
-        for future in concurrent.futures.as_completed(future_to_xpath):
-            id = future_to_xpath[future]
-            try:
-                result[id] = future.result()
-            except Exception as exc:
-                api.logger.info('%r generated an exception: %s' % (id, exc))
-
-    return json.dumps(result)
 
 
 # Start Flask server

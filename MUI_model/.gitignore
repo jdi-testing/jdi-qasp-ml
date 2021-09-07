@@ -1,0 +1,4 @@
+dataset/*
+model/*
+!dataset/classes.txt
+!dataset/EXTRACT_ATTRIBUTES_LIST.pkl

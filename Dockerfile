@@ -23,6 +23,7 @@ USER ${USER_NAME}
 RUN mkdir ${HOME}/utils
 RUN mkdir ${HOME}/html
 RUN mkdir ${HOME}/model
+RUN mkdir ${HOME}/MUI_model
 RUN mkdir -p ${HOME}/dataset/df
 RUN mkdir -p ${HOME}/flask-temp-storage
 COPY dataset/classes.txt ${HOME}/dataset/classes.txt
@@ -35,6 +36,7 @@ COPY robula_api.py ${HOME}/robula_api.py
 COPY tasks.py ${HOME}/tasks.py
 
 USER root
+RUN chown -R ${USER_NAME}:${USER_NAME} ${HOME}/MUI_model
 COPY celeryd /etc/init.d/celeryd
 COPY celeryd_conf /etc/default/celeryd
 RUN echo "#!/bin/bash" >> /entrypoint.sh

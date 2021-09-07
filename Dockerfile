@@ -22,6 +22,7 @@ RUN mkdir -p ${HOME}/dataset/df
 RUN mkdir -p ${HOME}/flask-temp-storage
 COPY dataset/classes.txt ${HOME}/dataset/classes.txt
 COPY model model
+COPY MUI_model MUI_model
 COPY utils utils
 COPY templates templates
 COPY main.py ${HOME}/main.py

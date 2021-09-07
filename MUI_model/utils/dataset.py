@@ -69,11 +69,11 @@ class JDNDataset(Dataset):
 
         if datasets_list is None:
             logger.info('Will use all available datasets')
-            ds_files = glob('MUI_model/dataset/df/*.parquet')
+            ds_files = glob('MUI_model/dataset/df/*.pkl')
 #             ds_files = [(fn, 'dataset/annotations/' + re.split(r'[/\\]', re.sub(r'\.parquet$', '', fn))[-1] + '.txt')
 #                         for fn in ds_files]
         else:
-            ds_files = [(f'MUI_model/dataset/df/{fn}.parquet') for fn in datasets_list]
+            ds_files = [(f'MUI_model/dataset/df/{fn}.pkl') for fn in datasets_list]
              
 
         # display(ds_files)
@@ -87,7 +87,8 @@ class JDNDataset(Dataset):
                     logger.error(f'File: {df_file_path} does not extst')
                 else:
                     bar.set_postfix_str(f'{df_file_path}')
-                    df = pd.read_parquet(df_file_path)
+#                     df = pd.read_parquet(df_file_path)
+                    df = pd.read_pickle(df_file_path)
                     df['label_text'] = df.attributes.apply(lambda x: x.get('data-label') if x is not None else 'n/a').fillna('n/a')
                     df = build_features(df)
                     df = assign_labels(

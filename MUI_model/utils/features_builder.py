@@ -3,7 +3,8 @@ import re
 import numba
 import pandas as pd
 import numpy as np
-
+import itertools
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, TfidfTransformer
 
 
 # from utils.common import build_elements_dict  # noqa
@@ -12,6 +13,7 @@ from MUI_model.utils.common import build_tree_dict
 from MUI_model.utils.hidden import build_is_hidden
 from tqdm.auto import trange
 from MUI_model.utils.config import logger
+
 
 # from scipy.sparse import csc_matrix, csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -85,15 +87,21 @@ def get_siblings(siblings_dict: dict, tree_dict: dict, index_dict: dict, element
     return index_dict.get(up), index_dict.get(dn)
 
 def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix:
-    model_file_path = 'MUI_model/model/tfidf_children_tags.pkl'
+    model_count_path = 'MUI_model/model/count_children_tags.pkl'
+    model_tf_path = 'MUI_model/model/tfidf_children_tags.pkl'
     logger.info(f'used column: {colname}')
 
-    if os.path.exists(model_file_path):
-        logger.info("TfIdfVectorizer for children tags exists. Loading...")
-        with open(model_file_path, 'rb') as f:
-            model = pickle.load(file=f)
-        child_tags_series = df[colname].fillna('n/a')   
-
+    if os.path.exists(model_count_path) and os.path.exists(model_tf_path):
+        logger.info("CountVectorizer and TfidfTransformer for children tags exist. Loading...")
+        with open(model_count_path, 'rb') as c:
+            model_cv = pickle.load(file=c)
+        with open(model_tf_path, 'rb') as f:
+            model_tf = pickle.load(file=f)
+        
+        child_tags_series = df[colname].fillna('')
+        child_tags_series = child_tags_series.apply(lambda x: x.strip() if x != '' else x)
+        child_sm = model_cv.transform(child_tags_series.values)
+        child_sm = model_tf.transform(child_sm)
 
     else:
         logger.info("TfIdfVectorizer for children tags does not exist. Build the one.")
@@ -102,58 +110,76 @@ def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix
 
         logger.info("Extract useful child_tags features, 'children_tags' column will be used")
         child_tags_series =  df[colname].fillna('')
-
-        child_cv = CountVectorizer()
-        child_cv.fit(child_tags_series.values)
-        # filter out class names:  length is at least 2 characters and only letters
-        vocabulary = sorted([v for v in child_cv.vocabulary_.keys() if re.match(r'^[a-z][a-z]+$', v)])
+        child_vocab = list(itertools.chain.from_iterable(child_tags_series.apply(lambda x: x.split(sep=' '))))
+        child_vocab = list(set(child_vocab))
+        child_vocab = sorted([v for v in child_vocab if re.match(r'^[a-z][a-z]+$', v)])
+        
+        child_cv = CountVectorizer(vocabulary=child_vocab)
+        child_sm = child_cv.fit_transform(child_tags_series.values)
 
         logger.info(f'Column ["{colname}"] used for tfidf')
-        child_tags_series = df[colname].fillna('')
-        model = TfidfVectorizer(vocabulary=vocabulary)  # CountVectorizer?
-        model.fit(child_tags_series.values)
-        logger.info(f'Saving {model_file_path}, vocabulary length: {len(vocabulary)}')
-        with open(model_file_path, 'wb') as f:
+        
+        model = TfidfTransformer()
+        child_sm = model.fit_transform(child_sm)
+        
+        logger.info(f'Saving {model_count_path}, vocabulary length: {len(child_cv.vocabulary_)}')
+        logger.info(f'Saving {model_tf_path}')
+        with open(model_count_path, 'wb') as c:
+            pickle.dump(child_cv, c)
+            c.flush()
+        with open(model_tf_path, 'wb') as f:
             pickle.dump(model, f)
             f.flush()
 
-    return model.transform(child_tags_series.values)
+    return child_sm
 
 
 def build_followers_tags(df: pd.DataFrame, colname='followers_tags') -> csr_matrix:
-    model_file_path = 'MUI_model/model/tfidf_followers_tags.pkl'
+    model_count_path = 'MUI_model/model/count_followers_tags.pkl'
+    model_tf_path = 'MUI_model/model/tfidf_followers_tags.pkl'
     logger.info(f'used column: {colname}')
 
-    if os.path.exists(model_file_path):
-        logger.info("TfIdfVectorizer for children tags exists. Loading...")
-        with open(model_file_path, 'rb') as f:
-            model = pickle.load(file=f)
-        foll_tags_series = df[colname].fillna('n/a')   
-
+    if os.path.exists(model_count_path) and os.path.exists(model_tf_path):
+        logger.info("CountVectorizer and TfidfTransformer for followers tags exist. Loading...")
+        with open(model_count_path, 'rb') as c:
+            model_cv = pickle.load(file=c)
+        with open(model_tf_path, 'rb') as f:
+            model_tf = pickle.load(file=f)
+        
+        followers_tags_series = df[colname].fillna('')
+        followers_tags_series = followers_tags_series.apply(lambda x: x.strip() if x != '' else x)
+        followers_sm = model_cv.transform(followers_tags_series.values)
+        followers_sm = model_tf.transform(followers_sm)
 
     else:
-        logger.info("TfIdfVectorizer for followers tags does not exist. Build the one.")
+        logger.info("CountVectorizer and TfIdfTransformer for followers tags do not exist. Build them.")
 #         if len(set(df.columns).intersection(set(['label', 'label_text']))) != 2:
 #             raise Exception('Cannot prepare CountVectorizer for attribute "class": need labels')
 
-        logger.info("Extract useful foll_tags features, 'followers_tags' column will be used")
-        foll_tags_series =  df[colname].fillna('')
-
-        foll_cv = CountVectorizer()
-        foll_cv.fit(foll_tags_series.values)
-        # filter out class names:  length is at least 2 characters and only letters
-        vocabulary = sorted([v for v in foll_cv.vocabulary_.keys() if re.match(r'^[a-z][a-z]+$', v)])
+        logger.info("Extract useful child_tags features, 'followers_tags' column will be used")
+        followers_tags_series =  df[colname].fillna('')
+        followers_vocab = list(itertools.chain.from_iterable(followers_tags_series.apply(lambda x: x.split(sep=' '))))
+        followers_vocab = list(set(followers_vocab))
+        followers_vocab = sorted([v for v in followers_vocab if re.match(r'^[a-z][a-z]+$', v)])
+        
+        followers_cv = CountVectorizer(vocabulary=followers_vocab)
+        followers_sm = followers_cv.fit_transform(followers_tags_series.values)
 
         logger.info(f'Column ["{colname}"] used for tfidf')
-        foll_tags_series = df[colname].fillna('')
-        model = TfidfVectorizer(vocabulary=vocabulary)  # CountVectorizer?
-        model.fit(foll_tags_series.values)
-        logger.info(f'Saving {model_file_path}, vocabulary length: {len(vocabulary)}')
-        with open(model_file_path, 'wb') as f:
+        
+        model = TfidfTransformer()
+        followers_sm = model.fit_transform(followers_sm)
+        
+        logger.info(f'Saving {model_count_path}, vocabulary length: {len(followers_cv.vocabulary_)}')
+        logger.info(f'Saving {model_tf_path}')
+        with open(model_count_path, 'wb') as c:
+            pickle.dump(followers_cv, c)
+            c.flush()
+        with open(model_tf_path, 'wb') as f:
             pickle.dump(model, f)
             f.flush()
 
-    return model.transform(foll_tags_series.values)
+    return followers_sm
 
 
 @numba.jit(forceobj=True)
@@ -436,15 +462,22 @@ def build_class_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
         containing attributes ("attributes", "attributes_parent", "attributes_up_sibling"...)
         default columns: "attributes"
     """
-    model_file_path = 'MUI_model/model/tfidf_attr_class.pkl'
+    model_count_file_path = 'MUI_model/model/count_attr_class.pkl'
+    model_tf_file_path = 'MUI_model/model/tfidf_attr_class.pkl'
     logger.info(f'used column: {colname}')
 
-    if os.path.exists(model_file_path):
-        logger.info("TfIdfVectorizer for class attribute exists. Loaging...")
-        with open(model_file_path, 'rb') as f:
-            model = pickle.load(file=f)
+    if os.path.exists(model_count_file_path) and os.path.exists(model_tf_file_path):
+        logger.info("CountVectorizer and TfidfTransformer for class attribute exist. Loading...")
+        with open(model_count_file_path, 'rb') as c:
+            model_cv = pickle.load(file=c)
+        with open(model_tf_file_path, 'rb') as f:
+            model_tf = pickle.load(file=f)
+#             print(f'{model_tf!r}')
+        
         attr_class_series = df[colname].apply(lambda x: None if type(x) is not dict else x.get('class')).fillna('')
-
+        attr_class_series = attr_class_series.apply(lambda x: x.replace("-", " ").lower())
+        class_sm = model_cv.transform(attr_class_series.values)
+        class_sm = model_tf.transform(class_sm)
     else:
         logger.info("TfIdfVectorizer for class attribute does not exist. Build the one.")
 #         if len(set(df.columns).intersection(set(['label', 'label_text']))) != 2:
@@ -452,24 +485,30 @@ def build_class_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
 
         logger.info("Extract useful attr_class features, 'attributes' column will be used")
         attr_class_series = df[df.label_text != 'n/a']\
-            .attributes.apply(lambda x: None if type(x) is not dict else x.get('class'))\
+            .attributes.apply(lambda x: x.get('class') if x is not None else '')\
             .fillna('')
-
-        class_cv = CountVectorizer()
-        class_cv.fit(attr_class_series.values)
+        attr_class_series = attr_class_series.apply(lambda x: x.replace("-", " ").lower())
+        class_vocab = list(itertools.chain.from_iterable(attr_class_series.apply(lambda x: x.split(sep=' '))))
+        class_vocab = list(set(class_vocab))
+        class_vocab = sorted([v for v in class_vocab if re.match(r'^[a-z][a-z]+$', v)])
+        class_cv = CountVectorizer(vocabulary = class_vocab)
+        class_sm = class_cv.fit_transform(attr_class_series.values)
+        model = TfidfTransformer()
+        class_sm = model.fit_transform(class_sm)
         # filter out class names:  length is at least 2 characters and only letters
-        vocabulary = sorted([v for v in class_cv.vocabulary_.keys() if re.match(r'^[a-z][a-z]+$', v)])
+#         vocabulary = sorted([v for v in class_cv.vocabulary_.keys() if re.match(r'^[a-z][a-z]+$', v)])
 
         logger.info(f'Column ["{colname}"] used for tfidf')
-        attr_class_series = df[colname].apply(lambda x: None if type(x) is not dict else x.get('class')).fillna('')
-        model = TfidfVectorizer(vocabulary=vocabulary)  # CountVectorizer?
-        model.fit(attr_class_series.values)
-        logger.info(f'Saving {model_file_path}, vocabulary length: {len(vocabulary)}')
-        with open(model_file_path, 'wb') as f:
+        logger.info(f'Saving {model_count_file_path}, vocabulary length: {len(class_cv.vocabulary_)}')
+        with open(model_count_file_path, 'wb') as c:
+            pickle.dump(class_cv, c)
+            c.flush()
+        logger.info(f'Saving {model_tf_file_path}')
+        with open(model_tf_file_path, 'wb') as f:
             pickle.dump(model, f)
             f.flush()
 
-    return model.transform(attr_class_series.values)
+    return class_sm
 
 
 def build_tag_name_feature(df: pd.DataFrame, colname='tag_name') -> csr_matrix:

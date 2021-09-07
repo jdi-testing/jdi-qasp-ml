@@ -29,7 +29,7 @@ n_datasets = 120
 
 DATASET_NAMES = [f'mui-site{i}' for i in range (1,n_datasets+1)]
 
-ds_files = [f'/MUI_model/dataset/df/{fn}.parquet' for fn in DATASET_NAMES]
+ds_files = [f'/MUI_model/dataset/df/{fn}.pkl' for fn in DATASET_NAMES]
 
 train_names= DATASET_NAMES[:100]
 test_names = DATASET_NAMES[100:]

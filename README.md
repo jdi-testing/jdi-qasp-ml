@@ -113,5 +113,83 @@ If directory **dataset/annotations** does not contain annotation file for the sc
     docker system prune --all --force
 ````
 
+#API:
+
+### /schedule_xpath_generation
+Creates task for xpath generation and returns id of task which can be used for task revoking and 
+getting task status or result.  
+
+Accessible via **POST** request.  
+Incoming JSON example:
+```json
+{
+    "document": "...",  
+    "id": "8520359515737429141026100694",  
+    "config": {  
+            "allow_indexes_at_the_beginning": true,  
+            "allow_indexes_in_the_middle": true,  
+            "allow_indexes_at_the_end": true 
+        }  
+}
+```
+Returns JSON: 
+```json
+{"task_id": "<task_id>"}
+```
+
+### /get_task_status
+Returns status of generation for task with specified id.
+
+Accessible via **GET** request.  
+Incoming JSON example:
+```json
+{"id": "<task_id>"}
+```
+Returns JSON: 
+```json
+{"status": "PENDING"}
+```
+
+Possible statuses:   
+**FAILURE** - Task failed  
+**PENDING** - Task state is unknown (assumed pending since you know the id).  
+**RECEIVED** - Task was received by a worker (only used in events).  
+**RETRY** - Task is waiting for retry.  
+**REVOKED** - Task was revoked.  
+**STARTED** - Task was started by a worker.  
+**SUCCESS** - Task succeeded  
+
+### /revoke_task
+Revokes task with specified id.  
+
+Accessible via **POST** request.  
+Incoming JSON example:
+```json
+{"id": "task_id"}
+```
+Returns JSON: 
+```json
+{"result": "Task successfully revoked."}
+```
+
+### /get_task_result
+Returns result of generation for task with specified id.
+
+Accessible via **GET** request.  
+Incoming JSON example:
+```json
+{"id": "task_id"}
+```
+Returns JSON: 
+```json
+{"result": "c2577de5-e154-4a14-a897-1bb48d608fa0"}
+```
+
+### Exceptions
+In case of exception in any of listed above methods JSON with 'exc' field will be returned.  
+JSON example:
+```json
+{"exc": "Generation still in progress."}
+```
 
 

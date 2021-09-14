@@ -113,7 +113,7 @@ If directory **dataset/annotations** does not contain annotation file for the sc
     docker system prune --all --force
 ````
 
-#API:
+# API:
 
 ### /schedule_xpath_generation
 Creates task for xpath generation and returns id of task which can be used for task revoking and 

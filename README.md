@@ -182,7 +182,7 @@ Incoming JSON example:
 ```
 Returns JSON: 
 ```json
-{"result": "c2577de5-e154-4a14-a897-1bb48d608fa0"}
+{"result": "<generated_xpath>"}
 ```
 
 ### Exceptions

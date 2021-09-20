@@ -48,7 +48,7 @@ def schedule_xpath_generation():
     return result
 
 
-@api.route('/get_task_status', methods=['GET'])
+@api.route('/get_task_status', methods=['POST'])
 @exception_handler
 def get_task_status():
     """ Returns status of generation task with specified id """
@@ -66,7 +66,7 @@ def revoke_task():
     return json.dumps({'result': 'Task successfully revoked.'})
 
 
-@api.route('/get_task_result', methods=['GET'])
+@api.route('/get_task_result', methods=['POST'])
 @exception_handler
 def get_task_result():
     task_id = json.loads(request.data)['id']

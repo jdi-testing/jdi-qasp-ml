@@ -141,7 +141,7 @@ Returns JSON:
 ### /get_task_status
 Returns status of generation for task with specified id.
 
-Accessible via **GET** request.  
+Accessible via **POST** request.  
 Incoming JSON example:
 ```json
 {"id": "<task_id>"}
@@ -176,7 +176,7 @@ Returns JSON:
 ### /get_task_result
 Returns result of generation for task with specified id.
 
-Accessible via **GET** request.  
+Accessible via **POST** request.  
 Incoming JSON example:
 ```json
 {"id": "task_id"}

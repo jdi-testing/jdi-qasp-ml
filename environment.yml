@@ -38,3 +38,4 @@ dependencies:
     - html5lib
     - torchsummary
     - Flask
+    - celery[redis]

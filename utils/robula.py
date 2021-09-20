@@ -82,6 +82,13 @@ class XPath:
             return True
         return False
 
+    def ends_with_star(self):
+        """
+        Check whether xpath ends with star or not.
+        Xpaths based on element count can't be robust.
+        """
+        return self.get_value()[-1] == '*'
+
     def __len__(self):
         length = 0
         for el in self.value.split('/'):
@@ -342,6 +349,7 @@ class RobulaPlus:
         return normalized_value
 
     def xpath_is_valid(self, xpath: XPath, parent_xpath: XPath):
+        """ Checks validity of xpath according to custom rules """
         if self.xpath_contains_only_tag(xpath, parent_xpath):
             return False
 
@@ -355,6 +363,9 @@ class RobulaPlus:
 
         if (not self.allow_indexes_in_the_middle
                 and xpath.contains_index_in_the_middle()):
+            return False
+
+        if xpath.ends_with_star():
             return False
 
         return True

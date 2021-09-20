@@ -27,4 +27,5 @@ dependencies:
     - html5lib
     - selenium
     - Flask
+    - celery[redis]
 

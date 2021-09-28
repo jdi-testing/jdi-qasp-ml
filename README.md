@@ -139,16 +139,25 @@ Returns JSON:
 ```
 
 ### /get_task_status
-Returns status of generation for task with specified id.
+Returns status of generation for task with specified id (or list of ids).
 
 Accessible via **POST** request.  
 Incoming JSON example:
 ```json
 {"id": "<task_id>"}
 ```
+or 
+```json
+{"id": ["<task_id1>", "<task_id2>"]}
+```
 Returns JSON: 
 ```json
-{"status": "PENDING"}
+[
+    {
+        "id": "<task_id>", 
+        "status": "PENDING"
+    }
+]
 ```
 
 Possible statuses:   
@@ -174,16 +183,26 @@ Returns JSON:
 ```
 
 ### /get_task_result
-Returns result of generation for task with specified id.
+Returns result of generation for task with specified id (or list of ids).
 
 Accessible via **POST** request.  
 Incoming JSON example:
 ```json
 {"id": "task_id"}
 ```
+or
+```json
+{"id": ["task_id1", "task_id2"]}
+```
+
 Returns JSON: 
 ```json
-{"result": "<generated_xpath>"}
+[
+    {
+        "id": "task_id", 
+        "result": "<generated_xpath>"
+    }
+]
 ```
 
 ### Exceptions
@@ -191,6 +210,15 @@ In case of exception in any of listed above methods JSON with 'exc' field will b
 JSON example:
 ```json
 {"exc": "Generation still in progress."}
+```
+or for methods which accepts list of ids
+```json
+[
+    {
+        "id": "<task_id>", 
+        "exc": "Generation still in progress."
+    }
+]
 ```
 
 

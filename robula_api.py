@@ -5,7 +5,7 @@ import os
 from flask import request
 
 from main import api, celery
-from utils import robula
+from utils import api_utils, robula
 import tasks
 
 
@@ -52,9 +52,14 @@ def schedule_xpath_generation():
 @exception_handler
 def get_task_status():
     """ Returns status of generation task with specified id """
-    task_id = json.loads(request.data)['id']
-    result = celery.AsyncResult(task_id)
-    return json.dumps({'status': result.status})
+    task_ids = json.loads(request.data)['id']
+    if not isinstance(task_ids, list):
+        task_ids = [task_ids]
+
+    results = []
+    for id in task_ids:
+        results.append(api_utils.get_task_status(id))
+    return json.dumps(results)
 
 
 @api.route('/revoke_task', methods=['POST'])
@@ -69,12 +74,14 @@ def revoke_task():
 @api.route('/get_task_result', methods=['POST'])
 @exception_handler
 def get_task_result():
-    task_id = json.loads(request.data)['id']
-    result = celery.AsyncResult(task_id)
-    if result.status == 'SUCCESS':
-        return json.dumps({'result': result.get()})
-    else:
-        raise Exception('Generation still in progress.')
+    task_ids = json.loads(request.data)['id']
+    if not isinstance(task_ids, list):
+        task_ids = [task_ids]
+
+    results = []
+    for task_id in task_ids:
+        results.append(api_utils.get_task_result(task_id))
+    return json.dumps(results)
 
 
 def get_robula_config(data):

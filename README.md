@@ -135,27 +135,49 @@ Incoming JSON example:
 ```
 Returns JSON: 
 ```json
-{"task_id": "<task_id>"}
+{
+    "task_id": "<task_id>"
+}
 ```
 
 ### /get_task_status
-Returns status of generation for task with specified id (or list of ids).
+Returns status of generation for task with specified id.
 
 Accessible via **POST** request.  
 Incoming JSON example:
 ```json
-{"id": "<task_id>"}
+{
+    "id": "<task_id>"
+}
 ```
-or 
+Returns JSON: 
 ```json
-{"id": ["<task_id1>", "<task_id2>"]}
+{
+    "id": "<task_id>", 
+    "status": "PENDING"
+}
+```
+
+### /get_tasks_statuses
+Same as get_task_status, but for the list of ids
+
+Accessible via **POST** request.  
+Incoming JSON example:
+```json
+{
+    "id": ["<task_id1>", "<task_id2>"]
+}
 ```
 Returns JSON: 
 ```json
 [
     {
-        "id": "<task_id>", 
+        "id": "<task_id1>", 
         "status": "PENDING"
+    },
+    {
+        "id": "<task_id2>", 
+        "status": "SUCCESS"
     }
 ]
 ```
@@ -175,31 +197,53 @@ Revokes task with specified id.
 Accessible via **POST** request.  
 Incoming JSON example:
 ```json
-{"id": "task_id"}
+{
+    "id": "task_id"
+}
 ```
 Returns JSON: 
 ```json
-{"result": "Task successfully revoked."}
+{
+    "result": "Task successfully revoked."
+}
 ```
 
 ### /get_task_result
-Returns result of generation for task with specified id (or list of ids).
+Returns result of generation for task with specified id.
 
 Accessible via **POST** request.  
 Incoming JSON example:
 ```json
-{"id": "task_id"}
+{
+    "id": "task_id"
+}
 ```
-or
+Returns JSON: 
 ```json
-{"id": ["task_id1", "task_id2"]}
+{
+    "id": "task_id", 
+    "result": "<generated_xpath>"
+}
 ```
 
+### /get_tasks_results
+Same as get_task_result, but for the list of ids.
+Accessible via **POST** request.  
+Incoming JSON example:
+```json
+{
+    "id": ["task_id1", "task_id2"]
+}
+```
 Returns JSON: 
 ```json
 [
     {
-        "id": "task_id", 
+        "id": "task_id1", 
+        "result": "<generated_xpath>"
+    },
+    {
+        "id": "task_id2", 
         "result": "<generated_xpath>"
     }
 ]
@@ -209,13 +253,19 @@ Returns JSON:
 In case of exception in any of listed above methods JSON with 'exc' field will be returned.  
 JSON example:
 ```json
-{"exc": "Generation still in progress."}
+{
+    "exc": "Generation still in progress."
+}
 ```
-or for methods which accepts list of ids
+or list of ids with exceptions if endpoint supports list processing:
 ```json
 [
     {
-        "id": "<task_id>", 
+        "id": "<task_id1>",
+        "exc": "Generation still in progress."
+    },
+    {
+        "id": "task_id2",
         "exc": "Generation still in progress."
     }
 ]

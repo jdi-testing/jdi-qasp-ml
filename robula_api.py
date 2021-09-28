@@ -14,7 +14,7 @@ def exception_handler(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            return json.dumps({'exc': str(e)})
+            return api_utils.get_json_response({'exc': str(e)}, 500)
 
     wrapper.__name__ = func.__name__
     return wrapper
@@ -30,7 +30,7 @@ def generate_xpath():
 
     result = generate_xpaths_simultaneously(ids, config, page)
 
-    return json.dumps(result)
+    return api_utils.get_json_response(result, 200)
 
 
 @api.route('/schedule_xpath_generation', methods=['POST'])
@@ -45,21 +45,27 @@ def schedule_xpath_generation():
 
     task_result = tasks.schedule_xpath_generation.delay(get_xpath_from_id(element_id), page, config)
     result = {'task_id': task_result.id}
-    return result
+    return api_utils.get_json_response(result, 200)
 
 
 @api.route('/get_task_status', methods=['POST'])
 @exception_handler
 def get_task_status():
     """ Returns status of generation task with specified id """
+    task_id = json.loads(request.data)['id']
+    return api_utils.get_json_response(api_utils.get_task_status(task_id), 200)
+
+
+@api.route('/get_tasks_statuses', methods=['POST'])
+@exception_handler
+def get_tasks_statuses():
+    """ Returns status of generation for tasks with specified ids """
     task_ids = json.loads(request.data)['id']
-    if not isinstance(task_ids, list):
-        task_ids = [task_ids]
 
     results = []
     for id in task_ids:
         results.append(api_utils.get_task_status(id))
-    return json.dumps(results)
+    return api_utils.get_json_response(results, 200)
 
 
 @api.route('/revoke_task', methods=['POST'])
@@ -68,20 +74,25 @@ def revoke_task():
     """ Revokes celery task with specified id """
     task_id = json.loads(request.data)['id']
     celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
-    return json.dumps({'result': 'Task successfully revoked.'})
+    return api_utils.get_json_response({'result': 'Task successfully revoked.'}, 200)
 
 
 @api.route('/get_task_result', methods=['POST'])
 @exception_handler
 def get_task_result():
+    task_id = json.loads(request.data)['id']
+    return api_utils.get_json_response(api_utils.get_task_result(task_id), 200)
+
+
+@api.route('/get_tasks_results', methods=['POST'])
+@exception_handler
+def get_tasks_results():
     task_ids = json.loads(request.data)['id']
-    if not isinstance(task_ids, list):
-        task_ids = [task_ids]
 
     results = []
     for task_id in task_ids:
         results.append(api_utils.get_task_result(task_id))
-    return json.dumps(results)
+    return api_utils.get_json_response(results, 200)
 
 
 def get_robula_config(data):

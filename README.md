@@ -126,7 +126,8 @@ Incoming JSON example:
 {
     "document": "...",  
     "id": "8520359515737429141026100694",  
-    "config": {  
+    "config": {
+            "maximum_generation_time": 10,
             "allow_indexes_at_the_beginning": true,  
             "allow_indexes_in_the_middle": true,  
             "allow_indexes_at_the_end": true 

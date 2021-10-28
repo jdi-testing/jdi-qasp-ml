@@ -30,7 +30,7 @@ api = Flask(__name__)
 api.logger.setLevel(logging.DEBUG)
 
 
-redis_address = 'redis://localhost'
+redis_address = 'redis://redis:6379'
 celery = Celery(api.name, broker=redis_address, backend=redis_address, task_track_started=True)
 celery.autodiscover_tasks(['tasks'], force=True)
 

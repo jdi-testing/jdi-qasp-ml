@@ -1,4 +1,5 @@
-dataset/*
+dataset/df/*
 #model/*
+!dataset/df/.keep
 !dataset/classes.txt
 !dataset/EXTRACT_ATTRIBUTES_LIST.pkl

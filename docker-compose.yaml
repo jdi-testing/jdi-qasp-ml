@@ -9,16 +9,16 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5050"
-    volumes:
-      - .:/app
+#    volumes:
+#      - .:/app
 
   celery:
     command: celery -A main:celery worker -l info
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - .:/app
+#    volumes:
+#      - .:/app
 
   redis:
     image: "redis:alpine"

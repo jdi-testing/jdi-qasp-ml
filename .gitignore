@@ -6,7 +6,6 @@ __pycache__/*
 *.ipynb_checkpoints*
 *.pyc
 *.log
-flask-temp-storage/*
 dataset/cache-labels/*
 dataset/df/20*
 .idea/*

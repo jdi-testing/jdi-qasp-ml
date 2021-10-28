@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  api:
+    image: ""
+    command: uwsgi --socket 0.0.0.0:5000 --process=1 --protocol=http -w main:api
+    ports:
+      - "5000:5000"
+
+  celery:
+    command: celery -A main:celery worker -l info
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"

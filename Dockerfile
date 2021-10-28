@@ -21,3 +21,6 @@ RUN pipenv install --ignore-pipfile --system --deploy
 ENV PYTHONPATH=${PYTHONPATH}:/app
 
 RUN MODEL_VERSION=`date +%Y-%m-%d-%H.%M.%S`; mkdir -p ${APP_HOME}/model/version; touch ${APP_HOME}/model/version/${MODEL_VERSION};
+
+RUN mkdir ${HOME}/html
+RUN mkdir -p ${HOME}/MUI_model/tmp

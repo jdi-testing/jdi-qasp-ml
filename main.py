@@ -1,12 +1,6 @@
-############################################
-# this is a Flask-based backend
-############################################
-
 import datetime as dt
 import gc
-import json
 import logging
-import os
 import pickle
 
 import pandas as pd
@@ -18,11 +12,9 @@ from tqdm.auto import trange
 
 import MUI_model  # noqa
 import MUI_model.utils.dataset
+from app import UPLOAD_DIRECTORY, MODEL_VERSION_DIRECTORY, JS_DIRECTORY
+from robula_api import *
 from utils import JDNDataset
-
-UPLOAD_DIRECTORY = "dataset/df"
-MODEL_VERSION_DIRECTORY = "model/version"
-JS_DIRECTORY = "js"
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
@@ -33,9 +25,6 @@ api.logger.setLevel(logging.DEBUG)
 redis_address = 'redis://redis:6379'
 celery = Celery(api.name, broker=redis_address, backend=redis_address, task_track_started=True)
 celery.autodiscover_tasks(['tasks'], force=True)
-
-
-from robula_api import *
 
 
 @api.route("/build")
@@ -289,11 +278,3 @@ def mui_predict():
         del model
         gc.collect()
         return results_df.to_json(orient='records')
-
-    # # Return 201 CREATED
-    return jsonify({'status': 'OK', 'filename': filename})
-
-
-# Start Flask server
-if __name__ == "__main__":
-    api.run(debug=False, port=5000, host='0.0.0.0')

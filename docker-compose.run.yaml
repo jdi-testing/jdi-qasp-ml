@@ -2,12 +2,13 @@ version: '3'
 
 services:
   api:
-    image: ""
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: uwsgi --socket 0.0.0.0:5000 --process=1 --protocol=http -w main:api
     ports:
       - "5000:5000"
 
   celery:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: celery -A main:celery worker -l info
 
   redis:

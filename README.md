@@ -83,9 +83,8 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 
 
 # Docker
-- build image: run build-docker-image.bat
-- run-docker.bat (check model's endpoint at http://localhost:5000/predict )
-- run build-dataset.js in your browser js console. 
+- `docker compose up` (check model's endpoint at http://localhost:5000/predict )
+  - run build-dataset.js in your browser js console. 
 - send data using POST request to model
 - after a few seconds dataset with discovered controll elements will be sent back
 - you may check Test-Backend.ipynb as an example 
@@ -94,21 +93,6 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 - http://localhost:5000/build  - get the docker image build's datetime
 - http://localhost:5000/files  - get data sent by browser to model
 
-- To publish docker image into gitlab's registry:
-````
-    docker login registry.gitlab.com                       # password will be asked 
-    docker build -t registry.gitlab.com/vfuga/jdi-qasp-ml:latest .
-    docker push registry.gitlab.com/vfuga/jdi-qasp-ml:latest
-````
-
-- To create and run docker container from gitlab's registry:
-````
-    docker login registry.gitlab.com            # password will be asked
-    # or as an alternative way:
-    # docker login registry.gitlab.com  -u <your_gitlab_user_name> -p <your_gitlab_user_password>
-    docker pull registry.gitlab.com/vfuga/jdi-qasp-ml:latest  # to be always up-to-date
-    docker run -p 127.0.0.1:5000:5000/tcp -ti --rm --name jdi-ml registry.gitlab.com/vfuga/jdi-qasp-ml:latest
-````
 - To clean all docker images and containers:
 ````
     docker system prune --all --force

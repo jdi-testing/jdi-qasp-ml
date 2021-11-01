@@ -8,4 +8,4 @@ jobs:
   release:
     uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@develop
     with:
-      image_tag: rest
+      image_tag: latest

@@ -12,25 +12,20 @@ from tqdm.auto import trange
 
 import MUI_model  # noqa
 import MUI_model.utils.dataset
-from celery import Celery
 from utils import JDNDataset
+from app import (
+    UPLOAD_DIRECTORY,
+    MODEL_VERSION_DIRECTORY,
+    JS_DIRECTORY,
+)
 
-REDIS_ADDRESS = os.getenv('REDIS_ADDRESS', 'redis://redis:6379')
-UPLOAD_DIRECTORY = os.getenv('UPLOAD_DIRECTORY', 'dataset/df')
-MODEL_VERSION_DIRECTORY = os.getenv('MODEL_VERSION_DIRECTORY', 'model/version')
-JS_DIRECTORY = os.getenv('JS_DIRECTORY', 'js')
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 api = Flask(__name__)
 api.logger.setLevel(logging.DEBUG)
 
-
-redis_address = 'redis://redis:6379'
-celery = Celery(api.name, broker=redis_address, backend=redis_address, task_track_started=True)
-celery.autodiscover_tasks(['tasks'], force=True)
-
-from robula_api import *
+from app.robula_api import *
 
 
 @api.route("/build")

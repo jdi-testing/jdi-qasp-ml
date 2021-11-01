@@ -6,6 +6,6 @@ on:
 
 jobs:
   release:
-    uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@fast-api-websockets
+    uses: xjdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@develop
     with:
       image_tag: ws

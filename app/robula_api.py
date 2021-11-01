@@ -1,14 +1,14 @@
 import concurrent.futures
 import json
+import logging
 import os
 
 from flask import request
 
-from main import api, celery
+from app.celery import celery
+from app.main import api
+from app.tasks import task_schedule_xpath_generation
 from utils import api_utils, robula
-import tasks
-import logging
-
 
 logger = logging.getLogger()
 
@@ -48,7 +48,7 @@ def schedule_xpath_generation():
     config = get_robula_config(data)
     element_id = data['id']
 
-    task_result = tasks.schedule_xpath_generation.delay(get_xpath_from_id(element_id), page, config)
+    task_result = task_schedule_xpath_generation.delay(get_xpath_from_id(element_id), page, config)
     result = {'task_id': task_result.id}
     return api_utils.get_json_response(result, 200)
 

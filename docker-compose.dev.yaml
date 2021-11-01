@@ -3,7 +3,7 @@ version: '3'
 services:
   api:
 #    env_file: .env
-    command: uwsgi --socket 0.0.0.0:5050 --process=1 --protocol=http -w main:api
+    command: uwsgi --socket 0.0.0.0:5050 --process=1 --protocol=http -w app.main:api
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +13,7 @@ services:
 #      - .:/app
 
   celery:
-    command: celery -A main:celery worker -l info
+    command: celery -A app.main:celery worker -l info
     build:
       context: .
       dockerfile: Dockerfile

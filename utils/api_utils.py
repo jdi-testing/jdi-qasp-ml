@@ -1,5 +1,6 @@
 import json
-from main import celery, api
+from app.main import api
+from app.celery import celery
 
 
 def get_task_status(task_id):

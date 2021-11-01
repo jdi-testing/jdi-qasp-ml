@@ -8,4 +8,4 @@ jobs:
   release:
     uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@feature/cicd-setup
     with:
-      image_tags: [ "rest", "latest" ]
+      image_tag: ${{ env.IMAGE_PATH }}:rest,${{ env.IMAGE_PATH }}:latest

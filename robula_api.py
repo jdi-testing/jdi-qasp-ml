@@ -7,6 +7,10 @@ from flask import request
 from main import api, celery
 from utils import api_utils, robula
 import tasks
+import logging
+
+
+logger = logging.getLogger()
 
 
 def exception_handler(func):
@@ -14,6 +18,7 @@ def exception_handler(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
+            logger.exception('Error: ')
             return api_utils.get_json_response({'exc': str(e)}, 500)
 
     wrapper.__name__ = func.__name__

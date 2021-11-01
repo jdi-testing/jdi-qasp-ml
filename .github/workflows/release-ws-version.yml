@@ -2,10 +2,10 @@ name: JDI QASP websockets version
 
 on:
   push:
-    branches: [ "feature/cicd-setup" ]
+    branches: [ "fast-api-websockets" ]
 
 jobs:
   release:
-    uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@feature/cicd-setup
+    uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@fast-api-websockets
     with:
       image_tag: ws

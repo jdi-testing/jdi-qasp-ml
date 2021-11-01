@@ -2,7 +2,7 @@ name: JDI QASP REST version
 
 on:
   push:
-    branches: [ "feature/cicd-setup" ]
+    branches: [ "develop" ]
 
 jobs:
   release:

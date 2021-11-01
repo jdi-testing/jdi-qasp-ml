@@ -1,28 +1,20 @@
-############################################
-# this is a Flask-based backend
-############################################
-
-import os, sys
-import gc
-import json
-from celery import Celery
-from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
 import datetime as dt
-
-import pandas as pd
-from utils import JDNDataset
-import MUI_model  # noqa
-import MUI_model.utils.dataset
-
-import torch
-from tqdm.auto import trange
-from torch.utils.data import DataLoader
+import gc
 import logging
 import pickle
 
-UPLOAD_DIRECTORY = "dataset/df"
-MODEL_VERSION_DIRECTORY = "model/version"
-JS_DIRECTORY = "js"
+import pandas as pd
+import torch
+from celery import Celery
+from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
+from torch.utils.data import DataLoader
+from tqdm.auto import trange
+
+import MUI_model  # noqa
+import MUI_model.utils.dataset
+from app import UPLOAD_DIRECTORY, MODEL_VERSION_DIRECTORY, JS_DIRECTORY
+from robula_api import *
+from utils import JDNDataset
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
@@ -30,11 +22,9 @@ api = Flask(__name__)
 api.logger.setLevel(logging.DEBUG)
 
 
-redis_address = 'redis://localhost'
+redis_address = 'redis://redis:6379'
 celery = Celery(api.name, broker=redis_address, backend=redis_address, task_track_started=True)
 celery.autodiscover_tasks(['tasks'], force=True)
-
-import robula_api
 
 
 @api.route("/build")
@@ -49,7 +39,6 @@ def list_files():
 
 
 @api.route('/files', defaults={'req_path': ''})
-# @app.route('/<path:req_path>')
 def dir_listing(req_path):
 
     # Joining the base and the requested path
@@ -289,11 +278,3 @@ def mui_predict():
         del model
         gc.collect()
         return results_df.to_json(orient='records')
-
-    # # Return 201 CREATED
-    return jsonify({'status': 'OK', 'filename': filename})
-
-
-# Start Flask server
-if __name__ == "__main__":
-    api.run(debug=False, port=5000, host='0.0.0.0')

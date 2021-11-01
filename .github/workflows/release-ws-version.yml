@@ -1,4 +1,4 @@
-name: JDI QASP REST version
+name: JDI QASP websockets version
 
 on:
   push:
@@ -8,4 +8,4 @@ jobs:
   release:
     uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@feature/cicd-setup
     with:
-      image_tag: rest
+      image_tag: ws

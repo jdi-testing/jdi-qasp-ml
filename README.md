@@ -83,8 +83,13 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 
 
 # Docker
+Download the latest Docker Compose file from the `develop` branch:
+```shell
+curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml
+```
+
 - `docker compose up` (check model's endpoint at http://localhost:5000/predict )
-  - run build-dataset.js in your browser js console. 
+- run build-dataset.js in your browser js console. 
 - send data using POST request to model
 - after a few seconds dataset with discovered controll elements will be sent back
 - you may check Test-Backend.ipynb as an example 

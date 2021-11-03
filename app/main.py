@@ -17,12 +17,13 @@ from app import (
     UPLOAD_DIRECTORY,
     MODEL_VERSION_DIRECTORY,
     JS_DIRECTORY,
+    TEMPLATES_PATH,
 )
 
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
-api = Flask(__name__)
+api = Flask(__name__, template_folder=TEMPLATES_PATH)
 api.logger.setLevel(logging.DEBUG)
 
 from app.robula_api import *

@@ -53,7 +53,8 @@ class BaseHTMLBuilder(ABC):
                 output.write(output_text)
             logging.info(f'File {file_name} generated.')
         full_path = path.join(os.getcwd(), output_file_path)
-        logging.info(f'Generation of {self.framework_name} finished. {self._num_of_pages} files generated at {full_path}.')
+        logging.info(f'Generation of {self.framework_name} finished. '
+                     f'{self._num_of_pages} files generated at {full_path}.')
 
     def _generate_text(self, html_text):
         """

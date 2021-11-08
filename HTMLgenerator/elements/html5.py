@@ -49,10 +49,10 @@ class HTML5BaseElement(BaseElement, ABC):
             checked = True if random.randint(0, 10) > 8 else False
             input_class_string = f'class="{input_class}"' if input_class else ''
             label_class_string = f'class="{label_class}"' if label_class else ''
-            input_text = f'''<input type="checkbox" {input_class_string} data-label="checkbox" 
-                             id={input_id} name="{self.html_attributes['name']}" 
+            input_text = f'''<input type="checkbox" {input_class_string} data-label="checkbox"
+                             id={input_id} name="{self.html_attributes['name']}"
                              {'checked' if checked else ''}>'''
-            label_text = f'''<label for="{input_id}" {label_class_string} 
+            label_text = f'''<label for="{input_id}" {label_class_string}
                              style="{self.generate_style_string()}">{value}</label>'''
             checklist_text += f'''{''.join(random.sample([input_text, label_text], 2))}<br>'''
         return checklist_text
@@ -134,7 +134,7 @@ class Range(HTML5BaseElement):
 
         range_text = f'''<input
                   type="range"
-                  {f'list="datalist-{self.html_attributes["id"]}"' if data_list else ''} 
+                  {f'list="datalist-{self.html_attributes["id"]}"' if data_list else ''}
                   {self.generate_html_attributes_string()}>'''
         label_text = f'''<label for="{self.html_attributes['id']}"
                    style="{self.generate_style_string()}">
@@ -180,7 +180,7 @@ class RadioButtons(HTML5BaseElement):
             label_style_string = self.generate_style_string()
             label_style_string = f'style="{label_style_string}"'
             disabled = random.randint(0, 10) > 7
-            radio_text = f'''<input type="radio" 
+            radio_text = f'''<input type="radio"
                             {self.generate_html_attributes_string()}
                             {'checked' if i == active_element else ''}
                             {'disabled' if disabled else ''}

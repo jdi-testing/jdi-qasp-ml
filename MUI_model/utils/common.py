@@ -1,18 +1,10 @@
-
-import os
-import re
-# import io
-import numpy as np
 import pandas as pd
 from IPython.display import HTML
 from IPython.display import display as ipython_displpay
 
 # import matplotlib.pyplot as plt
 # from matplotlib.patches import Rectangle
-from tqdm.auto import tqdm
 import numba
-
-from datetime import datetime
 
 # from time import sleep
 # import selenium
@@ -25,7 +17,6 @@ TQDM_BAR_FORMAT = '{desc:25}{percentage:3.0f}%|{bar:50}{r_bar}'
 # MAX_PICT_SIZE_TRESHOLD = 128
 
 
-import numba
 @numba.jit
 def iou_xywh(box_a, box_b):
     """ Compute Intersection over Union (IoU)
@@ -79,7 +70,6 @@ def build_tree_dict(df: pd.DataFrame) -> dict:
     }
 
     return tree_dict
-
 
 
 def accuracy(df: pd.DataFrame, y_true: str = 'y_true_label', is_hidden: str = 'is_hidden',

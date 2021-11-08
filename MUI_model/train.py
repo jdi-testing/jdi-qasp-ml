@@ -1,10 +1,11 @@
 # import pandas as pd
 # import numpy as np
 # import matplotlib.pyplot as plt
-import os, gc, sys
+import os
+import gc
+import sys
 from tqdm.auto import trange
 import pandas as pd
-import re
 
 import torch
 from torch.utils.data import DataLoader
@@ -13,32 +14,30 @@ from torch.utils.data import DataLoader
 sys.path.append('.')
 # print(os.getcwd())
 
-from MUI_model.utils.config import logger
-from MUI_model.utils.dataset import JDNDataset
-from MUI_model.utils.model import JDIModel
-from MUI_model.utils.common import accuracy
+from MUI_model.utils.config import logger  # noqa
+from MUI_model.utils.dataset import JDNDataset  # noqa
+from MUI_model.utils.model import JDIModel  # noqa
+from MUI_model.utils.common import accuracy  # noqa
 
-from multiprocessing import freeze_support
-from terminaltables import DoubleTable
-
-
+from multiprocessing import freeze_support  # noqa
+from terminaltables import DoubleTable  # noqa
 
 BATCH_SIZE = 256
 
 n_datasets = 120
 
-DATASET_NAMES = [f'mui-site{i}' for i in range (1,n_datasets+1)]
+DATASET_NAMES = [f'mui-site{i}' for i in range(1, n_datasets+1)]
 
 ds_files = [f'/MUI_model/dataset/df/{fn}.pkl' for fn in DATASET_NAMES]
 
-train_names= DATASET_NAMES[:100]
+train_names = DATASET_NAMES[:100]
 test_names = DATASET_NAMES[100:]
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 logger.info(f'device: {DEVICE}')
 
-def evaluate(model: JDIModel, dataset: JDNDataset) -> pd.DataFrame:
 
+def evaluate(model: JDIModel, dataset: JDNDataset) -> pd.DataFrame:
     model.eval()
     with torch.no_grad():
 
@@ -70,7 +69,7 @@ if __name__ == "__main__":
     freeze_support()
 
     train_dataset = JDNDataset(datasets_list=train_names, rebalance_and_shuffle=True)
-        # train_dataset = JDNDataset(datasets_list=None, rebalance_and_suffle=True)
+    # train_dataset = JDNDataset(datasets_list=None, rebalance_and_suffle=True)
     test_dataset = JDNDataset(datasets_list=test_names, rebalance_and_shuffle=False)
 
     logger.info(f'Train dataset shape:  {train_dataset.X.shape}; Test dataset shape: {test_dataset.X.shape}')
@@ -174,4 +173,3 @@ if __name__ == "__main__":
         if early_stopping_steps <= 0:
             logger.info('EARLY STOPPING')
             exit(0)
-

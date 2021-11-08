@@ -4,7 +4,7 @@ import numba
 import pandas as pd
 import numpy as np
 import itertools
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 
 # from utils.common import build_elements_dict  # noqa
@@ -16,13 +16,10 @@ from MUI_model.utils.config import logger
 
 
 # from scipy.sparse import csc_matrix, csr_matrix
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.preprocessing import OneHotEncoder
 from scipy.sparse.csr import csr_matrix
 from collections import Counter, defaultdict
 import pickle
-
-
 
 
 def build_siblings_dict(df: pd.DataFrame):
@@ -54,9 +51,6 @@ def build_siblings_dict(df: pd.DataFrame):
 #     ), 6)
 
 
-
-
-
 def get_siblings(siblings_dict: dict, tree_dict: dict, index_dict: dict, element_id: str):
     """
         Returns a pair of siblings (before_sibling, after_sibling)
@@ -86,6 +80,7 @@ def get_siblings(siblings_dict: dict, tree_dict: dict, index_dict: dict, element
 
     return index_dict.get(up), index_dict.get(dn)
 
+
 def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix:
     model_count_path = 'MUI_model/model/count_children_tags.pkl'
     model_tf_path = 'MUI_model/model/tfidf_children_tags.pkl'
@@ -97,7 +92,7 @@ def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix
             model_cv = pickle.load(file=c)
         with open(model_tf_path, 'rb') as f:
             model_tf = pickle.load(file=f)
-        
+
         child_tags_series = df[colname].fillna('')
         child_tags_series = child_tags_series.apply(lambda x: x.strip() if x != '' else x)
         child_sm = model_cv.transform(child_tags_series.values)
@@ -109,19 +104,19 @@ def build_children_tags(df: pd.DataFrame, colname='children_tags') -> csr_matrix
 #             raise Exception('Cannot prepare CountVectorizer for attribute "class": need labels')
 
         logger.info("Extract useful child_tags features, 'children_tags' column will be used")
-        child_tags_series =  df[colname].fillna('')
+        child_tags_series = df[colname].fillna('')
         child_vocab = list(itertools.chain.from_iterable(child_tags_series.apply(lambda x: x.split(sep=' '))))
         child_vocab = list(set(child_vocab))
         child_vocab = sorted([v for v in child_vocab if re.match(r'^[a-z][a-z]+$', v)])
-        
+
         child_cv = CountVectorizer(vocabulary=child_vocab)
         child_sm = child_cv.fit_transform(child_tags_series.values)
 
         logger.info(f'Column ["{colname}"] used for tfidf')
-        
+
         model = TfidfTransformer()
         child_sm = model.fit_transform(child_sm)
-        
+
         logger.info(f'Saving {model_count_path}, vocabulary length: {len(child_cv.vocabulary_)}')
         logger.info(f'Saving {model_tf_path}')
         with open(model_count_path, 'wb') as c:
@@ -145,7 +140,7 @@ def build_followers_tags(df: pd.DataFrame, colname='followers_tags') -> csr_matr
             model_cv = pickle.load(file=c)
         with open(model_tf_path, 'rb') as f:
             model_tf = pickle.load(file=f)
-        
+
         followers_tags_series = df[colname].fillna('')
         followers_tags_series = followers_tags_series.apply(lambda x: x.strip() if x != '' else x)
         followers_sm = model_cv.transform(followers_tags_series.values)
@@ -157,19 +152,19 @@ def build_followers_tags(df: pd.DataFrame, colname='followers_tags') -> csr_matr
 #             raise Exception('Cannot prepare CountVectorizer for attribute "class": need labels')
 
         logger.info("Extract useful child_tags features, 'followers_tags' column will be used")
-        followers_tags_series =  df[colname].fillna('')
+        followers_tags_series = df[colname].fillna('')
         followers_vocab = list(itertools.chain.from_iterable(followers_tags_series.apply(lambda x: x.split(sep=' '))))
         followers_vocab = list(set(followers_vocab))
         followers_vocab = sorted([v for v in followers_vocab if re.match(r'^[a-z][a-z]+$', v)])
-        
+
         followers_cv = CountVectorizer(vocabulary=followers_vocab)
         followers_sm = followers_cv.fit_transform(followers_tags_series.values)
 
         logger.info(f'Column ["{colname}"] used for tfidf')
-        
+
         model = TfidfTransformer()
         followers_sm = model.fit_transform(followers_sm)
-        
+
         logger.info(f'Saving {model_count_path}, vocabulary length: {len(followers_cv.vocabulary_)}')
         logger.info(f'Saving {model_tf_path}')
         with open(model_count_path, 'wb') as c:
@@ -313,22 +308,22 @@ def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> 
 # def get_input_a_descendants(df):
 #     def empty_string():
 #         return ''
-    
+
 #     tree_dict = build_tree_dict(df)
-    
+
 #     in_children_dict = defaultdict(empty_string)
 #     in_grandchildren_dict = defaultdict(empty_string)
 #     in_great_grandchildren_dict = defaultdict(empty_string)
-    
+
 #     a_children_dict = defaultdict(empty_string)
 #     a_grandchildren_dict = defaultdict(empty_string)
 #     a_great_grandchildren_dict = defaultdict(empty_string)
-    
+
 #     with trange(df.shape[0]) as tbar:
 #         tbar.set_description('Build descendants features')
-        
+
 #         for i, r in df.iterrows():
-            
+
 #             get_ancestors('INPUT', r, in_children_dict, in_grandchildren_dict, in_great_grandchildren_dict,tree_dict)
 #             get_ancestors('A', r, a_children_dict, a_grandchildren_dict, a_great_grandchildren_dict,tree_dict)
 
@@ -340,7 +335,7 @@ def followers_features(df: pd.DataFrame, followers_set: set = None, level=0) -> 
 #         in_grandchildren_dict).fillna('')
 #     df['input_great-grandchildren'] = df.element_id.map(
 #         in_great_grandchildren_dict).fillna('')
-    
+
 #     df['a_children'] = df.element_id.map(
 #         a_children_dict).fillna('')
 #     df['a_grandchildren'] = df.element_id.map(
@@ -415,7 +410,6 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-
 def build_attributes_feature(df: pd.DataFrame, colname='attributes') -> pd.DataFrame:
     """
         df must have "attributes" field and we are going
@@ -428,7 +422,6 @@ def build_attributes_feature(df: pd.DataFrame, colname='attributes') -> pd.DataF
     attributes = []
     with open('MUI_model/dataset/EXTRACT_ATTRIBUTES_LIST.pkl', 'rb') as f:
         EXTRACT_ATTRIBUTES_LIST = pickle.load(f)
-
 
     with trange(df.shape[0]) as bar:
         bar.set_description('Extract "attributes"')
@@ -473,7 +466,7 @@ def build_class_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
         with open(model_tf_file_path, 'rb') as f:
             model_tf = pickle.load(file=f)
 #             print(f'{model_tf!r}')
-        
+
         attr_class_series = df[colname].apply(lambda x: None if type(x) is not dict else x.get('class')).fillna('')
         attr_class_series = attr_class_series.apply(lambda x: x.replace("-", " ").lower())
         class_sm = model_cv.transform(attr_class_series.values)
@@ -491,7 +484,7 @@ def build_class_feature(df: pd.DataFrame, colname='attributes') -> csr_matrix:
         class_vocab = list(itertools.chain.from_iterable(attr_class_series.apply(lambda x: x.split(sep=' '))))
         class_vocab = list(set(class_vocab))
         class_vocab = sorted([v for v in class_vocab if re.match(r'^[a-z][a-z]+$', v)])
-        class_cv = CountVectorizer(vocabulary = class_vocab)
+        class_cv = CountVectorizer(vocabulary=class_vocab)
         class_sm = class_cv.fit_transform(attr_class_series.values)
         model = TfidfTransformer()
         class_sm = model.fit_transform(class_sm)

@@ -26,7 +26,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = Flask(__name__, template_folder=TEMPLATES_PATH)
 api.logger.setLevel(logging.DEBUG)
 
-from app.robula_api import *
+from app.robula_api import *  # noqa
 
 
 @api.route("/build")
@@ -127,7 +127,6 @@ def predict():
     df.to_pickle(f'dataset/df/{filename}')
     filename = filename.replace('.pkl', '.parquet')
     df.to_parquet(f'dataset/df/{filename}')
-
 
     api.logger.info('Creating JDNDataset')
     dataset = JDNDataset(datasets_list=[filename.split('.')[0]], rebalance_and_shuffle=False)

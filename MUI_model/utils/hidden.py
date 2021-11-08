@@ -1,6 +1,4 @@
-import numba
 import pandas as pd
-# import numba
 from MUI_model.utils.config import logger
 from MUI_model.utils.common import iou_xywh
 

@@ -1,7 +1,8 @@
 # import pandas as pd
 # import numpy as np
 # import matplotlib.pyplot as plt
-import os, gc
+import os
+import gc
 from tqdm.auto import trange
 import pandas as pd
 

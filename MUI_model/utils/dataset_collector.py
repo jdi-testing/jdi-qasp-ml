@@ -76,7 +76,7 @@ def collect_dataset(df: pd.DataFrame) -> csr_matrix:
     upsib_role_sm = build_role_feature(dataset_df, colname='attributes_upsib')
     dnsib_role_sm = build_role_feature(dataset_df, colname='attributes_dnsib')
     logger.info(f'role_sm: {role_sm.shape}')
-    
+
     # children & followers tags
     child_tags_sm = build_children_tags(dataset_df, colname='children_tags')
     foll_tags_sm = build_followers_tags(dataset_df, colname='followers_tags')

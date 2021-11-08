@@ -1,25 +1,21 @@
 import os
-import re
 
-import numba
 import pandas as pd
 import numpy as np
 import logging
 from tqdm.auto import trange
 from MUI_model.utils.dataset_collector import collect_dataset
 from MUI_model.utils.features_builder import build_features
-from MUI_model.utils.common import build_tree_dict
 
 from MUI_model.utils.common import iou_xywh # noqa
 from MUI_model.utils.labels import assign_labels
 
 
-from collections import Counter, defaultdict
 from torch.utils.data import Dataset
-import matplotlib.pyplot as plt
 from glob import glob
 from MUI_model.utils.config import logger
 from IPython.display import display  # noqa
+
 
 def rebalance(y: np.ndarray):
     logger.info('Rebalance dataset')
@@ -74,7 +70,6 @@ class JDNDataset(Dataset):
 #                         for fn in ds_files]
         else:
             ds_files = [(f'MUI_model/dataset/df/{fn}.pkl') for fn in datasets_list]
-             
 
         # display(ds_files)
 
@@ -89,7 +84,9 @@ class JDNDataset(Dataset):
                     bar.set_postfix_str(f'{df_file_path}')
 #                     df = pd.read_parquet(df_file_path)
                     df = pd.read_pickle(df_file_path)
-                    df['label_text'] = df.attributes.apply(lambda x: x.get('data-label') if x is not None else 'n/a').fillna('n/a')
+                    df['label_text'] = df.attributes.apply(
+                        lambda x: x.get('data-label') if x is not None else 'n/a'
+                    ).fillna('n/a')
                     df = build_features(df)
                     df = assign_labels(
                         df=df)

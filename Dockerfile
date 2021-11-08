@@ -6,7 +6,7 @@ RUN apt-get update -y && \
     apt-get install -y locales && \
     apt-get dist-upgrade
 
-RUN apt install -y curl wget mc gcc
+RUN apt install -y curl wget mc gcc make
 
 ENV APP_HOME=/app
 WORKDIR ${APP_HOME}

@@ -20,6 +20,8 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Build and test
+        run: docker compose -f docker-compose.dev.yaml run --rm api make unittest
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Log into registry ${{ env.REGISTRY }}

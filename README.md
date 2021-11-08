@@ -83,12 +83,17 @@ If directory **dataset/annotations** does not contain annotation file for the sc
 
 
 # Docker
-Download the latest Docker Compose file from the `develop` branch:
+Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
+## macOS/Linux
 ```shell
-curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml
+curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+```
+## Windows
+```shell
+curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
 
-- `docker compose up` (check model's endpoint at http://localhost:5000/predict )
+- check model's endpoint at http://localhost:5000/predict 
 - run build-dataset.js in your browser js console. 
 - send data using POST request to model
 - after a few seconds dataset with discovered controll elements will be sent back
@@ -103,7 +108,19 @@ curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-te
     docker system prune --all --force
 ````
 
-# API:
+# Development:
+
+## API service dependencies
+New dependencies can be added with `pipenv` command:
+```shell
+pipenv install <package>==<version>
+```
+If there are conflicts on creating a new pipenv env on your local machine, please, add the dependencies inside the container:
+```shell
+docker compose -f docker-compose.dev.yaml run --rm api pipenv install <package>==<version>
+```
+
+## API
 
 ### /schedule_xpath_generation
 Creates task for xpath generation and returns id of task which can be used for task revoking and 

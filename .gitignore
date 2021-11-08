@@ -5,9 +5,13 @@ __pycache__/*
 .vscode/*
 *.ipynb_checkpoints*
 *.pyc
-*.log
 dataset/cache-labels/*
 dataset/df/20*
 .idea/*
 HTMLgenerator/output/*
 venv/
+.pytest_cache/*
+.coverage
+.coverage.*
+.cache
+coverage.xml

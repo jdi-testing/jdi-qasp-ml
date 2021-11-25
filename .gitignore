@@ -22,3 +22,13 @@ data/old_dataset/*
 
 data/uploaded_dataset
 data/other
+dataset/cache-labels/*
+dataset/df/20*
+.idea/*
+HTMLgenerator/output/*
+venv/
+.pytest_cache/*
+.coverage
+.coverage.*
+.cache
+coverage.xml

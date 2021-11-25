@@ -1,7 +1,9 @@
 # import pandas as pd
 # import numpy as np
 # import matplotlib.pyplot as plt
-import os, gc, sys
+import os
+import gc
+import sys
 from tqdm.auto import trange
 import pandas as pd
 import re
@@ -43,7 +45,6 @@ logger.info(f"device: {DEVICE}")
 
 
 def evaluate(model: JDIModel, dataset: JDNDataset) -> pd.DataFrame:
-
     model.eval()
     with torch.no_grad():
 
@@ -187,4 +188,3 @@ if __name__ == "__main__":
         "tmp/train_metrics.csv"
     )
     exit(0)
-

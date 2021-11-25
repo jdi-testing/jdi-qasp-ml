@@ -1,65 +1,23 @@
-FROM continuumio/miniconda3
-EXPOSE 5000/tcp
-EXPOSE 5000/udp
+FROM python:3.7.9-slim-buster
 
-RUN apt-get update -y && apt-get install -y apt-utils && apt-get upgrade -y && apt-get install -y locales && apt-get dist-upgrade
-RUN apt install -y curl wget mc redis-server
-COPY docker-environment.yml ${HOME}/environment.yml
-RUN conda env update -n base -f environment.yml
+RUN apt-get update -y && \
+    apt-get install -y apt-utils && \
+    apt-get upgrade -y && \
+    apt-get install -y locales && \
+    apt-get dist-upgrade
 
-ENV USER_NAME=jdi-qasp-ml
-ENV HOME=/home/${USER_NAME}
-WORKDIR ${HOME}
-RUN useradd -d ${HOME} -m ${USER_NAME}
-RUN chown ${USER_NAME}:${USER_NAME} ${HOME}
+RUN apt install -y curl wget mc gcc make
 
-RUN mkdir /var/log/celery/
-RUN mkdir /var/run/celery/
-RUN chown -R ${USER_NAME}:${USER_NAME} /var/log/celery/
-RUN chown -R ${USER_NAME}:${USER_NAME} /var/run/celery/
+ENV APP_HOME=/app
+WORKDIR ${APP_HOME}
 
-USER ${USER_NAME}
+COPY . ${APP_HOME}
 
-RUN mkdir ${HOME}/utils
-RUN mkdir ${HOME}/utils_old
-RUN mkdir ${HOME}/vars
-RUN mkdir ${HOME}/html
-RUN mkdir ${HOME}/templates
-RUN mkdir ${HOME}/Old_model
-RUN mkdir ${HOME}/MUI_model
-RUN mkdir ${HOME}/js
-RUN mkdir -p ${HOME}/data/mui_dataset/df
-RUN mkdir -p ${HOME}/data/old_dataset/df
-RUN mkdir -p ${HOME}/flask-temp-storage
-RUN mkdir -p ${HOME}/MUI_model/tmp
-COPY data/mui_dataset/classes.txt ${HOME}/data/mui_dataset/classes.txt
-COPY data/mui_dataset/EXTRACT_ATTRIBUTES_LIST.json ${HOME}/data/mui_dataset/EXTRACT_ATTRIBUTES_LIST.json
-COPY data/old_dataset/classes.txt ${HOME}/data/old_dataset/classes.txt
-COPY Old_model Old_model
-COPY MUI_model MUI_model
-COPY js js
-COPY utils utils
-COPY utils_old utils_old
-COPY vars vars
-COPY templates templates
-COPY main.py ${HOME}/main.py
-COPY robula_api.py ${HOME}/robula_api.py
-COPY tasks.py ${HOME}/tasks.py
+RUN pip install -U pip && \
+    pip install pipenv
 
-USER root
-RUN chown -R ${USER_NAME}:${USER_NAME} ${HOME}/MUI_model
-RUN chown -R ${USER_NAME}:${USER_NAME} ${HOME}/Old_model
-COPY celeryd /etc/init.d/celeryd
-COPY celeryd_conf /etc/default/celeryd
-RUN echo "#!/bin/bash" >> /entrypoint.sh
-RUN echo "cd ${HOME}" >> /entrypoint.sh
-RUN echo "redis-server --daemonize yes --protected-mode no" >> /entrypoint.sh
-RUN echo "celery -A main:celery multi start worker1" >> /entrypoint.sh
-RUN echo "uwsgi --socket 0.0.0.0:5000 --process=5 --protocol=http -w main:api" >> /entrypoint.sh
-RUN chmod a+x /entrypoint.sh
-RUN MODEL_VERSION=`date +%Y-%m-%d-%H.%M.%S`; mkdir -p ${HOME}/model/version; touch ${HOME}/model/version/${MODEL_VERSION};  
+RUN pipenv install --ignore-pipfile --system --deploy
 
-USER ${USER_NAME}
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENV PYTHONPATH=${PYTHONPATH}:/app
 
-
+RUN MODEL_VERSION=`date +%Y-%m-%d-%H.%M.%S`; mkdir -p ${APP_HOME}/model/version; touch ${APP_HOME}/model/version/${MODEL_VERSION};

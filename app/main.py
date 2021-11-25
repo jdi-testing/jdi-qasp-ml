@@ -2,32 +2,27 @@
 # this is a Flask-based backend
 ############################################
 
-import os, sys
-import gc
-import json
-from celery import Celery
-from flask import (
-    Flask,
-    request,
-    abort,
-    jsonify,
-    send_from_directory,
-    json,
-    render_template,
-    send_file,
-)
 import datetime as dt
-
-import pandas as pd
-from utils.dataset import JDNDataset as MUI_JDNDataset
-from utils_old.dataset import JDNDataset as Old_JDNDataset
-
-import torch
-from tqdm.auto import trange
-from torch.utils.data import DataLoader
+import gc
 import logging
+import os
 import pickle
 
+import pandas as pd
+import torch
+from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
+from torch.utils.data import DataLoader
+from tqdm.auto import trange
+
+import MUI_model  # noqa
+from app import (
+    UPLOAD_DIRECTORY,
+    MODEL_VERSION_DIRECTORY,
+    JS_DIRECTORY,
+    TEMPLATES_PATH,
+)
+from utils.dataset import JDNDataset as MUI_JDNDataset
+from utils_old.dataset import JDNDataset as Old_JDNDataset
 from vars.path_vars import (
     UPLOAD_DIRECTORY,
     MODEL_VERSION_DIRECTORY,
@@ -36,21 +31,13 @@ from vars.path_vars import (
     mui_model,
     old_df_path,
     old_model,
-    redis_address,
 )
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
-
-
-api = Flask(__name__)
+api = Flask(__name__, template_folder=TEMPLATES_PATH)
 api.logger.setLevel(logging.DEBUG)
 
-celery = Celery(
-    api.name, broker=redis_address, backend=redis_address, task_track_started=True
-)
-celery.autodiscover_tasks(["tasks"], force=True)
-
-import robula_api
+from app.robula_api import *  # noqa
 
 
 @api.route("/build")
@@ -64,8 +51,7 @@ def list_files():
     return jsonify(files)
 
 
-@api.route("/files", defaults={"req_path": ""})
-# @app.route('/<path:req_path>')
+@api.route('/files', defaults={'req_path': ''})
 def dir_listing(req_path):
 
     # Joining the base and the requested path
@@ -317,13 +303,4 @@ def mui_predict():
     else:
         del model
         gc.collect()
-        return results_df.to_json(orient="records")
-
-    # # Return 201 CREATED
-    return jsonify({"status": "OK", "filename": filename})
-
-
-# Start Flask server
-if __name__ == "__main__":
-    api.run(debug=False, port=5000, host="0.0.0.0")
-
+        return results_df.to_json(orient='records')

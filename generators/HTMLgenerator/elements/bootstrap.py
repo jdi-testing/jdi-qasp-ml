@@ -914,7 +914,11 @@ class FileBrowser(BootstrapBaseElement):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.label_element = Label(attr_for=self.html_attributes['id'], attr_class='custom-file-label', label=self.label)
+        self.label_element = Label(
+            attr_for=self.html_attributes['id'],
+            attr_class='custom-file-label',
+            label=self.label,
+        )
 
     def add_specific_attributes(self):
         super().add_specific_attributes()

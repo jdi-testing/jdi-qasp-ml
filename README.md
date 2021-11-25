@@ -117,32 +117,45 @@ run_docker.bat (for windows)
 sh run_docker.sh (for mac)
 ```
 <span style="color:orange">Attention! The first time you will build the docker image can take significant time (1 hour and more)<span>
+<hr>
+Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
+## macOS/Linux
+```shell
+curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+```
+## Windows
+```shell
+curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+```
+
+- check model's endpoint at http://localhost:5000/predict 
+- run build-dataset.js in your browser js console. 
+- send data using POST request to model
+- after a few seconds dataset with discovered controll elements will be sent back
+- you may check Test-Backend.ipynb as an example
 
 # Docker - get debugging info:
 - http://localhost:5000/build  - get the docker image build's datetime
 - http://localhost:5000/files  - get data sent by browser to model
 
-- To publish docker image into gitlab's registry:
-````
-    docker login registry.gitlab.com                       # password will be asked 
-    docker build -t registry.gitlab.com/vfuga/jdi-qasp-ml:latest .
-    docker push registry.gitlab.com/vfuga/jdi-qasp-ml:latest
-````
-
-- To create and run docker container from gitlab's registry:
-````
-    docker login registry.gitlab.com            # password will be asked
-    # or as an alternative way:
-    # docker login registry.gitlab.com  -u <your_gitlab_user_name> -p <your_gitlab_user_password>
-    docker pull registry.gitlab.com/vfuga/jdi-qasp-ml:latest  # to be always up-to-date
-    docker run -p 127.0.0.1:5050:5000/tcp -ti --rm --name jdi-ml registry.gitlab.com/vfuga/jdi-qasp-ml:latest
-````
 - To clean all docker images and containers:
 ````
     docker system prune --all --force
 ````
 
-# Additional API:
+# Development:
+
+## API service dependencies
+New dependencies can be added with `pipenv` command:
+```shell
+pipenv install <package>==<version>
+```
+If there are conflicts on creating a new pipenv env on your local machine, please, add the dependencies inside the container:
+```shell
+docker compose -f docker-compose.dev.yaml run --rm api pipenv install <package>==<version>
+```
+
+## API
 
 ### /schedule_xpath_generation
 Creates task for xpath generation and returns id of task which can be used for task revoking and 

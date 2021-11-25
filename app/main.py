@@ -17,22 +17,21 @@ from tqdm.auto import trange
 import MUI_model  # noqa
 from app import (
     UPLOAD_DIRECTORY,
-    MODEL_VERSION_DIRECTORY,
-    JS_DIRECTORY,
     TEMPLATES_PATH,
-)
-from utils.dataset import JDNDataset as MUI_JDNDataset
-from utils_old.dataset import JDNDataset as Old_JDNDataset
-from vars.path_vars import (
-    UPLOAD_DIRECTORY,
     MODEL_VERSION_DIRECTORY,
     JS_DIRECTORY,
     mui_df_path,
     mui_model,
     old_df_path,
     old_model,
+    redis_address
 )
+from utils.dataset import JDNDataset as MUI_JDNDataset
+from utils_old.dataset import JDNDataset as Old_JDNDataset
 
+
+os.makedirs(mui_df_path, exist_ok=True)
+os.makedirs(old_df_path, exist_ok=True)
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = Flask(__name__, template_folder=TEMPLATES_PATH)
 api.logger.setLevel(logging.DEBUG)
@@ -134,8 +133,6 @@ def predict():
         f.flush()
 
     df.to_pickle(f"{old_df_path}/{filename}")
-    filename = filename.replace(".pkl", ".parquet")
-    df.to_parquet(f"{old_df_path}/{filename}")
 
     api.logger.info("Creating JDNDataset")
     dataset = Old_JDNDataset(

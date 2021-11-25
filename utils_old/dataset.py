@@ -251,19 +251,19 @@ class JDNDataset(Dataset):
 
         if datasets_list is None:
             logger.info("Will use all available datasets")
-            ds_files = glob(f"{df_path}/*.parquet")
+            ds_files = glob(f"{df_path}/*.pkl")
             ds_files = [
                 (
                     fn,
                     f"{dataset_path}/annotations/"
-                    + re.split(r"[/\\]", re.sub(r"\.parquet$", "", fn))[-1]
+                    + re.split(r"[/\\]", re.sub(r"\.pkl$", "", fn))[-1]
                     + ".txt",
                 )
                 for fn in ds_files
             ]
         else:
             ds_files = [
-                (f"{df_path}/{fn}.parquet", f"{dataset_path}/annotations/{fn}.txt")
+                (f"{df_path}/{fn}.pkl", f"{dataset_path}/annotations/{fn}.txt")
                 for fn in datasets_list
             ]
 
@@ -278,7 +278,7 @@ class JDNDataset(Dataset):
                     logger.error(f"File: {df_file_path} does not extst")
                 else:
                     bar.set_postfix_str(f"{df_file_path}, {ann_file_path}")
-                    df = pd.read_parquet(df_file_path)
+                    df = pd.read_pickle(df_file_path)
                     df = build_features(df)
                     df = assign_labels(df=df, annotations_file_path=ann_file_path)
                     df_list.append(df)

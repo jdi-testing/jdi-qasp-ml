@@ -117,7 +117,7 @@ run_docker.bat (for windows)
 sh run_docker.sh (for mac)
 ```
 <span style="color:orange">Attention! The first time you will build the docker image can take significant time (1 hour and more)<span>
-<hr>
+
 Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
 ## macOS/Linux
 ```shell
@@ -128,15 +128,15 @@ curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-te
 curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
 
-- check model's endpoint at http://localhost:5000/predict 
+- check model's endpoint at http://localhost:5050/predict 
 - run build-dataset.js in your browser js console. 
 - send data using POST request to model
 - after a few seconds dataset with discovered controll elements will be sent back
 - you may check Test-Backend.ipynb as an example
 
 # Docker - get debugging info:
-- http://localhost:5000/build  - get the docker image build's datetime
-- http://localhost:5000/files  - get data sent by browser to model
+- http://localhost:5050/build  - get the docker image build's datetime
+- http://localhost:5050/files  - get data sent by browser to model
 
 - To clean all docker images and containers:
 ````

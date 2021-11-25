@@ -1,0 +1,8 @@
+# variables for using in MUI_model/train.py
+BATCH_SIZE = 1024
+
+TRAIN_LEN = 400
+TEST_LEN = 50
+
+NUM_EPOCHS = 10
+EARLY_STOPPING_THRESHOLD = 11

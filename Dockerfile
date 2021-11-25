@@ -7,7 +7,7 @@ RUN apt install -y curl wget mc redis-server
 COPY docker-environment.yml ${HOME}/environment.yml
 RUN conda env update -n base -f environment.yml
 
-ENV USER_NAME=jdi-ml
+ENV USER_NAME=jdi-qasp-ml
 ENV HOME=/home/${USER_NAME}
 WORKDIR ${HOME}
 RUN useradd -d ${HOME} -m ${USER_NAME}
@@ -21,16 +21,26 @@ RUN chown -R ${USER_NAME}:${USER_NAME} /var/run/celery/
 USER ${USER_NAME}
 
 RUN mkdir ${HOME}/utils
+RUN mkdir ${HOME}/utils_old
+RUN mkdir ${HOME}/vars
 RUN mkdir ${HOME}/html
-RUN mkdir ${HOME}/model
+RUN mkdir ${HOME}/templates
+RUN mkdir ${HOME}/Old_model
 RUN mkdir ${HOME}/MUI_model
-RUN mkdir -p ${HOME}/dataset/df
+RUN mkdir ${HOME}/js
+RUN mkdir -p ${HOME}/data/mui_dataset/df
+RUN mkdir -p ${HOME}/data/old_dataset/df
 RUN mkdir -p ${HOME}/flask-temp-storage
 RUN mkdir -p ${HOME}/MUI_model/tmp
-COPY dataset/classes.txt ${HOME}/dataset/classes.txt
-COPY model model
+COPY data/mui_dataset/classes.txt ${HOME}/data/mui_dataset/classes.txt
+COPY data/mui_dataset/EXTRACT_ATTRIBUTES_LIST.json ${HOME}/data/mui_dataset/EXTRACT_ATTRIBUTES_LIST.json
+COPY data/old_dataset/classes.txt ${HOME}/data/old_dataset/classes.txt
+COPY Old_model Old_model
 COPY MUI_model MUI_model
+COPY js js
 COPY utils utils
+COPY utils_old utils_old
+COPY vars vars
 COPY templates templates
 COPY main.py ${HOME}/main.py
 COPY robula_api.py ${HOME}/robula_api.py
@@ -38,6 +48,7 @@ COPY tasks.py ${HOME}/tasks.py
 
 USER root
 RUN chown -R ${USER_NAME}:${USER_NAME} ${HOME}/MUI_model
+RUN chown -R ${USER_NAME}:${USER_NAME} ${HOME}/Old_model
 COPY celeryd /etc/init.d/celeryd
 COPY celeryd_conf /etc/default/celeryd
 RUN echo "#!/bin/bash" >> /entrypoint.sh

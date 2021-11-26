@@ -24,7 +24,6 @@ from app import (
     mui_model,
     old_df_path,
     old_model,
-    redis_address
 )
 from utils.dataset import JDNDataset as MUI_JDNDataset
 from utils_old.dataset import JDNDataset as Old_JDNDataset

@@ -1,10 +1,5 @@
-import os, sys
-import re
+import os
 
-prefix = os.getcwd().split("jdi-qasp-ml")[0]
-sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
-
-import numba
 import pandas as pd
 import numpy as np
 import logging
@@ -18,6 +13,7 @@ from torch.utils.data import Dataset
 from glob import glob
 from utils.config import logger
 
+prefix = os.getcwd().split("jdi-qasp-ml")[0]
 classes_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/classes.txt")
 df_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/df")
 
@@ -81,8 +77,6 @@ class JDNDataset(Dataset):
         if datasets_list is None:
             logger.info("Will use all available datasets")
             ds_files = glob(f"{df_path}/*.pkl")
-        #             ds_files = [(fn, 'dataset/annotations/' + re.split(r'[/\\]', re.sub(r'\.parquet$', '', fn))[-1] + '.txt')
-        #                         for fn in ds_files]
         else:
             ds_files = [(f"{df_path}/{fn}.pkl") for fn in datasets_list]
 

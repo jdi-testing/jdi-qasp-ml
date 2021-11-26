@@ -139,7 +139,8 @@ class DatasetBuilder:
 
         # to prevent "I'm not a robot" check, we have to add next option:
         self.options.add_argument(
-            '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36")'
+            '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) \
+            Chrome/95.0.4638.54 Safari/537.36")'
         )  # noqa
         if sys.platform != "darwin":
             self.options.set_capability("platformName", "windows")

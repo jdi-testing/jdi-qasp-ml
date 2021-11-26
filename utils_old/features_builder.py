@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 import re
 import numba
 import pandas as pd
@@ -347,4 +348,3 @@ def build_type_feature(df: pd.DataFrame, colname="attributes") -> csr_matrix:
 
 
 logger.info("feature_bilder module is loaded...")
-

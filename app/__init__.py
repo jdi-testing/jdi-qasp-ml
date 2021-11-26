@@ -1,6 +1,4 @@
-import os, sys
-
-prefix = os.getcwd().split("jdi-qasp-ml")[0]
+import os
 
 from vars.path_vars import (
     UPLOAD_DIRECTORY,
@@ -14,6 +12,8 @@ from vars.path_vars import (
     redis_address
 )
 
+prefix = os.getcwd().split("jdi-qasp-ml")[0]
+
 REDIS_URL = os.getenv('REDIS_ADDRESS', redis_address)
 BASE_DIR = os.path.join(prefix, "jdi-qasp-ml")
 
@@ -25,4 +25,3 @@ mui_df_path = os.getenv('JS_DIRECTORY', os.path.join(BASE_DIR, mui_df_path))
 mui_model = os.getenv('JS_DIRECTORY', os.path.join(BASE_DIR, mui_model))
 old_df_path = os.getenv('JS_DIRECTORY', os.path.join(BASE_DIR, old_df_path))
 old_model = os.getenv('JS_DIRECTORY', os.path.join(BASE_DIR, old_model))
-

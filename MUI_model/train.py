@@ -26,6 +26,7 @@ from vars.train_vars import (
     TEST_LEN,
     NUM_EPOCHS,
     EARLY_STOPPING_THRESHOLD,
+    SCHEDULER_STEP
 )
 
 from multiprocessing import freeze_support
@@ -121,7 +122,7 @@ if __name__ == "__main__":
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=SCHEDULER_STEP, gamma=0.1)
 
     NUM_BATCHES = len(train_dataloader)
 

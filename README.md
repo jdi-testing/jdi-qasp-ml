@@ -74,7 +74,7 @@ To train the model you need to go to the directory **/MUI_model** and run:
 ```
 If you need to set up training parameters, change following variables for train.py (placed in **vars/train_vars.py**):
 - BATCH_SIZE (1024 by default)
-- train_names and test_names. You need to set up them like (where N and T defines number of train-test ratio and depend on generated number of sites):
+- train_names and test_names. You need to set up them like (where N and T placed in train_vars defines number of train-test ratio and depend on generated number of sites):
 ``` 
     train_names = DATASET_NAMES[:N]
     test_names = DATASET_NAMES[N:N+T]
@@ -108,31 +108,24 @@ In that notebooks we load specific web-page, creating dataset and predict labels
 # Docker
 - build image: 
 ```
- build-docker-image.bat (for windows)
  sh build_docker.sh (for mac)
 ```
-- run docker:
+- run docker-compose:
 ```
-run_docker.bat (for windows)
 sh run_docker.sh (for mac)
 ```
-<span style="color:orange">Attention! The first time you will build the docker image can take significant time (1 hour and more)<span>
+<span style="color:orange">Attention! The first time you will build the docker image can take significant time<span>
 
 Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
-## macOS/Linux
+## Take docker image from github:
+### macOS/Linux
 ```shell
 curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
-## Windows
+### Windows
 ```shell
 curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
-
-- check model's endpoint at http://localhost:5050/predict 
-- run build-dataset.js in your browser js console. 
-- send data using POST request to model
-- after a few seconds dataset with discovered controll elements will be sent back
-- you may check Test-Backend.ipynb as an example
 
 # Docker - get debugging info:
 - http://localhost:5050/build  - get the docker image build's datetime

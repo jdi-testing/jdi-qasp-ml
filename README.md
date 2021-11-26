@@ -1,16 +1,25 @@
-# JDI-QASP-ml v.0.1
-
-Plans:
- - Extend dataset - ?
- - Features: number of children, followers, backward level of tag, list of follower tags - ?
-
- - Bugs/Improvements:
-   - Count num folloers - lost from previos version
-     build_path_fetures -> build_tree_features (num_followers, level, list of child tags)
-     
-   - "class" - extract features using CountVectorizer
-   - DatasetBuilder - filter out elements which coordinates are outside of screenshot field
-   - Logits -> Probabilities - In Progress
+# JDI-QASP-ml v.2.0
+# Model
+Our model is neural network based on pytorch framework organized as follows:
+```
+-> Input linear layer
+-> Dropout layer
+-> LeakyReLu activation layer
+-> Batch normalization layer
+-> Hidden linear layer
+-> Dropout layer
+-> LeakyReLu activation layer
+-> Output linear layer
+```
+As input for NN we use following calculated groups of features:
+- **Attributes features** (OneHot-encoded info about having some attributes for object, his parent and up and down siblinhs)
+- **Class features** (TF-IDF encoded info about class attribute for object, his parent and up and down siblinhs)
+- **Type features** (OneHot-encoded info about type attribute for object, his parent and up and down siblinhs)
+- **Role features** (OneHot-encoded info about role attribute for object, his parent and up and down siblinhs)
+- **TAG features** (OneHot-encoded info about tag of object, his parent and up and down siblinhs)
+- **Followers TAG features** (TF-IDF encoded info about all tags of childs or generally followers)
+- **Numerical general features**  (General features about object like numger of followers, children, max max_depth etc.)
+- **Binary general features** (General features with binary values like is the object or his parent hidden or displayed or leaf etc.)
 
 
 # Install environment to train / test model
@@ -20,88 +29,107 @@ Plans:
    Alter your PATH environment variable to be able run python as well as conda utility. <br>
 3. Create conda virtual environment using this command (see **create-env.bat** if you use Windows):<br>
 ````
-    conda env create -f environment.yml
+    conda env create -f environment.yml --name jdi-qasp-ml
 ````
-4. For Windows users: run cmd.exe, and from command prompt:<br>
+4. Run cmd.exe for windows or terminal for mac, and from command prompt:<br>
 ````
-    conda activate py37-torch 
-````
-5. Run jupyter notebook:<br>
-````
-    jupyter-notebook --ip=127.0.0.1 --port=9999
-````
-6. To view the build number:
-````
-    curl http://localhost:5000/build
+    conda activate jdi-qasp-ml 
 ````
 
 
-# Amending the dataset for training model
+# Generating the dataset for training model
+## MUI
 
-All data used to train/test the model are in the directory **dataset/**<br>
-It has that tree structure:
+Generator for MUI element library sites placed in **generators/MUIgenerator/**<br>
+To generate sites go in the directory of MUIgenerator and run:
 ````
-    dataset +
-            |- annotations # Dir
-            |- df          # Dir
-            |- html        # Dir
-            |- images      # Dir
-            |- classes.txt # file   
+    sh generate_data.sh
 ````
+After thet in catalog **/data/mui_dataset/build** you will find directories named like **"site-N"**
 
-**classes.txt** - list of classes of elements. Do not change it. Order of classes is important.<br>
-
-To add a new screenshot to the dataset (and its dom tree) you have to open **DatasetBuilder-Presentation-POC.ipynb**.<br>
-Change script variables (cell[2]):<br> 
- - URL - your site address<br>
- - DATASET_NAME - unique alias of a dataset<br>
-If your need extra steps to get to the target web page (login and navigate to some specific page), you may modify cell[3] method *setUp*
-
-After all these modifications are done, the dom tree of the web page will be stored as parquet file in **dataset/df**, screenshot in **dataset/images**, html text of the page in **dataset/html**.
-
-To modify/amend the dataset run script **annotate-labelImg.bat** in the repository root directory _and press **\<Enter\>**_. Then edit annotations for the screenshot
+Next go the directory **MUI_model** and run:
+```
+    python build_datasets_for_mui_sites.py
+```
+After that in directory **/data/mui_dataset** you will find following structure:
+- /annotations (not used, maybe need to be removed later)
+- /cache-labels (not used, maybe need to be removed later)
+- /df - directory with peakles of site-datasets
+- /html - directory with html files of sites (only for info)
+- /images - directiry with images of sites (only for info)
+- classes.txt - file with all possible labels to detect. Do not change it!!!
+- EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
+## HTML5
+to be done
 
 # Train model
+## MUI
 
-- If you need to train model from scratch (for example, number of classes is changed), delete all files from **model/**
-directory. Otherwise:
+<span style="color:orange"> If you need to train model from scratch (for example, number of classes is changed), delete all files from "MUI_model/model"
+directory.</span>
 
-- Just open notebook Model.ipynb and run all cells
-- Train until model loss is less then 0.15
+To train the model you need to go to the directory **/MUI_model** and run:
+```
+    python train.py
+```
+If you need to set up training parameters, change following variables for train.py (placed in **vars/train_vars.py**):
+- BATCH_SIZE (1024 by default)
+- train_names and test_names. You need to set up them like (where N and T placed in train_vars defines number of train-test ratio and depend on generated number of sites):
+``` 
+    train_names = DATASET_NAMES[:N]
+    test_names = DATASET_NAMES[N:N+T]
+``` 
+- NUM_EPOCHS (100 by default)
+- EARLY_STOPPING_THRESHOLD (10 by default) 
 
-# Validate model
-
-Run notebook *Model-Evaluate.ipynb*. Run all cells. Take a look at confusion matrix for the screenshot of validating page 
-below
-
+At the end of the process the table with training results saves in **MUI_model/tmp/train_metrics.csv**
 
 # Predicting
 
-To get predictions for an arbitrary web page you may use (or make a copy and use the copy)
-**DatasetBuilder-Presentation-POC.ipynb**. Just edit variables URL and DATASET_NAME. Then run all cells.
-If directory **dataset/annotations** does not contain annotation file for the screenshot, only predictions (blue labels) will be shown on the image below. Otherwise true labels (in red) will be shown as well.
+To get predictions we need to run API main.py (better to do it wia docker - will be disscussed below)
+when API is running we can send input json data to following url:
+- http://localhost:5050/mui-predict for mui model
+- http://localhost:5050/predict  for old version of model
+
+<span style="color:orange">ATTENTION! 
+In main.py flask application works on 5000 port but when we use docker we forward 5000 port in docker to 5050 port in local PC (because on my local PC port 5000 was always busy). So if you need to use another port on your local PC you need to change run_docker.sh file in the root of project.<span>
+
+# Validate model
+
+To validate models quality we use test web-pages, placed in directory **notebooks/MUI/Test-backend**
+
+<span style="color:orange">You can change only notebooks with the "new"-end in the name like "Test-backend_mui-Buttons_new.ipynb"(others are legacy for comparing)<span>
+
+In that notebooks we load specific web-page, creating dataset and predict labels for this dataset. It may be needed to correct some paths in notebooks (especially ports in them)
+
+<span style="color:orange">To use this notebooks main.py need to be run.<span>
 
 
 # Docker
+- build image: 
+```
+ sh build_docker.sh (for mac)
+```
+- run docker-compose:
+```
+sh run_docker.sh (for mac)
+```
+<span style="color:orange">Attention! The first time you will build the docker image can take significant time<span>
+
 Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
-## macOS/Linux
+## Take docker image from github:
+### macOS/Linux
 ```shell
 curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
-## Windows
+### Windows
 ```shell
 curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
 
-- check model's endpoint at http://localhost:5000/predict 
-- run build-dataset.js in your browser js console. 
-- send data using POST request to model
-- after a few seconds dataset with discovered controll elements will be sent back
-- you may check Test-Backend.ipynb as an example 
-
 # Docker - get debugging info:
-- http://localhost:5000/build  - get the docker image build's datetime
-- http://localhost:5000/files  - get data sent by browser to model
+- http://localhost:5050/build  - get the docker image build's datetime
+- http://localhost:5050/files  - get data sent by browser to model
 
 - To clean all docker images and containers:
 ````

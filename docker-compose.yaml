@@ -5,7 +5,7 @@ services:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: uwsgi --socket 0.0.0.0:5000 --process=1 --protocol=http -w app.main:api
     ports:
-      - "5000:5000"
+      - "5050:5000"
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"

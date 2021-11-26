@@ -8,7 +8,7 @@ RUN apt-get update -y && \
 
 RUN apt install -y curl wget mc gcc make
 
-ENV APP_HOME=/app
+ENV APP_HOME=/jdi-qasp-ml
 WORKDIR ${APP_HOME}
 
 COPY . ${APP_HOME}
@@ -18,6 +18,6 @@ RUN pip install -U pip && \
 
 RUN pipenv install --ignore-pipfile --system --deploy
 
-ENV PYTHONPATH=${PYTHONPATH}:/app
+ENV PYTHONPATH=${PYTHONPATH}:/jdi-qasp-ml
 
 RUN MODEL_VERSION=`date +%Y-%m-%d-%H.%M.%S`; mkdir -p ${APP_HOME}/model/version; touch ${APP_HOME}/model/version/${MODEL_VERSION};

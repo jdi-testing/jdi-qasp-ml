@@ -1,4 +1,4 @@
-import os, sys
+import os
 import re
 import numba
 import pandas as pd
@@ -9,9 +9,6 @@ from sklearn.feature_extraction.text import (
     TfidfTransformer,
 )
 
-prefix = os.getcwd().split("jdi-qasp-ml")[0]
-sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
-
 # from utils.common import build_elements_dict  # noqa
 from utils.common import build_tree_dict
 
@@ -19,14 +16,13 @@ from utils.hidden import build_is_hidden
 from tqdm.auto import trange
 from utils.config import logger
 
-
-# from scipy.sparse import csc_matrix, csr_matrix
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.preprocessing import OneHotEncoder
 from scipy.sparse.csr import csr_matrix
 from collections import Counter, defaultdict
-import pickle, json
+import pickle
+import json
 
+prefix = os.getcwd().split("jdi-qasp-ml")[0]
 classes_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/classes.txt")
 dataset_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset")
 model_path = os.path.join(prefix, "jdi-qasp-ml", "MUI_model/model")
@@ -338,64 +334,6 @@ def followers_features(
     return df
 
 
-# def get_ancestors(tag, r, child, grand, great, tree_dict):
-#     if r.tag_name == tag:
-#         parent_id = tree_dict.get(r.element_id)
-
-#         if r.tag_name:
-#             child[parent_id] += r.element_id + ' '
-
-#         grandparent_id = tree_dict.get(parent_id)
-#         if grandparent_id is not None:
-#             if r.element_id not in grand[grandparent_id].split(' '):
-#                 grand[grandparent_id] += r.element_id + ' '
-#         great_grandparent_id = tree_dict.get(grandparent_id)
-#         if great_grandparent_id is not None:
-#             if r.element_id not in great[great_grandparent_id].split(' '):
-#                 great[great_grandparent_id] += r.element_id + ' '
-
-
-# def get_input_a_descendants(df):
-#     def empty_string():
-#         return ''
-
-#     tree_dict = build_tree_dict(df)
-
-#     in_children_dict = defaultdict(empty_string)
-#     in_grandchildren_dict = defaultdict(empty_string)
-#     in_great_grandchildren_dict = defaultdict(empty_string)
-
-#     a_children_dict = defaultdict(empty_string)
-#     a_grandchildren_dict = defaultdict(empty_string)
-#     a_great_grandchildren_dict = defaultdict(empty_string)
-
-#     with trange(df.shape[0]) as tbar:
-#         tbar.set_description('Build descendants features')
-
-#         for i, r in df.iterrows():
-
-#             get_ancestors('INPUT', r, in_children_dict, in_grandchildren_dict, in_great_grandchildren_dict,tree_dict)
-#             get_ancestors('A', r, a_children_dict, a_grandchildren_dict, a_great_grandchildren_dict,tree_dict)
-
-#             tbar.update(1)
-
-#     df['input_children'] = df.element_id.map(
-#         in_children_dict).fillna('')
-#     df['input_grandchildren'] = df.element_id.map(
-#         in_grandchildren_dict).fillna('')
-#     df['input_great-grandchildren'] = df.element_id.map(
-#         in_great_grandchildren_dict).fillna('')
-
-#     df['a_children'] = df.element_id.map(
-#         a_children_dict).fillna('')
-#     df['a_grandchildren'] = df.element_id.map(
-#         a_grandchildren_dict).fillna('')
-#     df['a_great-grandchildren'] = df.element_id.map(
-#         a_great_grandchildren_dict).fillna('')
-
-#     return df
-
-
 def build_tree_features(elements_df: pd.DataFrame) -> pd.DataFrame:
     """
         Walk on elements tree and build tree-features:
@@ -677,4 +615,3 @@ def build_type_feature(df: pd.DataFrame, colname="attributes") -> csr_matrix:
 
 
 logger.info("feature_bilder module is loaded...")
-

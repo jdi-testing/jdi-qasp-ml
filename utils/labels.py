@@ -1,16 +1,10 @@
-import os, sys
-
-prefix = os.getcwd().split("jdi-qasp-ml")[0]
-sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
+import os
 
 import pandas as pd
 import numpy as np
 from utils.config import logger
 
-from tqdm.auto import tqdm
-from collections import defaultdict
-
-
+prefix = os.getcwd().split("jdi-qasp-ml")[0]
 classes_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/classes.txt")
 
 

@@ -1,24 +1,16 @@
-import os
-import re
 import matplotlib.pyplot as plt
 
-# import io
 import numpy as np
 import pandas as pd
 from IPython.display import HTML
 from IPython.display import display as ipython_displpay
 
-from tqdm.auto import tqdm
 import numba
-
-from datetime import datetime
 
 from .config import logger
 
 TQDM_BAR_FORMAT = "{desc:25}{percentage:3.0f}%|{bar:50}{r_bar}"
 
-
-import numba
 
 # Maximize window
 def maximize_window(driver=None, extend_pix=0):

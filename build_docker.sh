@@ -1,1 +1,1 @@
-docker build -t jdi-qasp-ml .
+docker compose -f docker-compose.dev.yaml bulid

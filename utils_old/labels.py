@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 from IPython.display import display
 import pandas as pd
 import numpy as np
@@ -168,8 +169,8 @@ def assign_labels(
         best_iou = 0.0001  # threshold to filter bad overlaps
         best_idx = -1  # fake value
         best_tag = ("n/a",)
-        best_rect = (0, 0, 0, 0)
-        best_yolo = (0, 0, 0, 0)
+        # best_rect = (0, 0, 0, 0)
+        # best_yolo = (0, 0, 0, 0)
         best_label = encoder_dict["n/a"]
 
         for idx, r in _boxes_df.iterrows():
@@ -192,15 +193,15 @@ def assign_labels(
                     best_idx,
                     best_iou,
                     best_tag,
-                    best_rect,
-                    best_yolo,
+                    # best_rect,
+                    # best_yolo,
                     best_label,
                 ) = (  # noqa
                     idx,
                     iou,
                     r.tag_name,
-                    (r.x, r.y, r.width, r.height),
-                    (x, y, w, h),
+                    # (r.x, r.y, r.width, r.height),
+                    # (x, y, w, h),
                     c,
                 )  # noqa
 

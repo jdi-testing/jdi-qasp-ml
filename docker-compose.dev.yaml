@@ -9,7 +9,7 @@ services:
     ports:
       - "5000:5050"
     volumes:
-      - .:/app
+      - .:/jdi-qasp-ml
 
   celery:
     command: celery -A app.main:celery worker -l info
@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app
+      - .:/jdi-qasp-ml
 
   redis:
     image: "redis:alpine"

@@ -21,7 +21,7 @@ class JDIModel(torch.nn.Module):
         self.dropout2 = torch.nn.Dropout(0.2)
         self.leaky_relu2 = torch.nn.LeakyReLU(0.1, inplace=True)
         self.hidden2 = torch.nn.Linear(
-            in_features=self.hidden1.out_features, out_features=out_features, bias=True
+            in_features=self.hidden1.out_features, out_features=out_features, bias=False
         )
 
     def forward(self, x):

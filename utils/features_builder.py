@@ -489,7 +489,14 @@ def build_class_feature(df: pd.DataFrame, colname="attributes") -> csr_matrix:
             )
         )
         class_vocab = list(set(class_vocab) - set(exclude_from_classes_vocab))
-        class_vocab = sorted([v for v in class_vocab if re.match(r"^[a-z][a-z]+$", v)])
+        class_vocab = sorted(
+            [
+                v
+                for v in class_vocab
+                if (re.match(r"^[a-z][a-z]+$", v) and not re.match(r"jss\d*", v))
+            ]
+        )
+        logger.info(f"Class_vocab: \n{class_vocab}")
         model_cv = CountVectorizer(vocabulary=class_vocab)
         class_sm = model_cv.fit_transform(attr_class_series.values)
         model_tf = TfidfTransformer().fit(class_sm)

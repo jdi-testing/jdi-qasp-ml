@@ -1,1 +1,1 @@
-docker compose -f docker-compose.dev.yaml bulid
+docker compose -f docker-compose.dev.yaml build

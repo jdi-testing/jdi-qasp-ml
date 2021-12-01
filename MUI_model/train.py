@@ -2,6 +2,7 @@
 # import numpy as np
 # import matplotlib.pyplot as plt
 import os
+import sys
 import gc
 from tqdm.auto import trange
 import pandas as pd
@@ -10,24 +11,26 @@ from glob import glob
 import torch
 from torch.utils.data import DataLoader
 
-from utils.config import logger
-from utils.dataset import JDNDataset
-from utils.model_new import JDIModel
-from utils.common import accuracy
-
 from vars.train_vars import (
     BATCH_SIZE,
     TRAIN_LEN,
     TEST_LEN,
     NUM_EPOCHS,
     EARLY_STOPPING_THRESHOLD,
-    SCHEDULER_STEP
+    SCHEDULER_STEP,
 )
 
 from multiprocessing import freeze_support
 from terminaltables import DoubleTable
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
+sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
+
+from utils.config import logger  # noqa
+from utils.dataset import JDNDataset  # noqa
+from utils.model_new import JDIModel  # noqa
+from utils.common import accuracy  # noqa
+
 model_path = os.path.join(prefix, "jdi-qasp-ml", "MUI_model/model")
 df_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/df")
 
@@ -35,7 +38,7 @@ ds_files = glob(f"{df_path}/site*.pkl")
 DATASET_NAMES = [os.path.basename(path)[:-4] for path in ds_files]
 
 train_names = DATASET_NAMES[:TRAIN_LEN]
-test_names = DATASET_NAMES[TRAIN_LEN: TRAIN_LEN + TEST_LEN]
+test_names = DATASET_NAMES[TRAIN_LEN : TRAIN_LEN + TEST_LEN]  # noqa
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 logger.info(f"device: {DEVICE}")
@@ -118,7 +121,9 @@ if __name__ == "__main__":
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=SCHEDULER_STEP, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, step_size=SCHEDULER_STEP, gamma=0.1
+    )
 
     NUM_BATCHES = len(train_dataloader)
 

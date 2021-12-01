@@ -22,3 +22,5 @@ data/old_dataset/*
 
 data/uploaded_dataset
 data/other
+
+**/notebooks

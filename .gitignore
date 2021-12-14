@@ -18,6 +18,14 @@ data/mui_dataset/*
 !data/mui_dataset/classes.txt
 !data/mui_dataset/EXTRACT_ATTRIBUTES_LIST.json
 
+data/html5_dataset/*
+!data/html5_dataset/classes.txt
+!data/html5_dataset/EXTRACT_ATTRIBUTES_LIST.json
+
+data/general_dataset/*
+!data/general_dataset/classes.txt
+!data/general_dataset/EXTRACT_ATTRIBUTES_LIST.json
+
 data/old_dataset/*
 !data/old_dataset/classes.txt
 

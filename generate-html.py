@@ -5,6 +5,12 @@ import argh
 from generators.HTMLgenerator.builders.html5_builder import HTML5Builder
 from generators.HTMLgenerator.builders.bootstrap_builder import BootstrapBuilder
 
+import os
+import sys
+
+prefix = os.getcwd().split("jdi-qasp-ml")[0]
+sys.path.append(os.path.join(prefix, "jdi-qasp-ml", "generators"))
+
 builders = (HTML5Builder, BootstrapBuilder)
 
 

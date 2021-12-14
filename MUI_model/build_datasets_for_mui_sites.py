@@ -1,15 +1,20 @@
 import os
+import sys
 import re
 from glob import glob
 from time import sleep
 
-from utils.config import logger
-
-from utils.dataset_builder import DatasetBuilder
-from utils.common import maximize_window
-
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
-dataset_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset")
+dataset_path = os.path.join(prefix, "jdi-qasp-ml", "data/general_dataset")
+
+sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
+
+from utils.config import logger  # noqa
+
+from utils.dataset_builder import DatasetBuilder  # noqa
+from utils.common import maximize_window  # noqa
+
+os.makedirs(dataset_path, exist_ok=True)
 
 WAIT_TIME_SECONDS = 3
 

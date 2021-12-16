@@ -9,8 +9,6 @@ import faker
 
 from HTMLgenerator.service import generate_uuid
 
-import sys
-
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 project_path = os.path.join(prefix, "jdi-qasp-ml")
 generators_path = os.path.join(prefix, "jdi-qasp-ml", "generators")
@@ -199,4 +197,3 @@ class BaseElement(ABC):
             return "".join([label_text, element_markup])
         else:
             return "".join([element_markup, label_text])
-

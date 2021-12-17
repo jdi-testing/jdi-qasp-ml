@@ -118,11 +118,22 @@ sh run_docker.sh (for mac)
 
 Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
 ## Take docker image from github:
-### macOS/Linux
+### Stable version
+#### macOS/Linux
+```shell
+curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose-stable.yaml && docker compose up
+```
+#### Windows
+```shell
+curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose-stable.yaml && docker compose up
+```
+
+### Development version
+#### macOS/Linux
 ```shell
 curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
-### Windows
+#### Windows
 ```shell
 curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```

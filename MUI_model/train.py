@@ -8,23 +8,24 @@ from tqdm.auto import trange
 import pandas as pd
 from glob import glob
 
+
 import torch
 from torch.utils.data import DataLoader
-
-from vars.train_vars import (
-    BATCH_SIZE,
-    TRAIN_LEN,
-    TEST_LEN,
-    NUM_EPOCHS,
-    EARLY_STOPPING_THRESHOLD,
-    SCHEDULER_STEP,
-)
 
 from multiprocessing import freeze_support
 from terminaltables import DoubleTable
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
+
+from vars.train_vars import (  # noqa
+    BATCH_SIZE,  # noqa
+    TRAIN_LEN,  # noqa
+    TEST_LEN,  # noqa
+    NUM_EPOCHS,  # noqa
+    EARLY_STOPPING_THRESHOLD,  # noqa
+    SCHEDULER_STEP,  # noqa
+)  # noqa
 
 from utils.config import logger  # noqa
 from utils.dataset import JDNDataset  # noqa

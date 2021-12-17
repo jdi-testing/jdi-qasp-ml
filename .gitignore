@@ -41,3 +41,4 @@ venv/
 .coverage.*
 .cache
 coverage.xml
+.DS_Store

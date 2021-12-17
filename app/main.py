@@ -25,17 +25,17 @@ from app import (
     old_df_path,
     old_model,
 )
+from app.robula_api import robula_api
 from utils.dataset import JDNDataset as MUI_JDNDataset
 from utils_old.dataset import JDNDataset as Old_JDNDataset
-
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
-api = Flask(__name__, template_folder=TEMPLATES_PATH)
-api.logger.setLevel(logging.DEBUG)
 
-from app.robula_api import *  # noqa
+api = Flask("app.main", template_folder=TEMPLATES_PATH)
+api.logger.setLevel(logging.DEBUG)
+api.register_blueprint(robula_api)
 
 
 @api.route("/build")
@@ -51,7 +51,6 @@ def list_files():
 
 @api.route('/files', defaults={'req_path': ''})
 def dir_listing(req_path):
-
     # Joining the base and the requested path
     abs_path = os.path.join(UPLOAD_DIRECTORY, req_path)
 
@@ -288,7 +287,7 @@ def mui_predict():
 
     results_df = dataset.df[
         (dataset.df["predicted_label"] != "n/a") & (dataset.df["is_hidden"] == 0)
-    ][columns_to_publish].copy()
+        ][columns_to_publish].copy()
     # # sort in descending order: big controls first
     results_df["sort_key"] = results_df.height * results_df.width
     results_df = results_df.sort_values(by="sort_key", ascending=False)

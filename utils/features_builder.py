@@ -452,7 +452,6 @@ def build_class_feature(df: pd.DataFrame, colname="attributes") -> csr_matrix:
         containing attributes ("attributes", "attributes_parent", "attributes_up_sibling"...)
         default columns: "attributes"
     """
-    model_count_file_path = f"{model_path}/count_attr_class.pkl"
     model_tf_file_path = f"{model_path}/tfidf_attr_class.pkl"
     logger.info(f"used column: {colname}")
 

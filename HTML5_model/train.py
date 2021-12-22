@@ -32,10 +32,10 @@ from utils.dataset import JDNDataset  # noqa
 from utils.model_new import JDIModel  # noqa
 from utils.common import accuracy  # noqa
 
-model_path = os.path.join(prefix, "jdi-qasp-ml", "MUI_model/model")
-df_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/df")
+model_path = os.path.join(prefix, "jdi-qasp-ml", "HTML5_model/model")
+df_path = os.path.join(prefix, "jdi-qasp-ml", "data/html5_dataset/df")
 
-ds_files = glob(f"{df_path}/site*.pkl")
+ds_files = glob(f"{df_path}/html5-*.pkl")
 DATASET_NAMES = [os.path.basename(path)[:-4] for path in ds_files]
 
 train_names = DATASET_NAMES[:TRAIN_LEN]
@@ -84,8 +84,12 @@ if __name__ == "__main__":
 
     freeze_support()
 
-    train_dataset = JDNDataset(datasets_list=train_names, rebalance_and_shuffle=True)
-    test_dataset = JDNDataset(datasets_list=test_names, rebalance_and_shuffle=False)
+    train_dataset = JDNDataset(
+        datasets_list=train_names, dataset_type="html5", rebalance_and_shuffle=True
+    )
+    test_dataset = JDNDataset(
+        datasets_list=test_names, dataset_type="html5", rebalance_and_shuffle=False
+    )
 
     logger.info(
         f"Train dataset shape:  {train_dataset.X.shape}; Test dataset shape: {test_dataset.X.shape}"

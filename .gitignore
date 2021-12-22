@@ -22,6 +22,10 @@ data/html5_dataset/*
 !data/html5_dataset/classes.txt
 !data/html5_dataset/EXTRACT_ATTRIBUTES_LIST.json
 
+data/bs_dataset/*
+!data/bs_dataset/classes.txt
+!data/bs_dataset/EXTRACT_ATTRIBUTES_LIST.json
+
 data/general_dataset/*
 !data/general_dataset/classes.txt
 !data/general_dataset/EXTRACT_ATTRIBUTES_LIST.json

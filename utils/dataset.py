@@ -5,20 +5,19 @@ import numpy as np
 import logging
 from tqdm.auto import trange
 from utils.dataset_collector import collect_dataset
-from utils.features_builder import build_features
+from utils.features_builder import BaseFeaturesBuilder
 
 from utils.labels import assign_labels
 
 from torch.utils.data import Dataset
 from glob import glob
 from utils.config import logger
+from vars.path_vars import dataset_dict
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
-classes_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/classes.txt")
-df_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/df")
 
 
-def rebalance(y: np.ndarray):
+def rebalance(y: np.ndarray, classes_path):
     logger.info("Rebalance dataset")
 
     with open(classes_path, "r") as f:
@@ -64,10 +63,21 @@ def rebalance(y: np.ndarray):
 
 
 class JDNDataset(Dataset):
-    def __init__(self, datasets_list: list = None, rebalance_and_shuffle: bool = False):
+    def __init__(
+        self,
+        dataset_type: str = "mui",
+        datasets_list: list = None,
+        rebalance_and_shuffle: bool = False,
+    ):
 
         super(JDNDataset, self).__init__()
         self.rebalance_and_suffle = rebalance_and_shuffle
+
+        dataset_path = dataset_dict.get(dataset_type)
+        classes_path = os.path.join(
+            prefix, "jdi-qasp-ml", f"{dataset_path}/classes.txt"
+        )
+        df_path = os.path.join(prefix, "jdi-qasp-ml", f"{dataset_path}/df")
 
         with open(classes_path, "r") as f:
             lines = f.readlines()
@@ -94,7 +104,7 @@ class JDNDataset(Dataset):
                     df["label_text"] = df.attributes.apply(
                         lambda x: x.get("data-label") if x is not None else "n/a"
                     ).fillna("n/a")
-                    df = build_features(df)
+                    df = BaseFeaturesBuilder(df).df
                     df = assign_labels(df=df)
                     df_list.append(df)
                 bar.update(1)
@@ -110,10 +120,10 @@ class JDNDataset(Dataset):
             raise Exception("There are duplicates in the dataset")
         logger.info("Check for duplicates is OK")
 
-        self.X, self.y = collect_dataset(self.df)
+        self.X, self.y = collect_dataset(self.df, dataset_type)
 
         if self.rebalance_and_suffle:
-            self.indices = np.array(rebalance(self.y))
+            self.indices = np.array(rebalance(self.y, classes_path))
         else:
             self.indices = np.array([i for i in range(len(self.y))])
 

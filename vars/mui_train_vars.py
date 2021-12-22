@@ -1,8 +1,8 @@
 # variables for using in MUI_model/train.py
 BATCH_SIZE = 2048
 
-TRAIN_LEN = 400
-TEST_LEN = 50
+TRAIN_LEN = 2
+TEST_LEN = 1
 
 NUM_EPOCHS = 5
 EARLY_STOPPING_THRESHOLD = 2

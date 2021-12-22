@@ -1,3 +1,17 @@
+# paths for using in train
+
+dataset_dict = {
+    "mui": "data/mui_dataset",
+    "html5": "data/html5_dataset",
+    "bs": "data/bs_dataset",
+}
+
+model_dict = {
+    "mui": "MUI_model/model",
+    "html5": "HTML5_model/model",
+    "bs": "BS_model/model",
+}
+
 # paths for using in main.py
 UPLOAD_DIRECTORY = "data/uploaded_dataset/df"
 TEMPLATES_PATH = "templates"
@@ -10,4 +24,4 @@ old_df_path = "data/old_dataset/df"
 old_model = "Old_model/model"
 mui_model = "MUI_model/model"
 
-redis_address = 'redis://redis:6379'
+redis_address = "redis://redis:6379"

@@ -24,13 +24,10 @@
     "placeholder",
     "focusable",
     "rows",
-    "title",
     "typenumber",
     "viewBox",
     "value",
     "for",
-    "id",
-    "name",
     "min",
     "max"
  ]

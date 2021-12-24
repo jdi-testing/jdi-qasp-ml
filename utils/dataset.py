@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import logging
 from tqdm.auto import trange
-from utils.dataset_collector import collect_dataset
+from utils.dataset_collector import MUI_DatasetCollector, HTML5_DatasetCollector
 from utils.features_builder import BaseFeaturesBuilder
 
 from utils.labels import assign_labels
@@ -71,30 +71,69 @@ class JDNDataset(Dataset):
     ):
 
         super(JDNDataset, self).__init__()
+        self.dataset_type = dataset_type
+        self.datasets_list = datasets_list
         self.rebalance_and_suffle = rebalance_and_shuffle
 
-        dataset_path = dataset_dict.get(dataset_type)
-        classes_path = os.path.join(
-            prefix, "jdi-qasp-ml", f"{dataset_path}/classes.txt"
+        self.dataset_path = dataset_dict.get(dataset_type)
+        self.classes_path = os.path.join(
+            prefix, "jdi-qasp-ml", f"{self.dataset_path}/classes.txt"
         )
-        df_path = os.path.join(prefix, "jdi-qasp-ml", f"{dataset_path}/df")
+        self.df_path = os.path.join(prefix, "jdi-qasp-ml", f"{self.dataset_path}/df")
 
-        with open(classes_path, "r") as f:
+        self.get_files()
+
+    def get_files(self):
+
+        with open(self.classes_path, "r") as f:
             lines = f.readlines()
             self.classes_dict = {v.strip(): i for i, v in enumerate(lines)}
             self.classes_reverse_dict = {i: v.strip() for i, v in enumerate(lines)}
 
-        if datasets_list is None:
+        if self.datasets_list is None:
             logger.info("Will use all available datasets")
-            ds_files = glob(f"{df_path}/*.pkl")
+            self.ds_files = glob(f"{self.df_path}/*.pkl")
         else:
-            ds_files = [(f"{df_path}/{fn}.pkl") for fn in datasets_list]
+            self.ds_files = [(f"{self.df_path}/{fn}.pkl") for fn in self.datasets_list]
 
+    def check_for_duplicates(self):
+
+        logger.info("Check for duplicates...")
+        if self.df.element_id.nunique() != self.df.shape[0]:
+            logger.fatal("There are duplicates in the dataset")
+            raise Exception("There are duplicates in the dataset")
+        logger.info("Check for duplicates is OK")
+
+    def __getitem__(self, idx):
+        return self.X[self.indices[idx]], self.y[self.indices[idx]]
+
+    def __len__(self):
+        return self.indices.shape[0]
+
+
+class MUI_JDNDataset(JDNDataset):
+    def __init__(
+        self,
+        dataset_type: str = "mui",
+        datasets_list: list = None,
+        rebalance_and_shuffle: bool = False,
+    ):
+        super().__init__(
+            dataset_type=dataset_type,
+            datasets_list=datasets_list,
+            rebalance_and_shuffle=rebalance_and_shuffle,
+        )
+
+        self.build_primari_features_and_concatenate()
+        self.check_for_duplicates()
+        self.build_secondary_features()
+
+    def build_primari_features_and_concatenate(self):
         df_list = []
 
         logger.setLevel(logging.ERROR)
-        with trange(len(ds_files)) as bar:
-            for df_file_path in ds_files:
+        with trange(len(self.ds_files)) as bar:
+            for df_file_path in self.ds_files:
                 if not os.path.exists(df_file_path):
                     logger.error(f"File: {df_file_path} does not extst")
                 else:
@@ -105,7 +144,7 @@ class JDNDataset(Dataset):
                         lambda x: x.get("data-label") if x is not None else "n/a"
                     ).fillna("n/a")
                     df = BaseFeaturesBuilder(df).df
-                    df = assign_labels(df=df)
+                    df = assign_labels(df=df, classes_file_path=self.classes_path)
                     df_list.append(df)
                 bar.update(1)
 
@@ -114,24 +153,70 @@ class JDNDataset(Dataset):
         self.df = pd.concat(df_list)
         logger.info(f"self.df.shape: {self.df.shape}")
 
-        logger.info("Check for duplicates...")
-        if self.df.element_id.nunique() != self.df.shape[0]:
-            logger.fatal("There are duplicates in the dataset")
-            raise Exception("There are duplicates in the dataset")
-        logger.info("Check for duplicates is OK")
+    def build_secondary_features(self):
 
-        self.X, self.y = collect_dataset(self.df, dataset_type)
+        self.X, self.y = MUI_DatasetCollector(
+            self.df, self.dataset_type
+        ).collect_dataset()
 
         if self.rebalance_and_suffle:
-            self.indices = np.array(rebalance(self.y, classes_path))
+            self.indices = np.array(rebalance(self.y, self.classes_path))
         else:
             self.indices = np.array([i for i in range(len(self.y))])
 
-    def __getitem__(self, idx):
-        return self.X[self.indices[idx]], self.y[self.indices[idx]]
 
-    def __len__(self):
-        return self.indices.shape[0]
+class HTML5_JDNDataset(JDNDataset):
+    def __init__(
+        self,
+        dataset_type: str = "html5",
+        datasets_list: list = None,
+        rebalance_and_shuffle: bool = False,
+    ):
+        super().__init__(
+            dataset_type=dataset_type,
+            datasets_list=datasets_list,
+            rebalance_and_shuffle=rebalance_and_shuffle,
+        )
+
+        self.build_primari_features_and_concatenate()
+        self.check_for_duplicates()
+        self.build_secondary_features()
+
+    def build_primari_features_and_concatenate(self):
+        df_list = []
+
+        logger.setLevel(logging.ERROR)
+        with trange(len(self.ds_files)) as bar:
+            for df_file_path in self.ds_files:
+                if not os.path.exists(df_file_path):
+                    logger.error(f"File: {df_file_path} does not extst")
+                else:
+                    bar.set_postfix_str(f"{df_file_path}")
+                    #                     df = pd.read_parquet(df_file_path)
+                    df = pd.read_pickle(df_file_path)
+                    df["label_text"] = df.attributes.apply(
+                        lambda x: x.get("data-label") if x is not None else "n/a"
+                    ).fillna("n/a")
+                    df = BaseFeaturesBuilder(df).df
+                    df = assign_labels(df=df, classes_file_path=self.classes_path)
+                    df_list.append(df)
+                bar.update(1)
+
+        logger.setLevel(logging.DEBUG)
+
+        self.df = pd.concat(df_list)
+        logger.info(f"self.df.shape: {self.df.shape}")
+
+    def build_secondary_features(self):
+
+        self.X, self.y = HTML5_DatasetCollector(
+            self.df, self.dataset_type
+        ).collect_dataset()
+
+        if self.rebalance_and_suffle:
+            self.indices = np.array(rebalance(self.y, self.classes_path))
+        else:
+            self.indices = np.array([i for i in range(len(self.y))])
 
 
 logger.info("dataset module is loaded...")

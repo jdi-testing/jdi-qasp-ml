@@ -10,7 +10,16 @@ import pickle
 
 import pandas as pd
 import torch
-from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
+from flask import (
+    Flask,
+    request,
+    abort,
+    jsonify,
+    send_from_directory,
+    json,
+    render_template,
+    send_file,
+)
 from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
@@ -25,7 +34,7 @@ from app import (
     old_df_path,
     old_model,
 )
-from utils.dataset import JDNDataset as MUI_JDNDataset
+from utils.dataset import MUI_JDNDataset
 from utils_old.dataset import JDNDataset as Old_JDNDataset
 
 
@@ -49,7 +58,7 @@ def list_files():
     return jsonify(files)
 
 
-@api.route('/files', defaults={'req_path': ''})
+@api.route("/files", defaults={"req_path": ""})
 def dir_listing(req_path):
 
     # Joining the base and the requested path
@@ -299,4 +308,5 @@ def mui_predict():
     else:
         del model
         gc.collect()
-        return results_df.to_json(orient='records')
+        return results_df.to_json(orient="records")
+

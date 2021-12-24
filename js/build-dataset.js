@@ -48,6 +48,7 @@ treeDataset = [...document.querySelectorAll('*')].map(el => {
      onmouseenter: el.onmouseenter,
      attributes: collect_attributes(el),
      text: el.innerText,
+     html: el.outerHTML,
      style: window.getComputedStyle(el)
    }
 })

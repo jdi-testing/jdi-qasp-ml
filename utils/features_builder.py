@@ -703,4 +703,82 @@ class SpecialFeaturesBuilder(object):
         return followers_sm
 
 
+class HTML5SpecialFeaturesBuilder(SpecialFeaturesBuilder):
+    def __init__(self, df: pd.DataFrame, dataset_type="html5"):
+        super().__init__(df, dataset_type=dataset_type)
+
+    def build_features(self):
+        # tag_name
+        tag_name_sm = self.build_tag_name_feature(colname="tag_name")
+        parent_tag_name_sm = self.build_tag_name_feature(colname="tag_name_parent")
+        upsib_tag_name_sm = self.build_tag_name_feature(colname="tag_name_upsib")
+        dnsib_tag_name_sm = self.build_tag_name_feature(colname="tag_name_dnsib")
+        logger.info(f"tag_name: {tag_name_sm.shape}")
+
+        # attributes
+        attributes_sm = csr_matrix(
+            self.build_attributes_feature(colname="attributes").values
+        )
+        parent_attributes_sm = csr_matrix(
+            self.build_attributes_feature(colname="attributes_parent").values
+        )
+        upsib_attributes_sm = csr_matrix(
+            self.build_attributes_feature(colname="attributes_upsib").values
+        )
+        dnsib_attributes_sm = csr_matrix(
+            self.build_attributes_feature(colname="attributes_dnsib").values
+        )
+        logger.info(f"attributes_sm: {attributes_sm.shape}")
+
+        # class
+        # class_sm = self.build_class_feature(colname="attributes")
+        # parent_class_sm = self.build_class_feature(colname="attributes_parent")
+        # upsib_class_sm = self.build_class_feature(colname="attributes_upsib")
+        # dnsib_class_sm = self.build_class_feature(colname="attributes_dnsib")
+        # logger.info(f"class_sm: {class_sm.shape}")
+
+        # type
+        type_sm = self.build_type_feature(colname="attributes")
+        parent_type_sm = self.build_type_feature(colname="attributes_parent")
+        upsib_type_sm = self.build_type_feature(colname="attributes_upsib")
+        dnsib_type_sm = self.build_type_feature(colname="attributes_dnsib")
+        logger.info(f"type_sm: {type_sm.shape}")
+
+        # role
+        role_sm = self.build_role_feature(colname="attributes")
+        parent_role_sm = self.build_role_feature(colname="attributes_parent")
+        upsib_role_sm = self.build_role_feature(colname="attributes_upsib")
+        dnsib_role_sm = self.build_role_feature(colname="attributes_dnsib")
+        logger.info(f"role_sm: {role_sm.shape}")
+
+        # children & followers tags
+        child_tags_sm = self.build_children_tags(colname="children_tags")
+        foll_tags_sm = self.build_followers_tags(colname="followers_tags")
+
+        return (
+            attributes_sm,
+            parent_attributes_sm,
+            upsib_attributes_sm,
+            dnsib_attributes_sm,
+            # class_sm,
+            # parent_class_sm,
+            # upsib_class_sm,
+            # dnsib_class_sm,
+            tag_name_sm,
+            parent_tag_name_sm,
+            upsib_tag_name_sm,
+            dnsib_tag_name_sm,
+            type_sm,
+            parent_type_sm,
+            upsib_type_sm,
+            dnsib_type_sm,
+            role_sm,
+            parent_role_sm,
+            upsib_role_sm,
+            dnsib_role_sm,
+            child_tags_sm,
+            foll_tags_sm,
+        )
+
+
 logger.info("feature_bilder module is loaded...")

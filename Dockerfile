@@ -11,7 +11,7 @@ RUN apt install -y curl wget mc gcc make
 ENV APP_HOME=/jdi-qasp-ml
 WORKDIR ${APP_HOME}
 
-COPY Pipfile* ${APP_HOME}
+COPY Pipfile* ${APP_HOME}/
 
 RUN pip install -U pip && \
     pip install pipenv

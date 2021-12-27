@@ -386,15 +386,6 @@ def remove_duplicates(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def get_default_config():
-    return {
-        'maximum_generation_time': None,
-        'allow_indexes_at_the_beginning': False,
-        'allow_indexes_in_the_middle': False,
-        'allow_indexes_at_the_end': True
-    }
-
-
 def generate_xpath(xpath, page, config):
     document = html.fromstring(page)
     element = document.xpath(xpath)

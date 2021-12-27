@@ -160,6 +160,7 @@ docker compose -f docker-compose.dev.yaml run --rm api pipenv install <package>=
 ```
 
 ## API
+Swagger available at http://localhost:5050/docs
 
 ### /schedule_xpath_generation
 Creates task for xpath generation and returns id of task which can be used for task revoking and 

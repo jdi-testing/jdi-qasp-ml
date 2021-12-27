@@ -10,7 +10,12 @@ import pickle
 
 import pandas as pd
 import torch
-from flask import Flask, request, abort, jsonify, send_from_directory, json, render_template, send_file
+from fastapi import FastAPI, HTTPException
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import FileResponse
 from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
@@ -33,70 +38,73 @@ os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
-api = Flask("app.main", template_folder=TEMPLATES_PATH)
-api.logger.setLevel(logging.DEBUG)
-api.register_blueprint(robula_api)
+api = FastAPI()
+api.include_router(robula_api.router)
+
+logger = logging.getLogger("jdi-qasp-ml")
+
+templates = Jinja2Templates(directory="templates")
 
 
-@api.route("/build")
-def list_files():
+@api.get("/build")
+async def build_version():
     """Endpoint to list files on the server."""
     files = []
     for filename in os.listdir(MODEL_VERSION_DIRECTORY):
         path = os.path.join(MODEL_VERSION_DIRECTORY, filename)
         if os.path.isfile(path):
             files.append(filename)
-    return jsonify(files)
+    return JSONResponse(files)
 
 
-@api.route('/files', defaults={'req_path': ''})
-def dir_listing(req_path):
+@api.get('/files')
+async def dir_listing(req_path):
     # Joining the base and the requested path
     abs_path = os.path.join(UPLOAD_DIRECTORY, req_path)
 
     # Return 404 if path doesn't exist
     if not os.path.exists(abs_path):
-        return abort(404)
+        raise HTTPException(400, "File not found")
 
     # Check if path is a file and serve
     if os.path.isfile(abs_path):
-        return send_file(abs_path)
+        return FileResponse(abs_path)
 
     # Show directory contents
     files = os.listdir(abs_path)
-    return render_template("files.html", files=files)
+    return templates.TemplateResponse("files.html", {"files": files})
 
 
-@api.route("/js")
-def list_js():
+@api.get("/js")
+async def list_js():
     """Endpoint to list files on the server."""
     files = []
     for filename in os.listdir(JS_DIRECTORY):
         path = os.path.join(JS_DIRECTORY, filename)
         if os.path.isfile(path):
             files.append(filename)
-    return jsonify(files)
+    return JSONResponse(files)
 
 
-@api.route("/files/<path:path>")
-def get_file(path):
+@api.get("/files/{path:path}")
+async def get_file(path: str):
     """Download a file."""
-    return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
+    return FileResponse(os.path.join(UPLOAD_DIRECTORY, path))
 
 
-@api.route("/js/<path:path>")
-def get_js_script(path):
+@api.get("/js/{path:path}")
+async def get_js_script(path):
     """Download a file."""
-    return send_from_directory(JS_DIRECTORY, path, as_attachment=False)
+    return FileResponse(os.path.join(JS_DIRECTORY, path))
 
 
-@api.route("/files/<filename>", methods=["POST"])
-def post_file(filename):
+@api.get("/files/<filename>", methods=["POST"])
+async def post_file(filename):
     """Upload a file."""
 
     if "/" in filename:
         # Return 400 BAD REQUEST
-        abort(400, "no subdirectories allowed")
+        raise HTTPException(400, "no subdirectories allowed")
 
     with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
         fp.write(request.data)

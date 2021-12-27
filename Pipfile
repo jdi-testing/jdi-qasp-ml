@@ -28,6 +28,7 @@ pytest-mock = "==3.6.1"
 flake8 = "==4.0.1"
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
+jinja2 = "*"
 
 [dev-packages]
 

@@ -92,4 +92,4 @@ async def predict_elements(body):
     else:
         del model
         gc.collect()
-        return results_df.to_json(orient="records")
+        return results_df.to_dict(orient="records")

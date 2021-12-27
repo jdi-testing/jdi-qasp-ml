@@ -3,13 +3,13 @@ import logging
 import typing
 from functools import wraps
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
 from app.celery_app import celery_app
-from app.models import XPathGenerationModel, TaskIdModel
+from app.models import XPathGenerationModel, TaskIdModel, TaskStatusModel, TaskIdsModel, TaskResultModel
 from app.tasks import task_schedule_xpath_generation
 from utils import api_utils
 from utils.api_utils import get_xpath_from_id
@@ -31,52 +31,54 @@ def exception_handler(func):
     return wrapper
 
 
-@router.post('/schedule_xpath_generation')
+@router.post('/schedule_xpath_generation', response_model=TaskIdModel)
 @exception_handler
 def schedule_xpath_generation(data: XPathGenerationModel):
     """ Creates new celery task for xpath generation. Returns celery task id """
     page = json.loads(data.document)
 
     task_result = task_schedule_xpath_generation.delay(get_xpath_from_id(data.id), page, data.config.dict())
-    result = {'task_id': task_result.id}
-    return JSONResponse(result, status.HTTP_201_CREATED)
+
+    result = TaskIdModel(id=task_result.id)
+    return JSONResponse(result.dict(), status.HTTP_201_CREATED)
 
 
-@router.get('/get_task_status')
+@router.get('/get_task_status', response_model=TaskStatusModel)
 @exception_handler
 def get_task_status(id: str):
     """ Returns status of generation task with specified id """
-    return JSONResponse(api_utils.get_task_status(id))
+    return api_utils.get_task_status(id)
 
 
-@router.get('/get_tasks_statuses')
+@router.get('/get_tasks_statuses', response_model=typing.List[TaskStatusModel])
 @exception_handler
-def get_tasks_statuses(ids: typing.List[str]):
+def get_tasks_statuses(id: typing.List[str] = Query(None)):
     """ Returns status of generation for tasks with specified ids """
     results = []
-    for id in ids:
-        results.append(api_utils.get_task_status(id))
-    return JSONResponse(results)
+    for task_id in id:
+        results.append(api_utils.get_task_status(task_id))
+    return results
 
 
 @router.post('/revoke_task')
 @exception_handler
-def revoke_task(task: TaskIdModel):
+def revoke_task(task: TaskIdsModel):
     """ Revokes celery task with specified id """
-    celery_app.control.revoke(task.id, terminate=True, signal='SIGKILL')
-    return JSONResponse({'result': 'Task successfully revoked.'})
+    for task_id in task.id:
+        celery_app.control.revoke(task_id, terminate=True, signal='SIGKILL')
+    return JSONResponse({'result': 'Tasks successfully revoked.'})
 
 
-@router.get('/get_task_result')
+@router.get('/get_task_result', response_model=TaskResultModel)
 @exception_handler
 def get_task_result(id: str):
     return JSONResponse(api_utils.get_task_result(id))
 
 
-@router.get('/get_tasks_results')
+@router.get('/get_tasks_results', response_model=typing.List[TaskResultModel])
 @exception_handler
-def get_tasks_results(task_ids: typing.List[str]):
+def get_tasks_results(id: typing.List[str] = Query(None)):
     results = []
-    for task_id in task_ids:
+    for task_id in id:
         results.append(api_utils.get_task_result(task_id))
     return JSONResponse(results)

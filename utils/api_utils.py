@@ -1,8 +1,10 @@
 from app.celery_app import celery_app
+from app.models import TaskStatusModel
 
 
 def get_task_status(task_id):
-    return {'id': task_id, 'status': celery_app.AsyncResult(task_id).status}
+    result = TaskStatusModel(id=task_id, status=celery_app.AsyncResult(task_id).status)
+    return result
 
 
 def get_task_result(task_id):

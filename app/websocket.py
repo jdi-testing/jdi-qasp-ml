@@ -32,7 +32,7 @@ async def websocket(ws: WebSocket):
                     payload.config.dict()
                 )
                 await ws.send_json(api_utils.get_websocket_response(WebSocketResponseActions.TASKS_SCHEDULED,
-                                                          {payload.id: task_result.id}))
+                                                                    {payload.id: task_result.id}))
                 for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
                     asyncio.create_task(api_utils.wait_until_task_reach_status(ws, task_result.id, status))
             elif action == "get_task_status":
@@ -48,5 +48,5 @@ async def websocket(ws: WebSocket):
             elif action == "get_task_results":
                 result = api_utils.get_celery_tasks_results(payload)
             await ws.send_json(result)
-        except KeyError as e:
+        except KeyError:
             await ws.send_json({"error": "Invalid message format."})

@@ -40,7 +40,7 @@ async def websocket(ws: WebSocket):
             elif action == "get_tasks_statuses":
                 task_ids = payload["id"]
                 result = api_utils.get_celery_task_statuses(task_ids)
-            elif action == "revoke_task":
+            elif action == "revoke_tasks":
                 api_utils.revoke_tasks(payload["id"])
                 result = {"result": "Tasks successfully revoked."}
             elif action == "get_task_result":

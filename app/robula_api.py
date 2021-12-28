@@ -57,7 +57,7 @@ def get_tasks_statuses(id: typing.List[str] = Query(None)):
     return results
 
 
-@router.post('/revoke_task')
+@router.post('/revoke_tasks')
 @exception_handler
 def revoke_task(task: TaskIdsModel):
     """ Revokes celery task with specified id """

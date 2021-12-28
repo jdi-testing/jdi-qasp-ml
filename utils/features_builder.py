@@ -7,6 +7,7 @@ import itertools
 from sklearn.feature_extraction.text import (
     CountVectorizer,
     TfidfTransformer,
+    TfidfVectorizer,
 )
 
 # from utils.common import build_elements_dict  # noqa
@@ -451,16 +452,16 @@ def build_class_feature(df: pd.DataFrame, colname="attributes") -> csr_matrix:
         containing attributes ("attributes", "attributes_parent", "attributes_up_sibling"...)
         default columns: "attributes"
     """
-    model_count_file_path = f"{model_path}/count_attr_class.pkl"
     model_tf_file_path = f"{model_path}/tfidf_attr_class.pkl"
     logger.info(f"used column: {colname}")
 
-    if os.path.exists(model_count_file_path) and os.path.exists(model_tf_file_path):
+    # if (os.path.exists(model_count_file_path) and os.path.exists(model_tf_file_path)):
+    if os.path.exists(model_tf_file_path):
         logger.info(
             "CountVectorizer and TfidfTransformer for class attribute exist. Loading..."
         )
-        with open(model_count_file_path, "rb") as c:
-            model_cv = pickle.load(file=c)
+        # with open(model_count_file_path, "rb") as c:
+        #     model_cv = pickle.load(file=c)
         with open(model_tf_file_path, "rb") as f:
             model_tf = pickle.load(file=f)
         #             print(f'{model_tf!r}')
@@ -480,36 +481,19 @@ def build_class_feature(df: pd.DataFrame, colname="attributes") -> csr_matrix:
             .attributes.apply(lambda x: x.get("class") if x is not None else "")
             .fillna("")
         )
-        attr_class_series = attr_class_series.apply(
-            lambda x: x.replace("-", " ").lower()
+        attr_class_series = (
+            attr_class_series.str.replace("-", " ")
+            .str.replace(r"[0-9]", "", regex=True)
+            .str.lower()
+            .str.replace("mui", "")
         )
-        class_vocab = list(
-            itertools.chain.from_iterable(
-                attr_class_series.apply(lambda x: x.split(sep=" "))
-            )
+        model_tf = TfidfVectorizer(ngram_range=(3, 4), analyzer="char_wb").fit(
+            attr_class_series.values
         )
-        class_vocab = list(set(class_vocab) - set(exclude_from_classes_vocab))
-        class_vocab = sorted(
-            [
-                v
-                for v in class_vocab
-                if (re.match(r"^[a-z][a-z]+$", v) and not re.match(r"jss\d*", v))
-            ]
-        )
-        logger.info(f"Class_vocab: \n{class_vocab}")
-        model_cv = CountVectorizer(vocabulary=class_vocab)
-        class_sm = model_cv.fit_transform(attr_class_series.values)
-        model_tf = TfidfTransformer().fit(class_sm)
-        # filter out class names:  length is at least 2 characters and only letters
-        #         vocabulary = sorted([v for v in class_cv.vocabulary_.keys() if re.match(r'^[az -z][a-z]+$', v)])
+        # logger.info(f"NGrams vocabulary: {model_tf.vocabulary_}")
 
         logger.info(f'Column ["{colname}"] used for tfidf')
-        logger.info(
-            f"Saving {model_count_file_path}, vocabulary length: {len(model_cv.vocabulary_)}"
-        )
-        with open(model_count_file_path, "wb") as c:
-            pickle.dump(model_cv, c)
-            c.flush()
+
         logger.info(f"Saving {model_tf_file_path}")
         with open(model_tf_file_path, "wb") as f:
             pickle.dump(model_tf, f)
@@ -520,9 +504,14 @@ def build_class_feature(df: pd.DataFrame, colname="attributes") -> csr_matrix:
         .apply(lambda x: None if type(x) is not dict else x.get("class"))
         .fillna("")
     )
-    attr_class_series = attr_class_series.apply(lambda x: x.replace("-", " ").lower())
-    class_sm = model_cv.transform(attr_class_series.values)
-    class_sm = model_tf.transform(class_sm)
+    attr_class_series = (
+        attr_class_series.str.replace("-", " ")
+        .str.replace(r"[0-9]", "", regex=True)
+        .str.lower()
+        .str.replace("mui", "")
+    )
+
+    class_sm = model_tf.transform(attr_class_series.values)
 
     return class_sm
 

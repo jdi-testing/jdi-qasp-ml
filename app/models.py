@@ -1,20 +1,9 @@
-import enum
 from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
 
-
-class CeleryStatuses(str, enum.Enum):
-    PENDING = 'PENDING'
-    RECEIVED = 'RECEIVED'
-    STARTED = 'STARTED'
-    SUCCESS = 'SUCCESS'
-    FAILURE = 'FAILURE'
-    REVOKED = 'REVOKED'
-    REJECTED = 'REJECTED'
-    RETRY = 'RETRY'
-    IGNORED = 'IGNORED'
+from app.constants import CeleryStatuses
 
 
 class TaskIdModel(BaseModel):

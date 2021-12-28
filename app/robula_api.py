@@ -8,11 +8,10 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
-from app.celery_app import celery_app
 from app.models import XPathGenerationModel, TaskIdModel, TaskStatusModel, TaskIdsModel, TaskResultModel
 from app.tasks import task_schedule_xpath_generation
 from utils import api_utils
-from utils.api_utils import get_xpath_from_id
+from utils.api_utils import get_celery_task_statuses
 
 logger = logging.getLogger("jdi-qasp-ml")
 router = APIRouter()
@@ -37,7 +36,7 @@ def schedule_xpath_generation(data: XPathGenerationModel):
     """ Creates new celery task for xpath generation. Returns celery task id """
     page = json.loads(data.document)
 
-    task_result = task_schedule_xpath_generation.delay(get_xpath_from_id(data.id), page, data.config.dict())
+    task_result = task_schedule_xpath_generation.delay(api_utils.get_xpath_from_id(data.id), page, data.config.dict())
 
     result = TaskIdModel(id=task_result.id)
     return JSONResponse(result.dict(), status.HTTP_201_CREATED)
@@ -54,9 +53,7 @@ def get_task_status(id: str):
 @exception_handler
 def get_tasks_statuses(id: typing.List[str] = Query(None)):
     """ Returns status of generation for tasks with specified ids """
-    results = []
-    for task_id in id:
-        results.append(api_utils.get_task_status(task_id))
+    results = get_celery_task_statuses(id)
     return results
 
 
@@ -64,8 +61,7 @@ def get_tasks_statuses(id: typing.List[str] = Query(None)):
 @exception_handler
 def revoke_task(task: TaskIdsModel):
     """ Revokes celery task with specified id """
-    for task_id in task.id:
-        celery_app.control.revoke(task_id, terminate=True, signal='SIGKILL')
+    api_utils.revoke_tasks(task.id)
     return JSONResponse({'result': 'Tasks successfully revoked.'})
 
 
@@ -78,7 +74,5 @@ def get_task_result(id: str):
 @router.get('/get_tasks_results', response_model=typing.List[TaskResultModel])
 @exception_handler
 def get_tasks_results(id: typing.List[str] = Query(None)):
-    results = []
-    for task_id in id:
-        results.append(api_utils.get_task_result(task_id))
+    results = api_utils.get_celery_tasks_results(id)
     return JSONResponse(results)

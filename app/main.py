@@ -19,6 +19,7 @@ from app import UPLOAD_DIRECTORY
 from app import mui_df_path
 from app import old_df_path
 from app import robula_api
+from app import websocket
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
 
@@ -28,6 +29,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 api = FastAPI()
 api.include_router(robula_api.router)
+api.include_router(websocket.router)
 templates = Jinja2Templates(directory="templates")
 
 logger = logging.getLogger("jdi-qasp-ml")

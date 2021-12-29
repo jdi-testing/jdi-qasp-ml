@@ -28,7 +28,7 @@ async def websocket(ws: WebSocket):
 
                 task_result = task_schedule_xpath_generation.delay(
                     api_utils.get_xpath_from_id(payload.id),
-                    json.loads(data.document),
+                    json.loads(payload.document),
                     payload.config.dict()
                 )
                 await ws.send_json(api_utils.get_websocket_response(WebSocketResponseActions.TASKS_SCHEDULED,

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from typing import Optional
 
 from pydantic import BaseModel
@@ -7,20 +7,14 @@ from app.constants import CeleryStatuses
 
 
 class TaskIdModel(BaseModel):
-    id: str
+    id: Union[str, List[str]]
 
 
-class TaskIdsModel(BaseModel):
-    id: List[str]
-
-
-class TaskStatusModel(BaseModel):
-    id: str
+class TaskStatusModel(TaskIdModel):
     status: CeleryStatuses
 
 
-class TaskResultModel(BaseModel):
-    id: str
+class TaskResultModel(TaskIdModel):
     result: str
 
 

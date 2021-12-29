@@ -8,7 +8,7 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
-from app.models import XPathGenerationModel, TaskIdModel, TaskStatusModel, TaskIdsModel, TaskResultModel
+from app.models import XPathGenerationModel, TaskIdModel, TaskStatusModel, TaskResultModel
 from app.tasks import task_schedule_xpath_generation
 from utils import api_utils
 from utils.api_utils import get_celery_task_statuses
@@ -59,7 +59,7 @@ def get_tasks_statuses(id: typing.List[str] = Query(None)):
 
 @router.post('/revoke_tasks')
 @exception_handler
-def revoke_task(task: TaskIdsModel):
+def revoke_task(task: TaskIdModel):
     """ Revokes celery task with specified id """
     api_utils.revoke_tasks(task.id)
     return JSONResponse({'result': 'Tasks successfully revoked.'})

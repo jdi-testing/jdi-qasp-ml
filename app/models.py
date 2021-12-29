@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Dict
 from typing import Optional
 
 from pydantic import BaseModel
@@ -28,3 +28,37 @@ class RobulaSettingsModel(BaseModel):
 class XPathGenerationModel(TaskIdModel):
     document: str
     config: RobulaSettingsModel
+
+
+class PredictionRequestElement(BaseModel):
+    tag_name: Union[str, None]
+    element_id: Union[str, None]
+    parent_id: Union[str, None]
+    x: Union[int, None]
+    y: Union[int, None]
+    width: Union[int, None]
+    height: Union[int, None]
+    displayed: Union[bool, None]
+    onmouseover: Union[str, None]
+    onmouseenter: Union[str, None]
+    attributes: Union[Dict, None]
+    text: Union[str, None]
+
+
+class PredictionInputModel(BaseModel):
+    __root__: List[PredictionRequestElement]
+
+
+class PredictedElement(BaseModel):
+    element_id: str
+    x: int
+    y: int
+    width: int
+    height: int
+    predicted_label: str
+    predicted_probability: int
+    sort_key: int
+
+
+class PredictionResponseModel(BaseModel):
+    __root__: List[PredictedElement]

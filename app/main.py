@@ -20,6 +20,7 @@ from app import mui_df_path
 from app import old_df_path
 from app import robula_api
 from app import websocket
+from app.models import PredictionInputModel, PredictionResponseModel
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
 
@@ -67,15 +68,15 @@ async def get_file(path: str):
     return FileResponse(filename=path, path=os.path.join(UPLOAD_DIRECTORY, path), media_type="application/json")
 
 
-@api.post("/predict")
-async def predict(request: Request):
+@api.post("/predict", response_model=PredictionResponseModel)
+async def predict(request: Request, input: PredictionInputModel):
     """ HTML elements prediction based on received JSON. Old model. """
     body = await request.body()
     return JSONResponse(await predict_elements(body))
 
 
-@api.post("/mui-predict")
-async def mui_predict(request: Request):
+@api.post("/mui-predict", response_model=PredictionResponseModel)
+async def mui_predict(request: Request, input: PredictionInputModel):
     """ HTML elements prediction based on received JSON. MUI model. """
     body = await request.body()
     return JSONResponse(await mui_predict_elements(body))

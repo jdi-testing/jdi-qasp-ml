@@ -82,5 +82,10 @@ async def mui_predict(request: Request, input: PredictionInputModel):
     return JSONResponse(await mui_predict_elements(body))
 
 
+@api.get("/cpu-count")
+async def cpu_count():
+    return {"cpu_count": os.cpu_count()}
+
+
 if __name__ == '__main__':
     uvicorn.run("app.main:api", host="127.0.0.1", port=5000, log_level="info")

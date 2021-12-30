@@ -32,7 +32,6 @@ def get_xpath_from_id(element_id):
 
 async def wait_until_task_reach_status(ws: WebSocket, task_id: str, expected_status: CeleryStatuses):
     while True:
-        await asyncio.sleep(1)
         task = get_task_status(task_id)
         if task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE):
             break
@@ -42,6 +41,7 @@ async def wait_until_task_reach_status(ws: WebSocket, task_id: str, expected_sta
                 result = get_task_result(task_id)
                 await ws.send_json(get_websocket_response(WebSocketResponseActions.RESULT_READY, result))
             break
+        await asyncio.sleep(0.5)
 
 
 def get_websocket_response(action: WebSocketResponseActions, payload: dict) -> dict:

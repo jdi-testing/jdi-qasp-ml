@@ -18,7 +18,7 @@ async def websocket(ws: WebSocket):
             action = data["action"]
             payload = data["payload"]
 
-            result = await process_incoming_ws_request(action, payload, result, ws)
+            result = await process_incoming_ws_request(action, payload, ws)
 
             if result:
                 await ws.send_json(result)

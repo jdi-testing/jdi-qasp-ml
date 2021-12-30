@@ -1,11 +1,13 @@
 import asyncio
+import json
 import typing
 
-from fastapi.websockets import WebSocket
+from starlette.websockets import WebSocket
 
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
-from app.models import TaskStatusModel
+from app.models import TaskStatusModel, XPathGenerationModel
+from app.tasks import task_schedule_xpath_generation
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -66,3 +68,33 @@ def get_celery_task_statuses(ids: typing.List[str]):
     for task_id in ids:
         results.append(get_task_status(task_id))
     return results
+
+
+async def process_incoming_ws_request(action: str, payload: dict, ws: WebSocket) -> typing.Dict:
+    result = {}
+    if action == "schedule_xpath_generation":
+        payload = XPathGenerationModel(**payload)
+
+        task_result = task_schedule_xpath_generation.delay(
+            get_xpath_from_id(payload.id),
+            json.loads(payload.document),
+            payload.config.dict()
+        )
+        await ws.send_json(get_websocket_response(WebSocketResponseActions.TASKS_SCHEDULED,
+                                                            {payload.id: task_result.id}))
+        for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
+            asyncio.create_task(wait_until_task_reach_status(ws, task_result.id, status))
+    elif action == "get_task_status":
+        result = get_task_status(payload["id"]).dict()
+    elif action == "get_tasks_statuses":
+        task_ids = payload["id"]
+        result = get_celery_task_statuses(task_ids)
+    elif action == "revoke_tasks":
+        revoke_tasks(payload["id"])
+        result = {"result": "Tasks successfully revoked."}
+    elif action == "get_task_result":
+        result = get_task_result(payload["id"])
+    elif action == "get_task_results":
+        result = get_celery_tasks_results(payload)
+
+    return result

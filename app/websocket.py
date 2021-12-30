@@ -47,6 +47,7 @@ async def websocket(ws: WebSocket):
                 result = api_utils.get_task_result(payload["id"])
             elif action == "get_task_results":
                 result = api_utils.get_celery_tasks_results(payload)
-            await ws.send_json(result)
+            if result:
+                await ws.send_json(result)
         except KeyError:
             await ws.send_json({"error": "Invalid message format."})

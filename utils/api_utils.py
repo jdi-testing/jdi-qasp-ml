@@ -81,7 +81,7 @@ async def process_incoming_ws_request(action: str, payload: dict, ws: WebSocket)
             payload.config.dict()
         )
         await ws.send_json(get_websocket_response(WebSocketResponseActions.TASKS_SCHEDULED,
-                                                            {payload.id: task_result.id}))
+                                                  {payload.id: task_result.id}))
         for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
             asyncio.create_task(wait_until_task_reach_status(ws, task_result.id, status))
     elif action == "get_task_status":

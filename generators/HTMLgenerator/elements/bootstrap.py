@@ -3,10 +3,10 @@ import string
 
 import faker
 
-from HTMLgenerator.base_classes import BaseElement
-from HTMLgenerator.elements.html5 import Button as HTML5Button, Span, Form, Input, HorizontalLine, Header, Option
-from HTMLgenerator.elements.html5 import Paragraph, Label, Link, OrderedList, ListItem, Div, UnorderedList
-from HTMLgenerator.service import generate_uuid, border_properties, bootstrap_button_styles
+from base_classes import BaseElement
+from elements.html5 import Button as HTML5Button, Span, Form, Input, HorizontalLine, Header, Option
+from elements.html5 import Paragraph, Label, Link, OrderedList, ListItem, Div, UnorderedList
+from service import generate_uuid, border_properties, bootstrap_button_styles
 
 fake = faker.Faker()
 

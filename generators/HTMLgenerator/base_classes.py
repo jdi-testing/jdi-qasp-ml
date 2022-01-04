@@ -7,7 +7,7 @@ from pathlib import Path
 
 import faker
 
-from HTMLgenerator.service import generate_uuid
+from service import generate_uuid
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 project_path = os.path.join(prefix, "jdi-qasp-ml")

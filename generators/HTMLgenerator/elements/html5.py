@@ -5,8 +5,8 @@ from datetime import datetime
 
 from faker import Faker
 
-from HTMLgenerator.base_classes import BaseElement
-from HTMLgenerator.service import generate_uuid, border_properties
+from base_classes import BaseElement
+from service import generate_uuid, border_properties
 
 fake = Faker()
 

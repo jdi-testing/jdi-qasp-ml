@@ -32,11 +32,11 @@ def all(
         html_builder.generate()
 
 
-@argh.arg("--output_dir", default="dataset/html5/generated", help="Output directory")
+@argh.arg("--output_dir", default="dataset/generated", help="Output directory")
 @argh.arg("--num_of_pages", default=10, help="Number of pages to generate")
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def html5(
-    output_dir: str = "data/html5_dataset/generated",
+    output_dir: str = "dataset/generated",
     num_of_pages: int = 10,
     elements_on_page: int = 40,
 ):
@@ -49,12 +49,12 @@ def html5(
 
 
 @argh.arg(
-    "--output_dir", default="dataset/bootstrap/generated", help="Output directory"
+    "--output_dir", default="dataset/generated", help="Output directory"
 )
 @argh.arg("--num_of_pages", default=10, help="Number of pages to generate")
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def bootstrap(
-    output_dir: str = "data/html5_dataset/generated",
+    output_dir: str = "dataset/generated",
     num_of_pages: int = 10,
     elements_on_page: int = 40,
 ):

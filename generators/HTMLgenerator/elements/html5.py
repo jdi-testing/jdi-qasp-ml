@@ -3,10 +3,9 @@ import string
 from abc import ABC
 from datetime import datetime
 
-from faker import Faker
-
 from base_classes import BaseElement
-from service import generate_uuid, border_properties
+from faker import Faker
+from service import border_properties, generate_uuid
 
 fake = Faker()
 
@@ -59,7 +58,7 @@ class HTML5BaseElement(BaseElement, ABC):
 
     def add_label(self):
         self.label_first = random.randint(0, 10) > 5
-        self.label_element = Label(attr_for=self.html_attributes['id'], label=self.label)
+        self.label_element = Label(attr_for=self.html_attributes['id'], label="label")
 
 
 class Button(HTML5BaseElement):

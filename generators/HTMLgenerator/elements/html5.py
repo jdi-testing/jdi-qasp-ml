@@ -291,8 +291,15 @@ class TextArea(HTML5BaseElement):
             'cols': random.randint(10, 30)
         }
 
-        self.add_unnecessary_html_attribute('inner_value', fake.paragraph(nb_sentences=random.randint(5, 15)), 50)
-        self.add_unnecessary_html_attribute('placeholder', fake.paragraph(nb_sentences=random.randint(1, 3)), 50)
+        self.add_unnecessary_html_attribute("inner_value", fake.paragraph(nb_sentences=random.randint(5, 15)), 50)
+        self.add_unnecessary_html_attribute("placeholder", fake.paragraph(nb_sentences=random.randint(1, 3)), 50)
+        self.add_unnecessary_html_attribute("autocomplete", random.choice(["on", "off"]), 30)
+        self.add_unnecessary_html_attribute("maxlength", random.randint(50, 100), 30)
+        self.add_unnecessary_html_attribute("minlength",
+            random.randint(1, self.html_attributes["maxlength"] if "maxlength" in self.html_attributes else 100), 30)
+        self.add_unnecessary_html_attribute("readonly", True, 15)
+        self.add_unnecessary_html_attribute("spellcheck", random.choice(["true", "false", "default"]), 30)
+        self.add_unnecessary_html_attribute("wrap", random.choice(["hard", "soft", "off "]), 30)
         self.html_attributes.update(specific_attributes)
 
 
@@ -766,7 +773,7 @@ class Header(HTML5BaseElement):
 
     @property
     def label(self):
-        return 'n/a'
+        return 'title'
 
     def __init__(self, randomize_styling=True, **kwargs):
         super().__init__(randomize_styling, **kwargs)
@@ -808,5 +815,6 @@ elements = [
     Selector,
     Datalist,
     Progress,
-    NumberInput
+    NumberInput,
+    Header,
 ]

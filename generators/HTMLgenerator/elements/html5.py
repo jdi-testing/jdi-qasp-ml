@@ -292,7 +292,7 @@ class TextArea(HTML5BaseElement):
         self.html_attributes.update(specific_attributes)
 
 
-class FileUpload(HTML5BaseElement):
+class FileInput(HTML5BaseElement):
 
     @property
     def label(self):
@@ -301,6 +301,7 @@ class FileUpload(HTML5BaseElement):
     def __init__(self):
         super().__init__()
         self.tag = 'input'
+        self.add_label()
 
     def add_specific_attributes(self):
         super().add_specific_attributes()
@@ -308,9 +309,10 @@ class FileUpload(HTML5BaseElement):
                            for _ in range(random.randint(1, 3))])
         specific_attributes = {
             'type': 'file',
-            'accept': f".{fake.bothify(text='???', letters=string.ascii_lowercase)}"
         }
         self.add_unnecessary_html_attribute('accept', accept, 60)
+        self.add_unnecessary_html_attribute('capture', random.choice(["user", "environment"]), 15)
+        self.add_unnecessary_html_attribute('multiple', True, 50)
         self.html_attributes.update(specific_attributes)
 
     def markup(self):
@@ -333,7 +335,7 @@ class Selector(HTML5BaseElement):
 
     def add_specific_attributes(self):
         super().add_specific_attributes()
-        self.add_unnecessary_html_attribute('multiple', None, 40)
+        self.add_unnecessary_html_attribute('multiple', True, 40)
         self.add_unnecessary_html_attribute('required', True, 60)
         self.add_unnecessary_html_attribute('size', random.randint(3, 10), 80)
 
@@ -479,7 +481,7 @@ class DateTimeInput(HTML5BaseElement):
             "bday-month",
             "bday-year",
         ]
-        self.add_unnecessary_html_attribute('required', None, 50)
+        self.add_unnecessary_html_attribute('required', True, 50)
         self.add_unnecessary_html_attribute('step', random.randint(1, 2000), 50)
         self.add_unnecessary_html_attribute('readonly', "readonly", 25)
         self.add_unnecessary_html_attribute('autocomplete', random.choice(autocomplete_values), 25)
@@ -763,7 +765,7 @@ elements = [
     Link,
     TextField,
     TextArea,
-    FileUpload,
+    FileInput,
     Selector,
     Datalist,
     Progress,

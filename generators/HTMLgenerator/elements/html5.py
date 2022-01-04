@@ -471,12 +471,38 @@ class DateTimeInput(HTML5BaseElement):
         }
         self.html_attributes.update(specific_attributes)
         self.generate_values()
+        autocomplete_values = [
+            "on", 
+            "cc-exp", 
+            "bday",
+            "bday-day",
+            "bday-month",
+            "bday-year",
+        ]
         self.add_unnecessary_html_attribute('required', None, 50)
+        self.add_unnecessary_html_attribute('step', random.randint(1, 2000), 50)
+        self.add_unnecessary_html_attribute('readonly', "readonly", 25)
+        self.add_unnecessary_html_attribute('autocomplete', random.choice(autocomplete_values), 25)
 
     def generate_values(self):
         min_date = self.get_random_date()
         max_date = self.get_random_date(min_date)
         value = self.get_random_date(min_date, max_date)
+        format_string = self.get_format_string()
+        if self.html_attributes['type'] == 'time':
+            min_time = self.get_random_time()
+            max_time = self.get_random_time(min_time['hour'], min_time['minute'])
+            value_time = self.get_random_time(min_time['hour'], min_time['minute'],
+                                              max_time['hour'], max_time['minute'])
+            min_date = datetime.now().replace(**min_time)
+            max_date = datetime.now().replace(**max_time)
+            value = datetime.now().replace(**value_time)
+
+        self.add_unnecessary_html_attribute('min', min_date.strftime(format_string), 50)
+        self.add_unnecessary_html_attribute('max', max_date.strftime(format_string), 50)
+        self.add_unnecessary_html_attribute('value', value.strftime(format_string), 50)
+
+    def get_format_string(self):
         format_string = '%Y-%m-%dT%H:%M'
         if self.html_attributes['type'] == 'date':
             format_string = '%Y-%m-%d'
@@ -485,20 +511,11 @@ class DateTimeInput(HTML5BaseElement):
         elif self.html_attributes['type'] == 'datetime-local':
             format_string = '%Y-%m-%dT%H:%M'
         elif self.html_attributes['type'] == 'time':
-            min_time = self.get_random_time()
-            max_time = self.get_random_time(min_time['hour'], min_time['minute'])
-            value_time = self.get_random_time(min_time['hour'], min_time['minute'],
-                                              max_time['hour'], max_time['minute'])
-            min_date = datetime.now().replace(**min_time)
-            max_date = datetime.now().replace(**max_time)
-            value = datetime.now().replace(**value_time)
             format_string = '%H:%M'
         elif self.html_attributes['type'] == 'week':
             format_string = '%Y-W%W'
 
-        self.add_unnecessary_html_attribute('min', min_date.strftime(format_string), 50)
-        self.add_unnecessary_html_attribute('max', max_date.strftime(format_string), 50)
-        self.add_unnecessary_html_attribute('value', value.strftime(format_string), 50)
+        return format_string
 
     @staticmethod
     def get_random_date(start=None, end=None):
@@ -737,6 +754,8 @@ class Option(HTML5BaseElement):
 elements = [
     Button,
     CheckList,
+    ColorPicker,
+    DateTimeInput,
     RadioButtons,
     Range,
     Table,
@@ -747,8 +766,6 @@ elements = [
     FileUpload,
     Selector,
     Datalist,
-    ColorPicker,
     Progress,
-    DateTimeInput,
     NumberInput
 ]

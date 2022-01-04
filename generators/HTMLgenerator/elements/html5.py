@@ -590,9 +590,43 @@ class Link(HTML5BaseElement):
     def add_specific_attributes(self):
         super().add_specific_attributes()
         self.html_attributes.update({
-            'href': "#",
+            'href': random.choice(["#", fake.url()]),
             'inner_value': fake.sentence(nb_words=random.randint(1, 3))
         })
+
+        referrer_policies = [
+            "no-referrer",
+            "no-referrer-when-downgrade",
+            "origin",
+            "origin-when-cross-origin",
+            "same-origin",
+            "strict-origin",
+            "strict-origin-when-cross-origin",
+            "unsafe-url",
+        ]
+        relationships = [
+            "alternate",
+            "author",
+            "bookmark",
+            "external",
+            "help",
+            "license",
+            "next",
+            "nofollow",
+            "noopener",
+            "noreferrer",
+            "opener",
+            "prev",
+            "search",
+            "tag",
+        ]
+        self.add_unnecessary_html_attribute("download", fake.url(), 30)
+        self.add_unnecessary_html_attribute("ping", fake.url(), 30)
+        self.add_unnecessary_html_attribute("referrerpolicy", random.choice(referrer_policies), 30)
+        self.add_unnecessary_html_attribute("rel", random.choice(relationships), 30)
+        self.add_unnecessary_html_attribute("target", random.choice(["_self", "_blank", "_parent", "_top"]), 30)
+        self.add_unnecessary_html_attribute("rel", random.choice(relationships), 30)
+        self.add_unnecessary_html_attribute("type", fake.mime_type(), 30)
 
 
 class Label(HTML5BaseElement):

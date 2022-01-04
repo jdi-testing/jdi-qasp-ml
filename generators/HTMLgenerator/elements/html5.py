@@ -63,8 +63,11 @@ class HTML5BaseElement(BaseElement, ABC):
 
 class Button(HTML5BaseElement):
     def __init__(self, **kwargs):
+        if "type" not in kwargs:
+            available_tags = ['button', 'input']
+            self.tag = random.choice(available_tags)
+
         super().__init__(**kwargs)
-        self.tag = 'button'
 
     @property
     def label(self):
@@ -84,10 +87,33 @@ class Button(HTML5BaseElement):
 
     def add_specific_attributes(self):
         super().add_specific_attributes()
+        text_key = "inner_value" if self.tag == "button" else "value"
         specific_attributes = {
-            'inner_value': fake.sentence(nb_words=1),
+            text_key: fake.sentence(nb_words=1),
         }
         self.html_attributes.update(specific_attributes)
+        if self.tag != "button":
+            self.add_unnecessary_html_attribute("formaction", generate_uuid(), 50)
+            self.add_button_type()
+            self.add_formenctype()
+
+    def add_formenctype(self):
+        possible_values = [
+            "application/x-www-form-urlencoded",
+            "multipart/form-data",
+            "text/plain",
+        ]
+        self.add_unnecessary_html_attribute("formenctype", random.choice(possible_values), 50)
+
+    def add_button_type(self):
+        available_types = ["submit", "reset", "button"]
+        self.html_attributes["type"] = random.choice(available_types)
+
+    def markup(self, label_margin=None):
+        markup = super().markup(label_margin=label_margin)
+        if self.tag != "button":
+            markup = f"<form>{markup}</form>"
+        return markup
 
 
 class Range(HTML5BaseElement):

@@ -483,7 +483,10 @@ class NavBar(BootstrapBaseElement):
         toggler.html_attributes['aria-label'] = 'Toggle navigation'
         span = Span(attr_class='navbar-toggler-icon')
         toggler.nested_elements.append(span)
-        del toggler.html_attributes['inner_value']
+        try:
+            del toggler.html_attributes['inner_value']
+        except KeyError:
+            pass
 
         content_as_ul = bool(random.randint(0, 1))
         if content_as_ul:

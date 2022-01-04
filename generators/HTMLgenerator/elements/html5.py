@@ -38,24 +38,6 @@ class HTML5BaseElement(BaseElement, ABC):
             options_text += f'''<option value="{value}">{value}</option>\n'''
         return options_text
 
-    def generate_checkbox_elements(self, input_class="", label_class=""):
-        """Generates markup of random checkboxes"""
-        num_of_elements = random.randint(2, 12)
-        checklist_text = ''
-        for i in range(num_of_elements):
-            value = fake.word()
-            input_id = '-'.join([self.html_attributes['id'], value])
-            checked = True if random.randint(0, 10) > 8 else False
-            input_class_string = f'class="{input_class}"' if input_class else ''
-            label_class_string = f'class="{label_class}"' if label_class else ''
-            input_text = f'''<input type="checkbox" {input_class_string} data-label="checkbox"
-                             id={input_id} name="{self.html_attributes['name']}"
-                             {'checked' if checked else ''}>'''
-            label_text = f'''<label for="{input_id}" {label_class_string}
-                             style="{self.generate_style_string()}">{value}</label>'''
-            checklist_text += f'''{''.join(random.sample([input_text, label_text], 2))}<br>'''
-        return checklist_text
-
     def add_label(self):
         self.label_first = random.randint(0, 10) > 5
         self.label_element = Label(attr_for=self.html_attributes['id'], label="label")
@@ -402,8 +384,31 @@ class CheckList(HTML5BaseElement):
         self.tag = 'input'
 
     def markup(self):
-        checklist_text = self.generate_checkbox_elements()
+        checklist_text = self.generate_checkbox_elements(input_class="checkbox")
         return f'''<div {self.generate_html_attributes_string()}>{checklist_text}</div>'''
+
+    def generate_checkbox_elements(self, input_class="", label_class=""):
+        """Generates markup of random checkboxes"""
+        num_of_elements = random.randint(2, 12)
+        checklist_text = ''
+        for i in range(num_of_elements):
+            checkbox = CheckBox()
+            checklist_text += checkbox.markup()
+        return checklist_text
+
+
+class CheckBox(HTML5BaseElement):
+    @property
+    def label(self):
+        return "checkbox"
+
+    def __init__(self, randomize_styling=True, **kwargs):
+        super().__init__(randomize_styling=randomize_styling, **kwargs)
+        self.tag = "input"
+        self.html_attributes["type"] = "checkbox"
+        self.add_unnecessary_html_attribute("checked", True, 50)
+        self.add_unnecessary_html_attribute("indeterminate", random.choice(["true", "false"]), 25)
+        self.add_label()
 
 
 class ColorPicker(HTML5BaseElement):
@@ -730,8 +735,9 @@ class Option(HTML5BaseElement):
 
 
 elements = [
-    RadioButtons,
     Button,
+    CheckList,
+    RadioButtons,
     Range,
     Table,
     Paragraph,
@@ -741,7 +747,6 @@ elements = [
     FileUpload,
     Selector,
     Datalist,
-    CheckList,
     ColorPicker,
     Progress,
     DateTimeInput,

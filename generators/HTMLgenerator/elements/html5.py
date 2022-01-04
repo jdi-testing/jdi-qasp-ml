@@ -267,7 +267,11 @@ class TextField(HTML5BaseElement):
             maxlength = random.randint(1, 150)
         self.add_unnecessary_html_attribute('maxlength', maxlength, 70)
         self.add_unnecessary_html_attribute('value', fake.sentence(nb_words=random.randint(1, 10)), 40)
-        self.add_unnecessary_html_attribute('placeholder', fake.sentence(nb_words=random.randint(3, 8)), 90)
+        self.add_unnecessary_html_attribute('pattern', fake.sentence(1), 20)
+        self.add_unnecessary_html_attribute('placeholder', fake.sentence(nb_words=random.randint(3, 8)), 30)
+        self.add_unnecessary_html_attribute('readonly', True, 10)
+        self.add_unnecessary_html_attribute('size', random.randint(1, 1000), 10)
+        self.add_unnecessary_html_attribute('spellcheck', random.choice(["true", "false", ""]), 10)
 
 
 class TextArea(HTML5BaseElement):
@@ -560,6 +564,7 @@ class NumberInput(HTML5BaseElement):
         self.add_unnecessary_html_attribute('max', max_value, 50)
         self.add_unnecessary_html_attribute('value', value, 80)
         self.add_unnecessary_html_attribute('step', step, 80)
+        self.add_unnecessary_html_attribute('readonly', True, 30)
 
 
 class Paragraph(HTML5BaseElement):
@@ -570,7 +575,7 @@ class Paragraph(HTML5BaseElement):
 
     @property
     def label(self):
-        return 'n/a'
+        return 'text'
 
     def add_specific_attributes(self):
         super().add_specific_attributes()

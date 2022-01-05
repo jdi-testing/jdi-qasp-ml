@@ -34,8 +34,8 @@ class HTML5BaseElement(BaseElement, ABC):
         """Generates list of options with randomized value"""
         options_text = ''
         for i in range(random.randint(3, 10)):
-            value = fake.word()
-            options_text += f'''<option value="{value}">{value}</option>\n'''
+            option = Option()
+            options_text += option.markup()
         return options_text
 
     def add_label(self):
@@ -156,10 +156,10 @@ class Range(HTML5BaseElement):
                 '''
 
 
-class RadioButtons(HTML5BaseElement):
+class RadioButtonsGroup(HTML5BaseElement):
     @property
     def label(self):
-        return 'radiobutton'
+        return 'radiobuttongroup'
 
     self_closing_tag = True
 
@@ -180,34 +180,31 @@ class RadioButtons(HTML5BaseElement):
         options_text = ""
 
         # options generation
-        vertical_alignment = bool(random.randint(0, 1))
-        active_element = random.randint(0, num_of_choices)
         for i in range(num_of_choices):
-            element_id = generate_uuid()
-            label_style_string = self.generate_style_string()
-            label_style_string = f'style="{label_style_string}"'
-            disabled = random.randint(0, 10) > 7
-            radio_text = f'''<input type="radio"
-                            {self.generate_html_attributes_string()}
-                            {'checked' if i == active_element else ''}
-                            {'disabled' if disabled else ''}
-                            style={self.generate_style_string()}>'''
-            label_text = f'''<label for="{element_id}" {label_style_string}>{fake.sentence(nb_words=1)}</label>'''
-
-            elements = [label_text, radio_text]
-            random.shuffle(elements)
-            options_text += f'''
-                            {''.join(elements)}
-                            {'<br>' if vertical_alignment else ''}
-                            '''
+            radio = RadioButton()
+            options_text += f"{radio.markup()}<br>\n"
 
         return f"""
                     <p style=\"{self.generate_style_string()}\">{question_text}</p>
-                    <div {'style="display:inline-block"' if vertical_alignment else ''}>
+                    <div>
                         {options_text}
                     </div>
                 """
 
+
+class RadioButton(HTML5BaseElement):
+    def __init__(self, randomize_styling=True, **kwargs):
+        super().__init__(randomize_styling=randomize_styling, **kwargs)
+        self.tag = "input"
+        self.html_attributes["type"] = "radio"
+        self.add_unnecessary_html_attribute("checked", True, 50)
+        self.add_label()
+
+    @property
+    def label(self):
+        return 'radiobutton'
+
+    
 
 class Table(HTML5BaseElement):
 
@@ -333,11 +330,11 @@ class FileInput(HTML5BaseElement):
         return ''.join(elements)
 
 
-class Selector(HTML5BaseElement):
+class Dropdown(HTML5BaseElement):
 
     @property
     def label(self):
-        return 'selector'
+        return 'dropdown'
 
     def __init__(self):
         super().__init__()
@@ -346,9 +343,7 @@ class Selector(HTML5BaseElement):
 
     def add_specific_attributes(self):
         super().add_specific_attributes()
-        self.add_unnecessary_html_attribute('multiple', True, 40)
         self.add_unnecessary_html_attribute('required', True, 60)
-        self.add_unnecessary_html_attribute('size', random.randint(3, 10), 80)
 
     def markup(self):
         options_text = self.generate_options()
@@ -358,11 +353,30 @@ class Selector(HTML5BaseElement):
         return selector_text
 
 
+class MultiDropdown(Dropdown):
+    @property
+    def label(self):
+        return "multidropdown"
+
+    def __init__(self):
+        super().__init__()
+        self.html_attributes["multiple"] = True
+
+
+class MultiSelector(Dropdown):
+    @property
+    def label(self):
+        return "multiselector"
+
+    def __init__(self):
+        super().__init__()
+        self.html_attributes["size"] = random.randint(3, 10)
+
 class Datalist(HTML5BaseElement):
 
     @property
     def label(self):
-        return 'dropdown'
+        return 'datalist'
 
     def __init__(self):
         super().__init__()
@@ -390,7 +404,7 @@ class CheckList(HTML5BaseElement):
 
     @property
     def label(self):
-        return 'n/a'
+        return 'checklist'
 
     def __init__(self):
         super().__init__()
@@ -804,7 +818,7 @@ elements = [
     CheckList,
     ColorPicker,
     DateTimeInput,
-    RadioButtons,
+    RadioButtonsGroup,
     Range,
     Table,
     Paragraph,
@@ -812,7 +826,9 @@ elements = [
     TextField,
     TextArea,
     FileInput,
-    Selector,
+    Dropdown,
+    MultiDropdown,
+    MultiSelector,
     Datalist,
     Progress,
     NumberInput,

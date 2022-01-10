@@ -21,7 +21,7 @@ WAIT_TIME_SECONDS = 3
 SITE_URLS = [
     "file://" + p
     for p in glob(
-        f'{os.path.join(prefix, "jdi-qasp-ml")}/data/html5_dataset/build/*.html'
+        f'{os.path.join(prefix, "jdi-qasp-ml")}/data/html5_dataset/build/html5/*.html'
     )
 ]
 DATASET_NAMES = ["html5-" + re.search("[0-9]+.html", nm)[0][:-5] for nm in SITE_URLS]

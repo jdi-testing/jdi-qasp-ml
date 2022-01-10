@@ -11,14 +11,20 @@ import sys
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml", "generators"))
 
+data_path = os.path.join(prefix, "jdi-qasp-ml", "data")
+
 builders = (HTML5Builder, BootstrapBuilder)
 
 
-@argh.arg("--output_dir", default="data/general_dataset/build", help="Output directory")
+@argh.arg(
+    "--output_dir",
+    default=f"{data_path}/general_dataset/build",
+    help="Output directory",
+)
 @argh.arg("--num_of_pages", default=10, help="Number of pages to generate")
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def all(
-    output_dir: str = "data/general_dataset/build",
+    output_dir: str = f"{data_path}/general_dataset/build",
     num_of_pages: int = 10,
     elements_on_page: int = 40,
 ):
@@ -32,11 +38,13 @@ def all(
         html_builder.generate()
 
 
-@argh.arg("--output_dir", default="data/html5_dataset/build", help="Output directory")
+@argh.arg(
+    "--output_dir", default=f"{data_path}/html5_dataset/build", help="Output directory"
+)
 @argh.arg("--num_of_pages", default=10, help="Number of pages to generate")
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def html5(
-    output_dir: str = "data/html5_dataset/build",
+    output_dir: str = f"{data_path}/html5_dataset/build",
     num_of_pages: int = 10,
     elements_on_page: int = 40,
 ):
@@ -48,11 +56,13 @@ def html5(
     ).generate()
 
 
-@argh.arg("--output_dir", default="data/bs_dataset/build", help="Output directory")
+@argh.arg(
+    "--output_dir", default=f"{data_path}/bs_dataset/build", help="Output directory"
+)
 @argh.arg("--num_of_pages", default=10, help="Number of pages to generate")
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def bootstrap(
-    output_dir: str = "data/bs_dataset/build",
+    output_dir: str = f"{data_path}/bs_dataset/build",
     num_of_pages: int = 10,
     elements_on_page: int = 40,
 ):

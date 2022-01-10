@@ -135,6 +135,7 @@ class DatasetBuilder:
         self.options = Options()
         # Last I checked this was necessary.
         self.options.add_argument("--disable-gpu")
+        self.options.add_argument("--no-sandbox")
         self.options.add_argument("--skip-js-errors")
 
         # to prevent "I'm not a robot" check, we have to add next option:
@@ -162,9 +163,9 @@ class DatasetBuilder:
 
         logger.info("Chrome web driver is created")
         self.setUp(self.driver)
-        scr = f"{self.root_path}/images/{self.dataset_name}.png"
-        logger.info(f"save scrinshot: {scr}")
-        self.driver.save_screenshot(scr)
+        # scr = f"{self.root_path}/images/{self.dataset_name}.png"
+        # logger.info(f"save scrinshot: {scr}")
+        # self.driver.save_screenshot(scr)
         self.build_dataset()
 
         return self

@@ -35,16 +35,17 @@ from app import (
     old_model,
 )
 from utils.dataset import MUI_JDNDataset
-from utils_old.dataset import JDNDataset as Old_JDNDataset
+from app.robula_api import robula_api
 
+from utils_old.dataset import JDNDataset as Old_JDNDataset
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
-api = Flask(__name__, template_folder=TEMPLATES_PATH)
-api.logger.setLevel(logging.DEBUG)
 
-from app.robula_api import *  # noqa
+api = Flask("app.main", template_folder=TEMPLATES_PATH)
+api.logger.setLevel(logging.DEBUG)
+api.register_blueprint(robula_api)
 
 
 @api.route("/build")
@@ -60,7 +61,6 @@ def list_files():
 
 @api.route("/files", defaults={"req_path": ""})
 def dir_listing(req_path):
-
     # Joining the base and the requested path
     abs_path = os.path.join(UPLOAD_DIRECTORY, req_path)
 

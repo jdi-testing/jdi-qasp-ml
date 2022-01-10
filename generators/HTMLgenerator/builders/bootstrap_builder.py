@@ -1,5 +1,5 @@
-from HTMLgenerator.base_classes import BaseHTMLBuilder
-import HTMLgenerator.elements.bootstrap as bootstrap_elements
+from base_classes import BaseHTMLBuilder
+import elements.bootstrap as bootstrap_elements
 
 
 class BootstrapBuilder(BaseHTMLBuilder):

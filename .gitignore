@@ -12,6 +12,7 @@
 flask-temp-storage/*
 
 generators/HTMLgenerator/output
+generators/HTMLgenerator/dataset
 venv/
 
 data/mui_dataset/*
@@ -45,3 +46,4 @@ venv/
 .coverage.*
 .cache
 coverage.xml
+.DS_Store

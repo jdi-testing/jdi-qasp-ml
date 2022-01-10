@@ -2,8 +2,8 @@ import logging
 
 import argh
 
-from generators.HTMLgenerator.builders.html5_builder import HTML5Builder
-from generators.HTMLgenerator.builders.bootstrap_builder import BootstrapBuilder
+from builders.html5_builder import HTML5Builder
+from builders.bootstrap_builder import BootstrapBuilder
 
 import os
 import sys

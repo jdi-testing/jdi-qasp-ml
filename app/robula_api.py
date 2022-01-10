@@ -3,14 +3,15 @@ import json
 import logging
 import os
 
-from flask import request
+from flask import request, Blueprint, Response
 
 from app.celery import celery
-from app.main import api
 from app.tasks import task_schedule_xpath_generation
 from utils import api_utils, robula
 
 logger = logging.getLogger()
+
+robula_api = Blueprint('robula_api', __name__)
 
 
 def exception_handler(func):
@@ -19,13 +20,13 @@ def exception_handler(func):
             return func(*args, **kwargs)
         except Exception as e:
             logger.exception('Error: ')
-            return api_utils.get_json_response({'exc': str(e)}, 500)
+            return get_json_response({'exc': str(e)}, 500)
 
     wrapper.__name__ = func.__name__
     return wrapper
 
 
-@api.route('/generate_xpath', methods=['POST'])
+@robula_api.route('/generate_xpath', methods=['POST'])
 def generate_xpath():
     data = json.loads(request.data)
 
@@ -35,10 +36,10 @@ def generate_xpath():
 
     result = generate_xpaths_simultaneously(ids, config, page)
 
-    return api_utils.get_json_response(result, 200)
+    return get_json_response(result, 200)
 
 
-@api.route('/schedule_xpath_generation', methods=['POST'])
+@robula_api.route('/schedule_xpath_generation', methods=['POST'])
 @exception_handler
 def schedule_xpath_generation():
     """ Creates new celery task for xpath generation. Returns celery task id """
@@ -50,18 +51,18 @@ def schedule_xpath_generation():
 
     task_result = task_schedule_xpath_generation.delay(get_xpath_from_id(element_id), page, config)
     result = {'task_id': task_result.id}
-    return api_utils.get_json_response(result, 200)
+    return get_json_response(result, 200)
 
 
-@api.route('/get_task_status', methods=['POST'])
+@robula_api.route('/get_task_status', methods=['POST'])
 @exception_handler
 def get_task_status():
     """ Returns status of generation task with specified id """
     task_id = json.loads(request.data)['id']
-    return api_utils.get_json_response(api_utils.get_task_status(task_id), 200)
+    return get_json_response(api_utils.get_task_status(task_id), 200)
 
 
-@api.route('/get_tasks_statuses', methods=['POST'])
+@robula_api.route('/get_tasks_statuses', methods=['POST'])
 @exception_handler
 def get_tasks_statuses():
     """ Returns status of generation for tasks with specified ids """
@@ -70,26 +71,26 @@ def get_tasks_statuses():
     results = []
     for id in task_ids:
         results.append(api_utils.get_task_status(id))
-    return api_utils.get_json_response(results, 200)
+    return get_json_response(results, 200)
 
 
-@api.route('/revoke_task', methods=['POST'])
+@robula_api.route('/revoke_task', methods=['POST'])
 @exception_handler
 def revoke_task():
     """ Revokes celery task with specified id """
     task_id = json.loads(request.data)['id']
     celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
-    return api_utils.get_json_response({'result': 'Task successfully revoked.'}, 200)
+    return get_json_response({'result': 'Task successfully revoked.'}, 200)
 
 
-@api.route('/get_task_result', methods=['POST'])
+@robula_api.route('/get_task_result', methods=['POST'])
 @exception_handler
 def get_task_result():
     task_id = json.loads(request.data)['id']
-    return api_utils.get_json_response(api_utils.get_task_result(task_id), 200)
+    return get_json_response(api_utils.get_task_result(task_id), 200)
 
 
-@api.route('/get_tasks_results', methods=['POST'])
+@robula_api.route('/get_tasks_results', methods=['POST'])
 @exception_handler
 def get_tasks_results():
     task_ids = json.loads(request.data)['id']
@@ -97,7 +98,7 @@ def get_tasks_results():
     results = []
     for task_id in task_ids:
         results.append(api_utils.get_task_result(task_id))
-    return api_utils.get_json_response(results, 200)
+    return get_json_response(results, 200)
 
 
 def get_robula_config(data):
@@ -119,7 +120,7 @@ def generate_xpaths_simultaneously(ids, config, page):
             try:
                 result[element_id] = future.result()
             except Exception as exc:
-                api.logger.info('%r generated an exception: %s' % (element_id, exc))
+                logger.info('%r generated an exception: %s' % (element_id, exc))
     return result
 
 
@@ -130,3 +131,12 @@ def get_xpath_from_id(element_id):
     :return: xpath
     """
     return f"//*[@jdn-hash='{element_id}']"
+
+
+def get_json_response(body, status):
+    response = Response(
+        response=json.dumps(body),
+        status=status,
+        mimetype='application/json'
+    )
+    return response

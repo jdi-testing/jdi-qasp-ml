@@ -10,13 +10,11 @@ switch
 table
 breadcrumbs
 list
-alert
 chip
 select
 textarea-autosize
 accordion
 text-field
-radio
 checkbox
 drawer
 snackbar

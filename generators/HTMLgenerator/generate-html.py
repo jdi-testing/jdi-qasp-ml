@@ -2,8 +2,14 @@ import logging
 
 import argh
 
-from generators.HTMLgenerator.builders.html5_builder import HTML5Builder
-from generators.HTMLgenerator.builders.bootstrap_builder import BootstrapBuilder
+from builders.html5_builder import HTML5Builder
+from builders.bootstrap_builder import BootstrapBuilder
+
+import os
+import sys
+
+prefix = os.getcwd().split("jdi-qasp-ml")[0]
+sys.path.append(os.path.join(prefix, "jdi-qasp-ml", "generators"))
 
 builders = (HTML5Builder, BootstrapBuilder)
 
@@ -42,7 +48,9 @@ def html5(
     ).generate()
 
 
-@argh.arg("--output_dir", default="dataset/generated", help="Output directory")
+@argh.arg(
+    "--output_dir", default="dataset/generated", help="Output directory"
+)
 @argh.arg("--num_of_pages", default=10, help="Number of pages to generate")
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def bootstrap(

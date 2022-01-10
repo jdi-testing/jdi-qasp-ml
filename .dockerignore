@@ -29,9 +29,10 @@ data/general_dataset/*
 !data/general_dataset/classes.txt
 !data/general_dataset/EXTRACT_ATTRIBUTES_LIST.json
 
-
 data/old_dataset/*
 !data/old_dataset/classes.txt
 
 data/uploaded_dataset
 data/other
+
+**/notebooks

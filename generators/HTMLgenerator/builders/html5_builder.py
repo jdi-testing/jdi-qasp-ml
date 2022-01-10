@@ -1,7 +1,7 @@
 import random
 
-from HTMLgenerator.base_classes import BaseHTMLBuilder
-import HTMLgenerator.elements.html5 as html5_elements
+from base_classes import BaseHTMLBuilder
+import elements.html5 as html5_elements
 
 
 class HTML5Builder(BaseHTMLBuilder):

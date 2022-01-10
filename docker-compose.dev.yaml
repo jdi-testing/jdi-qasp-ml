@@ -7,12 +7,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5000:5050"
+      - "5050:5050"
     volumes:
       - .:/jdi-qasp-ml
 
   celery:
-    command: celery -A app.main:celery worker -l info
+    command: celery -A app.celery:celery worker -l info
     build:
       context: .
       dockerfile: Dockerfile

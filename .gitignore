@@ -4,6 +4,7 @@
 *__pycache__
 .vscode
 .idea
+*pytest_cache
 
 *.log
 *.ipynb_checkpoints*
@@ -11,6 +12,7 @@
 flask-temp-storage/*
 
 generators/HTMLgenerator/output
+generators/HTMLgenerator/dataset
 venv/
 
 data/mui_dataset/*
@@ -29,7 +31,6 @@ data/general_dataset/*
 !data/general_dataset/classes.txt
 !data/general_dataset/EXTRACT_ATTRIBUTES_LIST.json
 
-
 data/old_dataset/*
 !data/old_dataset/classes.txt
 
@@ -45,3 +46,4 @@ venv/
 .coverage.*
 .cache
 coverage.xml
+.DS_Store

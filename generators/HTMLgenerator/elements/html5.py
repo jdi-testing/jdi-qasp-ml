@@ -140,11 +140,11 @@ class Range(HTML5BaseElement):
         '''
 
         range_text = f'''<input
-                  type="range"
+                  type="range" data-label="{self.label}"
                   {f'list="datalist-{self.html_attributes["id"]}"' if data_list else ''}
                   {self.generate_html_attributes_string()}>'''
         label_text = f'''<label for="{self.html_attributes['id']}"
-                   style="{self.generate_style_string()}">
+                   style="{self.generate_style_string()}" data-label="label">
                     {self.html_attributes['inner_value']}
                   </label>'''
         elements = [range_text, label_text, data_list]
@@ -184,12 +184,12 @@ class RadioButtonsGroup(HTML5BaseElement):
             radio = RadioButton()
             options_text += f"{radio.markup()}<br>\n"
 
-        return f"""
-                    <p style=\"{self.generate_style_string()}\">{question_text}</p>
-                    <div>
+        return f'''
+                    <p style="{self.generate_style_string()}" data-label="text">{question_text}</p>
+                    <div data-label="{self.label}">
                         {options_text}
                     </div>
-                """
+                '''
 
 
 class RadioButton(HTML5BaseElement):
@@ -324,7 +324,7 @@ class FileInput(HTML5BaseElement):
         self.html_attributes.update(specific_attributes)
 
     def markup(self):
-        label = f'<label for="{self.html_attributes.get("id")}">{fake.sentence(nb_words=random.randint(4, 15))}</label>'
+        label = f'<label for="{self.html_attributes.get("id")}" data-label="label">{fake.sentence(nb_words=random.randint(4, 15))}</label>'
         elements = [label, super().markup()]
         random.shuffle(elements)
         return ''.join(elements)
@@ -347,7 +347,7 @@ class Dropdown(HTML5BaseElement):
 
     def markup(self):
         options_text = self.generate_options()
-        selector_text = f'''<select {self.generate_html_attributes_string()} style="{self.generate_style_string()}">
+        selector_text = f'''<select {self.generate_html_attributes_string()} style="{self.generate_style_string()}" data-label="{self.label}">
                             {options_text}
                         </select>'''
         return selector_text
@@ -394,7 +394,7 @@ class Datalist(HTML5BaseElement):
         options = self.generate_options()
         input_markup = f'''<input {self.generate_html_attributes_string()} style="{self.generate_style_string()}"/>'''
         datalist = f'''
-        <datalist id=datalist-{self.html_attributes["id"]}>
+        <datalist id=datalist-{self.html_attributes["id"]} data-label="{self.label}">
             {options}
         </datalist>'''
         return f'''<div>{''.join(random.sample([input_markup, datalist], 2))}</div>'''
@@ -412,7 +412,7 @@ class CheckList(HTML5BaseElement):
 
     def markup(self):
         checklist_text = self.generate_checkbox_elements(input_class="checkbox")
-        return f'''<div {self.generate_html_attributes_string()}>{checklist_text}</div>'''
+        return f'''<div {self.generate_html_attributes_string()} data-label="{self.label}">{checklist_text}</div>'''
 
     def generate_checkbox_elements(self, input_class="", label_class=""):
         """Generates markup of random checkboxes"""

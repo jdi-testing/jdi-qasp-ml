@@ -29,7 +29,7 @@ from vars.html5_train_vars import (  # noqa
 
 from utils.config import logger  # noqa
 from utils.dataset import HTML5_JDNDataset  # noqa
-from utils.model_new import HTML5_JDIModel  # noqa
+from utils.model_new import JDIModel  # noqa
 from utils.common import accuracy  # noqa
 
 model_path = os.path.join(prefix, "jdi-qasp-ml", "HTML5_model/model")
@@ -45,7 +45,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 logger.info(f"device: {DEVICE}")
 
 
-def evaluate(model: HTML5_JDIModel, dataset: HTML5_JDNDataset) -> pd.DataFrame:
+def evaluate(model: JDIModel, dataset: HTML5_JDNDataset) -> pd.DataFrame:
     model.eval()
     with torch.no_grad():
 
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         best_accuracy = evaluate(model=model, dataset=test_dataset)
     else:
         print("WARNING: Create brand new model")
-        model = HTML5_JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
+        model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
         best_accuracy = 0.0
 
     logger.info(f"START TRAINING THE MODEL WITH THE BEST ACCURACY: {best_accuracy}")

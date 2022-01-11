@@ -394,7 +394,7 @@ class Datalist(HTML5BaseElement):
         options = self.generate_options()
         input_markup = f'''<input {self.generate_html_attributes_string()} style="{self.generate_style_string()}"/>'''
         datalist = f'''
-        <datalist id=datalist-{self.html_attributes["id"]} data-label="{self.label}">
+        <datalist id=datalist-{self.html_attributes["id"]}>
             {options}
         </datalist>'''
         return f'''<div>{''.join(random.sample([input_markup, datalist], 2))}</div>'''

@@ -11,6 +11,9 @@ from vars.path_vars import (
     old_df_path,
     old_model,
     redis_address,
+    html5_df_path,
+    html5_model,
+    html5_classes_path,
 )
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
@@ -31,3 +34,9 @@ mui_df_path = os.getenv("mui_df_path", os.path.join(BASE_DIR, mui_df_path))
 mui_model = os.getenv("mui_model", os.path.join(BASE_DIR, mui_model))
 old_df_path = os.getenv("old_df_path", os.path.join(BASE_DIR, old_df_path))
 old_model = os.getenv("old_model", os.path.join(BASE_DIR, old_model))
+
+html5_df_path = os.getenv("html5_df_path", os.path.join(BASE_DIR, html5_df_path))
+html5_model = os.getenv("html5_model", os.path.join(BASE_DIR, html5_model))
+html5_classes_path = os.getenv(
+    "html5_classes_path", os.path.join(BASE_DIR, html5_classes_path)
+)

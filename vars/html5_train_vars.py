@@ -1,10 +1,10 @@
 # variables for using in MUI_model/train.py
-BATCH_SIZE = 1024
+TRAIN_LEN = 200
+TEST_LEN = 50
 
-TRAIN_LEN = 50
-TEST_LEN = 10
-
-NUM_EPOCHS = 30
-EARLY_STOPPING_THRESHOLD = 10
-
-SCHEDULER_STEP = 2
+parameters = {
+    "max_depth": range(20, 25),
+    "criterion": ["gini", "entropy"],
+    "min_samples_split": range(2, 5),
+    "min_samples_leaf": range(1, 2),
+}

@@ -163,9 +163,9 @@ class DatasetBuilder:
 
         logger.info("Chrome web driver is created")
         self.setUp(self.driver)
-        # scr = f"{self.root_path}/images/{self.dataset_name}.png"
-        # logger.info(f"save scrinshot: {scr}")
-        # self.driver.save_screenshot(scr)
+        scr = f"{self.root_path}/images/{self.dataset_name}.png"
+        logger.info(f"save scrinshot: {scr}")
+        self.driver.save_screenshot(scr)
         self.build_dataset()
 
         return self

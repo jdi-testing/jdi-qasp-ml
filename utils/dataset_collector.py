@@ -65,7 +65,7 @@ class DatasetCollector(object):
 
 
 class MUI_DatasetCollector(DatasetCollector):
-    def __init__(self, df: pd.DataFrame, dataset_type="html5"):
+    def __init__(self, df: pd.DataFrame, dataset_type="mui"):
         super().__init__(df, dataset_type=dataset_type)
 
     def collect_dataset(self) -> csr_matrix:
@@ -170,85 +170,9 @@ class HTML5_DatasetCollector(DatasetCollector):
         super().__init__(df, dataset_type=dataset_type)
 
     def collect_dataset(self) -> csr_matrix:
-        (
-            # attributes_sm,
-            # parent_attributes_sm,
-            # upsib_attributes_sm,
-            # dnsib_attributes_sm,
-            # class_sm,
-            # parent_class_sm,
-            # upsib_class_sm,
-            # dnsib_class_sm,
-            tag_name_sm,
-            # parent_tag_name_sm,
-            # upsib_tag_name_sm,
-            # dnsib_tag_name_sm,
-            type_sm,
-            # parent_type_sm,
-            # upsib_type_sm,
-            # dnsib_type_sm,
-            # role_sm,
-            # parent_role_sm,
-            # upsib_role_sm,
-            # dnsib_role_sm,
-            child_tags_sm,
-            foll_tags_sm,
-        ) = HTML5SpecialFeaturesBuilder(
+        self.dataset_df = HTML5SpecialFeaturesBuilder(
             self.dataset_df, self.dataset_type
         ).build_features()
 
-        X = np.array(
-            hstack(
-                [
-                    # attributes_sm,
-                    # parent_attributes_sm,
-                    # upsib_attributes_sm,
-                    # dnsib_attributes_sm,
-                    # class_sm,
-                    # parent_class_sm,
-                    # upsib_class_sm,
-                    # dnsib_class_sm,
-                    tag_name_sm,
-                    # parent_tag_name_sm,
-                    # upsib_tag_name_sm,
-                    # dnsib_tag_name_sm,
-                    type_sm,
-                    # parent_type_sm,
-                    # upsib_type_sm,
-                    # dnsib_type_sm,
-                    # role_sm,
-                    # parent_role_sm,
-                    # upsib_role_sm,
-                    # dnsib_role_sm,
-                    child_tags_sm,
-                    foll_tags_sm,
-                    self.dataset_df.num_followers.fillna(False)
-                    .astype(int)
-                    .values.reshape(-1, 1),
-                    self.dataset_df.is_leaf.fillna(False)
-                    .astype(int)
-                    .values.reshape(-1, 1),
-                    self.dataset_df.num_leafs.fillna(False)
-                    .astype(int)
-                    .values.reshape(-1, 1),
-                    self.dataset_df.num_children.fillna(False)
-                    .astype(int)
-                    .values.reshape(-1, 1),
-                    self.dataset_df.sum_children_widths.fillna(False)
-                    .astype(int)
-                    .values.reshape(-1, 1),
-                    self.dataset_df.sum_children_hights.fillna(False)
-                    .astype(int)
-                    .values.reshape(-1, 1),
-                    self.dataset_df.max_depth.astype(int).values.reshape(-1, 1),
-                    self.dataset_df.displayed.astype(int).values.reshape(-1, 1),
-                    self.dataset_df.displayed_parent.fillna(False)
-                    .astype(int)
-                    .values.reshape(-1, 1),
-                    self.dataset_df.is_hidden.fillna(1.0).values.reshape(-1, 1),
-                    self.dataset_df.is_hidden_parent.fillna(1.0).values.reshape(-1, 1),
-                ]
-            ).todense()
-        )  # I hope we have enougth RAM
-        logger.info(f"X: {X.shape}")
-        return X.astype(np.float32), self.y
+        logger.info(f"X: {self.dataset_df.shape}")
+        return self.dataset_df, self.y

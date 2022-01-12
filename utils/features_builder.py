@@ -25,6 +25,7 @@ import pickle
 import json
 
 from vars.path_vars import dataset_dict, model_dict
+from vars.html5_df_vars import attr_columns, tag_columns, type_columns
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 
@@ -703,82 +704,76 @@ class SpecialFeaturesBuilder(object):
         return followers_sm
 
 
-class HTML5SpecialFeaturesBuilder(SpecialFeaturesBuilder):
+class HTML5SpecialFeaturesBuilder(object):
     def __init__(self, df: pd.DataFrame, dataset_type="html5"):
-        super().__init__(df, dataset_type=dataset_type)
+        self.dataset_type = "html5"
+        self.df = df
 
     def build_features(self):
-        # tag_name
-        tag_name_sm = self.build_tag_name_feature(colname="tag_name")
-        parent_tag_name_sm = self.build_tag_name_feature(colname="tag_name_parent")
-        upsib_tag_name_sm = self.build_tag_name_feature(colname="tag_name_upsib")
-        dnsib_tag_name_sm = self.build_tag_name_feature(colname="tag_name_dnsib")
-        logger.info(f"tag_name: {tag_name_sm.shape}")
 
-        # attributes
-        attributes_sm = csr_matrix(
-            self.build_attributes_feature(colname="attributes").values
+        # make column with special child parameters (for radiobuttongroup and checklist uses only)
+        self.df["is_checkbox_in_childs"] = self.df["childs_types"].apply(
+            lambda x: 1 if "checkbox" in x else 0
         )
-        parent_attributes_sm = csr_matrix(
-            self.build_attributes_feature(colname="attributes_parent").values
+        self.df["is_radio_in_childs"] = self.df["childs_types"].apply(
+            lambda x: 1 if "radio" in x else 0
         )
-        upsib_attributes_sm = csr_matrix(
-            self.build_attributes_feature(colname="attributes_upsib").values
+
+        # drop unneded features
+        self.reduce_features(
+            [
+                "element_id",
+                "tag_name",
+                "attributes_list",
+                "type",
+                "is_checkbox_in_childs",
+                "is_radio_in_childs",
+            ]
         )
-        dnsib_attributes_sm = csr_matrix(
-            self.build_attributes_feature(colname="attributes_dnsib").values
+
+        self.build_onehot_features()
+
+        return self.df[
+            self.tag_columns
+            + self.attr_columns
+            + self.type_columns
+            + ["is_checkbox_in_childs", "is_radio_in_childs"]
+        ]
+
+    def reduce_features(self, feature_list):
+        self.df = self.df[feature_list].copy()
+
+    def build_onehot_features(self):
+        buf_types = set(
+            [i for i in self.df.type.unique() if (not "/" in i or i == "n/a")]
         )
-        logger.info(f"attributes_sm: {attributes_sm.shape}")
 
-        # class
-        # class_sm = self.build_class_feature(colname="attributes")
-        # parent_class_sm = self.build_class_feature(colname="attributes_parent")
-        # upsib_class_sm = self.build_class_feature(colname="attributes_upsib")
-        # dnsib_class_sm = self.build_class_feature(colname="attributes_dnsib")
-        # logger.info(f"class_sm: {class_sm.shape}")
+        buf = re.sub(r" +", " ", " ".join(self.df.attributes_list.to_list()))
 
-        # type
-        type_sm = self.build_type_feature(colname="attributes")
-        parent_type_sm = self.build_type_feature(colname="attributes_parent")
-        upsib_type_sm = self.build_type_feature(colname="attributes_upsib")
-        dnsib_type_sm = self.build_type_feature(colname="attributes_dnsib")
-        logger.info(f"type_sm: {type_sm.shape}")
+        for col in attr_columns:
+            self.df.loc[:, "attr_" + col] = (
+                self.df.loc[:, "attributes_list"]
+                .apply(lambda x: 1 if col in x else 0)
+                .values
+            )
 
-        # role
-        role_sm = self.build_role_feature(colname="attributes")
-        parent_role_sm = self.build_role_feature(colname="attributes_parent")
-        upsib_role_sm = self.build_role_feature(colname="attributes_upsib")
-        dnsib_role_sm = self.build_role_feature(colname="attributes_dnsib")
-        logger.info(f"role_sm: {role_sm.shape}")
+        for col in tag_columns:
+            self.df.loc[:, "tag_" + col] = (
+                self.df.loc[:, "tag_name"].apply(lambda x: 1 if col == x else 0).values
+            )
 
-        # children & followers tags
-        child_tags_sm = self.build_children_tags(colname="children_tags")
-        foll_tags_sm = self.build_followers_tags(colname="followers_tags")
+        for col in type_columns:
+            self.df.loc[:, "type_" + col] = (
+                self.df.loc[:, "type"].apply(lambda x: 1 if col == x else 0).values
+            )
 
-        return (
-            # attributes_sm,
-            # parent_attributes_sm,
-            # upsib_attributes_sm,
-            # dnsib_attributes_sm,
-            # class_sm,
-            # parent_class_sm,
-            # upsib_class_sm,
-            # dnsib_class_sm,
-            tag_name_sm,
-            # parent_tag_name_sm,
-            # upsib_tag_name_sm,
-            # dnsib_tag_name_sm,
-            type_sm,
-            # parent_type_sm,
-            # upsib_type_sm,
-            # dnsib_type_sm,
-            # role_sm,
-            # parent_role_sm,
-            # upsib_role_sm,
-            # dnsib_role_sm,
-            child_tags_sm,
-            foll_tags_sm,
-        )
+        self.attr_columns = ["attr_" + col for col in attr_columns]
+
+        self.tag_columns = ["tag_" + col for col in tag_columns]
+
+        self.type_columns = ["type_" + col for col in type_columns]
+
+        self.df.set_index(self.df.element_id, inplace=True)
 
 
 logger.info("feature_bilder module is loaded...")

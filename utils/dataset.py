@@ -198,6 +198,7 @@ class HTML5_JDNDataset(JDNDataset):
                         lambda x: x.get("data-label") if x is not None else "n/a"
                     ).fillna("n/a")
                     df = BaseFeaturesBuilder(df).df
+                    df = self.build_additional_features(df)
                     df = assign_labels(df=df, classes_file_path=self.classes_path)
                     df_list.append(df)
                 bar.update(1)
@@ -205,18 +206,52 @@ class HTML5_JDNDataset(JDNDataset):
         logger.setLevel(logging.DEBUG)
 
         self.df = pd.concat(df_list)
+        self.df.set_index(self.df.element_id, inplace=True)
         logger.info(f"self.df.shape: {self.df.shape}")
 
     def build_secondary_features(self):
 
+        logger.info(f"Calculating features...")
         self.X, self.y = HTML5_DatasetCollector(
             self.df, self.dataset_type
         ).collect_dataset()
-
+        logger.info(f"Features have calculated succesfully!")
         if self.rebalance_and_suffle:
             self.indices = np.array(rebalance(self.y, self.classes_path))
         else:
             self.indices = np.array([i for i in range(len(self.y))])
+
+    @staticmethod
+    def build_additional_features(df):
+
+        # make column with list of attributes
+        df["attributes_list"] = df.attributes.apply(
+            lambda x: "" if x is None else " ".join(list(x.keys()))
+        )
+        # make column with type attribute
+        df["type"] = df.attributes.apply(
+            lambda x: None
+            if (None if x is None else x.get("type")) is None
+            else x.get("type")
+        ).fillna("n/a")
+
+        par_childs = {
+            par: list(df[df.parent_id == par].element_id.unique())
+            for par in df.parent_id.unique()
+        }
+        df["childs"] = df["element_id"].apply(lambda x: par_childs.get(x))
+        df["childs_types"] = df["childs"].apply(
+            lambda l: [None]
+            if l is None
+            else [
+                df[df.element_id == i].type.iloc[0]
+                if df[df.element_id == i].type.iloc[0] != "n/a"
+                else None
+                for i in l
+            ]
+        )
+
+        return df
 
 
 logger.info("dataset module is loaded...")

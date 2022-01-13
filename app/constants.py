@@ -17,3 +17,4 @@ class WebSocketResponseActions(str, enum.Enum):
     STATUS_CHANGED = "status_changed"
     RESULT_READY = "result_ready"
     TASKS_SCHEDULED = "tasks_scheduled"
+    TASKS_REVOKED = "tasks_revoked"

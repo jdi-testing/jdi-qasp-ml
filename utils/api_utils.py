@@ -91,7 +91,7 @@ async def process_incoming_ws_request(action: str, payload: dict, ws: WebSocket)
         result = get_celery_task_statuses(task_ids)
     elif action == "revoke_tasks":
         revoke_tasks(payload["id"])
-        result = {"result": "Tasks successfully revoked."}
+        result = get_websocket_response(WebSocketResponseActions.TASKS_REVOKED, {"id": payload["id"]})
     elif action == "get_task_result":
         result = get_task_result(payload["id"])
     elif action == "get_task_results":

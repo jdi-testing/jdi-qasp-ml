@@ -1,7 +1,6 @@
 import os
 import re
 import numba
-from numba.core.types import abstract
 import pandas as pd
 import numpy as np
 import itertools
@@ -744,12 +743,6 @@ class HTML5SpecialFeaturesBuilder(object):
         self.df = self.df[feature_list].copy()
 
     def build_onehot_features(self):
-        buf_types = set(
-            [i for i in self.df.type.unique() if (not "/" in i or i == "n/a")]
-        )
-
-        buf = re.sub(r" +", " ", " ".join(self.df.attributes_list.to_list()))
-
         for col in attr_columns:
             self.df.loc[:, "attr_" + col] = (
                 self.df.loc[:, "attributes_list"]

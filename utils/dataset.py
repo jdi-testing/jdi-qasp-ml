@@ -211,11 +211,11 @@ class HTML5_JDNDataset(JDNDataset):
 
     def build_secondary_features(self):
 
-        logger.info(f"Calculating features...")
+        logger.info("Calculating features...")
         self.X, self.y = HTML5_DatasetCollector(
             self.df, self.dataset_type
         ).collect_dataset()
-        logger.info(f"Features have calculated succesfully!")
+        logger.info("Features have calculated succesfully!")
         if self.rebalance_and_suffle:
             self.indices = np.array(rebalance(self.y, self.classes_path))
         else:

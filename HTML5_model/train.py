@@ -3,8 +3,6 @@
 # import matplotlib.pyplot as plt
 import os
 import sys
-from numba.core.types.containers import List
-from tqdm.auto import trange
 from glob import glob
 
 import pickle
@@ -23,12 +21,12 @@ from vars.html5_train_vars import (  # noqa
 from utils.config import logger  # noqa
 from utils.dataset import HTML5_JDNDataset  # noqa
 
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report
+from sklearn.tree import DecisionTreeClassifier  # noqa
+from sklearn.model_selection import GridSearchCV  # noqa
+from sklearn.metrics import classification_report  # noqa
 
-from sklearn import tree
-import matplotlib.pyplot as plt
+from sklearn import tree  # noqa
+import matplotlib.pyplot as plt  # noqa
 
 model_path = os.path.join(prefix, "jdi-qasp-ml", "HTML5_model/model")
 df_path = os.path.join(prefix, "jdi-qasp-ml", "data/html5_dataset/df")
@@ -71,7 +69,7 @@ if __name__ == "__main__":
     model.fit(X=train_dataset.X, y=train_dataset.y)
     model = model.best_estimator_
 
-    logger.info(f"Classification report for train set:")
+    logger.info("Classification report for train set:")
     logger.info(
         classification_report(
             train_dataset.y,
@@ -82,7 +80,7 @@ if __name__ == "__main__":
 
     y_pred = model.predict(test_dataset.X)
 
-    logger.info(f"Classification report for test set:")
+    logger.info("Classification report for test set:")
     logger.info(
         classification_report(
             test_dataset.y, y_pred, target_names=list(encoder_dict.keys())

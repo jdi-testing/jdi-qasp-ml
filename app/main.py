@@ -340,7 +340,7 @@ def html5_predict():
         rebalance_and_shuffle=False,
     )
     # load model
-    api.logger.info(f"Loading the model")
+    api.logger.info("Loading the model")
     pkl_filename = "DT_model.pkl"
     with open(f"{html5_model}/{pkl_filename}", "rb") as file:
         model = pickle.load(file)
@@ -361,6 +361,7 @@ def html5_predict():
 
     columns_to_publish = [
         "element_id",
+        "is_hidden",
         "x",
         "y",
         "width",

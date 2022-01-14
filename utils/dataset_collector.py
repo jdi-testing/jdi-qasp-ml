@@ -7,8 +7,6 @@ from scipy.sparse import hstack
 
 from utils.features_builder import SpecialFeaturesBuilder, HTML5SpecialFeaturesBuilder
 
-from vars.path_vars import dataset_dict, model_dict
-
 
 COLS = ["element_id", "tag_name", "attributes", "displayed", "is_hidden"]
 

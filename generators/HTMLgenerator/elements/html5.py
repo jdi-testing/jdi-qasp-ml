@@ -358,7 +358,7 @@ class FileInput(HTML5BaseElement):
         self.html_attributes.update(specific_attributes)
 
     def markup(self):
-        label = f'<label for="{self.html_attributes.get("id")}" data-label="label">{fake.sentence(nb_words=random.randint(4, 15))}</label>'
+        label = f'<label for="{self.html_attributes.get("id")}" data-label="label">{fake.sentence(nb_words=random.randint(4, 15))}</label>'  # noqa
         elements = [label, super().markup()]
         random.shuffle(elements)
         return "".join(elements)

@@ -36,12 +36,20 @@ TARGET_DN_SIBLING_COLUMNS = [
 
 
 class DatasetCollector(object):
+    """
+        Base calss for dataset collector
+        With some base preparations non-depended on type of model
+    """
+
     def __init__(self, df: pd.DataFrame, dataset_type="mui"):
         self.df = df
         self.dataset_type = dataset_type
         self.prepare_df()
 
     def prepare_df(self):
+        """
+        Method that creates dataset with element, siblings and parent data
+        """
         df_parent = self.df[COLS].copy()
         df_parent.columns = TARGET_PARENT_COLUMNS
 
@@ -63,6 +71,10 @@ class DatasetCollector(object):
 
 
 class MUI_DatasetCollector(DatasetCollector):
+    """
+    Class for creating dataset in case of MUI model
+    """
+
     def __init__(self, df: pd.DataFrame, dataset_type="mui"):
         super().__init__(df, dataset_type=dataset_type)
 
@@ -164,6 +176,10 @@ class MUI_DatasetCollector(DatasetCollector):
 
 
 class HTML5_DatasetCollector(DatasetCollector):
+    """
+    Class for creating dataset in case of html5 model
+    """
+
     def __init__(self, df: pd.DataFrame, dataset_type="html5"):
         super().__init__(df, dataset_type=dataset_type)
 

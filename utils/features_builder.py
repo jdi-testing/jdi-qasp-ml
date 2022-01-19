@@ -290,6 +290,10 @@ class BaseFeaturesBuilder(object):
 
 
 class SpecialFeaturesBuilder(object):
+    """
+    Class for calculating special features in case of MUI model
+    """
+
     def __init__(self, df: pd.DataFrame, dataset_type: str = "mui"):
 
         self.dataset_type = dataset_type
@@ -704,6 +708,10 @@ class SpecialFeaturesBuilder(object):
 
 
 class HTML5SpecialFeaturesBuilder(object):
+    """
+    Class for calculating special features in case of html5 model
+    """
+
     def __init__(self, df: pd.DataFrame, dataset_type="html5"):
         self.dataset_type = "html5"
         self.df = df

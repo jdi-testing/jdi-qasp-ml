@@ -18,6 +18,9 @@ prefix = os.getcwd().split("jdi-qasp-ml")[0]
 
 
 def rebalance(y: np.ndarray, classes_path):
+    """
+    Function for rabalancing dataset to increase number of rare objects
+    """
     logger.info("Rebalance dataset")
 
     with open(classes_path, "r") as f:
@@ -63,6 +66,10 @@ def rebalance(y: np.ndarray, classes_path):
 
 
 class JDNDataset(Dataset):
+    """
+    Class for creating dataset pytorch instance 
+    """
+
     def __init__(
         self,
         dataset_type: str = "mui",
@@ -112,6 +119,10 @@ class JDNDataset(Dataset):
 
 
 class MUI_JDNDataset(JDNDataset):
+    """
+    Class for creating dataset pytorch instance in case of MUI model 
+    """
+
     def __init__(
         self,
         dataset_type: str = "mui",
@@ -166,6 +177,10 @@ class MUI_JDNDataset(JDNDataset):
 
 
 class HTML5_JDNDataset(JDNDataset):
+    """
+    Class for creating dataset pytorch instance in case of HTML5 model 
+    """
+
     def __init__(
         self,
         dataset_type: str = "html5",

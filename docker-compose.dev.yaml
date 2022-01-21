@@ -2,6 +2,7 @@ version: '3'
 
 services:
   api:
+    container_name: jdi-qasp-ml-api
     command: uvicorn app.main:api --host 0.0.0.0 --port 5050
     build:
       context: .
@@ -12,6 +13,7 @@ services:
       - .:/jdi-qasp-ml
 
   celery:
+    container_name: jdi-qasp-ml-celery
     command: celery -A app.celery_app:celery_app worker -l info
     build:
       context: .
@@ -20,6 +22,7 @@ services:
       - .:/jdi-qasp-ml
 
   redis:
+    container_name: jdi-qasp-ml-redis
     image: "redis:alpine"
     ports:
       - "6379:6379"

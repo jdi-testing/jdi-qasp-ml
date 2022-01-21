@@ -204,7 +204,6 @@ class RadioButton(HTML5BaseElement):
     def label(self):
         return 'radiobutton'
 
-    
 
 class Table(HTML5BaseElement):
 
@@ -293,7 +292,8 @@ class TextArea(HTML5BaseElement):
         self.add_unnecessary_html_attribute("autocomplete", random.choice(["on", "off"]), 30)
         self.add_unnecessary_html_attribute("maxlength", random.randint(50, 100), 30)
         self.add_unnecessary_html_attribute("minlength",
-            random.randint(1, self.html_attributes["maxlength"] if "maxlength" in self.html_attributes else 100), 30)
+                                            random.randint(1, self.html_attributes[
+                                                "maxlength"] if "maxlength" in self.html_attributes else 100), 30)
         self.add_unnecessary_html_attribute("readonly", True, 15)
         self.add_unnecessary_html_attribute("spellcheck", random.choice(["true", "false", "default"]), 30)
         self.add_unnecessary_html_attribute("wrap", random.choice(["hard", "soft", "off "]), 30)
@@ -371,6 +371,7 @@ class MultiSelector(Dropdown):
     def __init__(self):
         super().__init__()
         self.html_attributes["size"] = random.randint(3, 10)
+
 
 class Datalist(HTML5BaseElement):
 
@@ -499,8 +500,8 @@ class DateTimeInput(HTML5BaseElement):
         self.html_attributes.update(specific_attributes)
         self.generate_values()
         autocomplete_values = [
-            "on", 
-            "cc-exp", 
+            "on",
+            "cc-exp",
             "bday",
             "bday-day",
             "bday-month",

@@ -204,7 +204,6 @@ class RadioButton(HTML5BaseElement):
     def label(self):
         return 'radiobutton'
 
-    
 
 class Table(HTML5BaseElement):
 
@@ -293,7 +292,8 @@ class TextArea(HTML5BaseElement):
         self.add_unnecessary_html_attribute("autocomplete", random.choice(["on", "off"]), 30)
         self.add_unnecessary_html_attribute("maxlength", random.randint(50, 100), 30)
         self.add_unnecessary_html_attribute("minlength",
-            random.randint(1, self.html_attributes["maxlength"] if "maxlength" in self.html_attributes else 100), 30)
+                                            random.randint(1, self.html_attributes[
+                                                "maxlength"] if "maxlength" in self.html_attributes else 100), 30)
         self.add_unnecessary_html_attribute("readonly", True, 15)
         self.add_unnecessary_html_attribute("spellcheck", random.choice(["true", "false", "default"]), 30)
         self.add_unnecessary_html_attribute("wrap", random.choice(["hard", "soft", "off "]), 30)
@@ -324,7 +324,9 @@ class FileInput(HTML5BaseElement):
         self.html_attributes.update(specific_attributes)
 
     def markup(self):
-        label = f'<label for="{self.html_attributes.get("id")}" data-label="label">{fake.sentence(nb_words=random.randint(4, 15))}</label>'
+        str_id = self.html_attributes.get("id")
+        text = fake.sentence(nb_words=random.randint(4, 15))
+        label = f'<label for="{str_id}" data-label="label">{text}</label>'
         elements = [label, super().markup()]
         random.shuffle(elements)
         return ''.join(elements)
@@ -372,6 +374,7 @@ class MultiSelector(Dropdown):
         super().__init__()
         self.html_attributes["size"] = random.randint(3, 10)
 
+
 class Datalist(HTML5BaseElement):
 
     @property
@@ -394,7 +397,7 @@ class Datalist(HTML5BaseElement):
         options = self.generate_options()
         input_markup = f'''<input {self.generate_html_attributes_string()} style="{self.generate_style_string()}"/>'''
         datalist = f'''
-        <datalist id=datalist-{self.html_attributes["id"]} data-label="{self.label}">
+        <datalist id=datalist-{self.html_attributes["id"]}>
             {options}
         </datalist>'''
         return f'''<div>{''.join(random.sample([input_markup, datalist], 2))}</div>'''
@@ -499,8 +502,8 @@ class DateTimeInput(HTML5BaseElement):
         self.html_attributes.update(specific_attributes)
         self.generate_values()
         autocomplete_values = [
-            "on", 
-            "cc-exp", 
+            "on",
+            "cc-exp",
             "bday",
             "bday-day",
             "bday-month",

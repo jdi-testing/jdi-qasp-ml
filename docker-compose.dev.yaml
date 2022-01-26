@@ -2,7 +2,8 @@ version: '3'
 
 services:
   api:
-    command: uwsgi --socket 0.0.0.0:5050 --process=1 --protocol=http -w app.main:api
+    container_name: jdi-qasp-ml-api
+    command: uvicorn app.main:api --host 0.0.0.0 --port 5050
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,7 +13,8 @@ services:
       - .:/jdi-qasp-ml
 
   celery:
-    command: celery -A app.celery:celery worker -l info
+    container_name: jdi-qasp-ml-celery
+    command: celery -A app.celery_app:celery_app worker -l info
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,6 +22,7 @@ services:
       - .:/jdi-qasp-ml
 
   redis:
+    container_name: jdi-qasp-ml-redis
     image: "redis:alpine"
     ports:
       - "6379:6379"

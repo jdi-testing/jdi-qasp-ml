@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
 from app import UPLOAD_DIRECTORY, mui_df_path, mui_model
-from utils.dataset import JDNDataset as MUI_JDNDataset
+from utils.dataset import MUI_JDNDataset
 
 logger = logging.getLogger("jdi-qasp-ml")
 
@@ -84,7 +84,7 @@ async def mui_predict_elements(body):
     ]
     results_df = dataset.df[
         (dataset.df["predicted_label"] != "n/a") & (dataset.df["is_hidden"] == 0)
-        ][columns_to_publish].copy()
+    ][columns_to_publish].copy()
     # # sort in descending order: big controls first
     results_df["sort_key"] = results_df.height * results_df.width
     results_df = results_df.sort_values(by="sort_key", ascending=False)
@@ -94,4 +94,4 @@ async def mui_predict_elements(body):
     else:
         del model
         gc.collect()
-        return results_df.to_dict(orient='records')
+        return results_df.to_dict(orient="records")

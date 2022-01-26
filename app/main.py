@@ -18,14 +18,17 @@ from app import MODEL_VERSION_DIRECTORY
 from app import UPLOAD_DIRECTORY
 from app import mui_df_path
 from app import old_df_path
+from app import html5_df_path
 from app import robula_api
 from app import websocket
 from app.models import PredictionInputModel, PredictionResponseModel
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
+from ds_methods.html5_predict import html5_predict_elements
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
+os.makedirs(html5_df_path, exist_ok=True)
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 api = FastAPI()
@@ -47,7 +50,7 @@ async def build_version():
     return JSONResponse(files)
 
 
-@api.get('/files')
+@api.get("/files")
 async def dir_listing(request: Request):
     # Joining the base and the requested path
 
@@ -59,13 +62,19 @@ async def dir_listing(request: Request):
 
     files = os.listdir(UPLOAD_DIRECTORY)
 
-    return templates.TemplateResponse("files.html", {"request": request, "files": files})
+    return templates.TemplateResponse(
+        "files.html", {"request": request, "files": files}
+    )
 
 
 @api.get("/files/{path:path}")
 async def get_file(path: str):
     """Download a file."""
-    return FileResponse(filename=path, path=os.path.join(UPLOAD_DIRECTORY, path), media_type="application/json")
+    return FileResponse(
+        filename=path,
+        path=os.path.join(UPLOAD_DIRECTORY, path),
+        media_type="application/json",
+    )
 
 
 @api.post("/predict", response_model=PredictionResponseModel)
@@ -82,10 +91,17 @@ async def mui_predict(request: Request, input: PredictionInputModel):
     return JSONResponse(await mui_predict_elements(body))
 
 
+@api.post("/html5-predict", response_model=PredictionResponseModel)
+async def html5_predict(request: Request, input: PredictionInputModel):
+    """ HTML elements prediction based on received JSON. HTML5 model. """
+    body = await request.body()
+    return JSONResponse(await html5_predict_elements(body))
+
+
 @api.get("/cpu-count")
 async def cpu_count():
     return {"cpu_count": os.cpu_count()}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run("app.main:api", host="127.0.0.1", port=5000, log_level="info")

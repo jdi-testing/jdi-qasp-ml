@@ -18,7 +18,7 @@ from terminaltables import DoubleTable
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
 
-from vars.train_vars import (  # noqa
+from vars.mui_train_vars import (  # noqa
     BATCH_SIZE,  # noqa
     TRAIN_LEN,  # noqa
     TEST_LEN,  # noqa
@@ -28,7 +28,7 @@ from vars.train_vars import (  # noqa
 )  # noqa
 
 from utils.config import logger  # noqa
-from utils.dataset import JDNDataset  # noqa
+from utils.dataset import MUI_JDNDataset  # noqa
 from utils.model_new import JDIModel  # noqa
 from utils.common import accuracy  # noqa
 
@@ -45,7 +45,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 logger.info(f"device: {DEVICE}")
 
 
-def evaluate(model: JDIModel, dataset: JDNDataset) -> pd.DataFrame:
+def evaluate(model: JDIModel, dataset: MUI_JDNDataset) -> pd.DataFrame:
     model.eval()
     with torch.no_grad():
 
@@ -84,8 +84,12 @@ if __name__ == "__main__":
 
     freeze_support()
 
-    train_dataset = JDNDataset(datasets_list=train_names, rebalance_and_shuffle=True)
-    test_dataset = JDNDataset(datasets_list=test_names, rebalance_and_shuffle=False)
+    train_dataset = MUI_JDNDataset(
+        datasets_list=train_names, dataset_type="mui", rebalance_and_shuffle=True
+    )
+    test_dataset = MUI_JDNDataset(
+        datasets_list=test_names, dataset_type="mui", rebalance_and_shuffle=False
+    )
 
     logger.info(
         f"Train dataset shape:  {train_dataset.X.shape}; Test dataset shape: {test_dataset.X.shape}"

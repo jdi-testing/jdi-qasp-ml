@@ -5,7 +5,7 @@ from glob import glob
 from time import sleep
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
-dataset_path = os.path.join(prefix, "jdi-qasp-ml", "data/general_dataset")
+dataset_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset")
 
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
 

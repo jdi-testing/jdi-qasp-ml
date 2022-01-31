@@ -1,5 +1,7 @@
-from typing import List, Union, Dict
+from typing import Dict
+from typing import List
 from typing import Optional
+from typing import Union
 
 from pydantic import BaseModel
 
@@ -62,3 +64,8 @@ class PredictedElement(BaseModel):
 
 class PredictionResponseModel(BaseModel):
     __root__: List[PredictedElement]
+
+
+class SystemInfoModel(BaseModel):
+    cpu_count: int
+    total_memory: int

@@ -29,6 +29,7 @@ flake8 = "==4.0.1"
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 jinja2 = "*"
+psutil = "*"
 
 [dev-packages]
 

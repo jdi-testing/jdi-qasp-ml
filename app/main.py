@@ -5,7 +5,11 @@
 import logging
 import os
 
+import psutil
 import uvicorn
+from ds_methods.html5_predict import html5_predict_elements
+from ds_methods.mui_predict import mui_predict_elements
+from ds_methods.old_predict import predict_elements
 from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import Request
@@ -16,15 +20,14 @@ from fastapi.templating import Jinja2Templates
 
 from app import MODEL_VERSION_DIRECTORY
 from app import UPLOAD_DIRECTORY
+from app import html5_df_path
 from app import mui_df_path
 from app import old_df_path
-from app import html5_df_path
 from app import robula_api
 from app import websocket
-from app.models import PredictionInputModel, PredictionResponseModel
-from ds_methods.mui_predict import mui_predict_elements
-from ds_methods.old_predict import predict_elements
-from ds_methods.html5_predict import html5_predict_elements
+from app.models import PredictionInputModel
+from app.models import PredictionResponseModel
+from app.models import SystemInfoModel
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
@@ -38,10 +41,17 @@ templates = Jinja2Templates(directory="templates")
 
 logger = logging.getLogger("jdi-qasp-ml")
 
+tags_metadata = [
+    {
+        "name": "users",
+        "description": "Operations with users. The **login** logic is also here.",
+    }
+]
+
 
 @api.get("/build")
 async def build_version():
-    """ Build version. """
+    """Build version."""
     files = []
     for filename in os.listdir(MODEL_VERSION_DIRECTORY):
         path = os.path.join(MODEL_VERSION_DIRECTORY, filename)
@@ -79,21 +89,21 @@ async def get_file(path: str):
 
 @api.post("/predict", response_model=PredictionResponseModel)
 async def predict(request: Request, input: PredictionInputModel):
-    """ HTML elements prediction based on received JSON. Old model. """
+    """HTML elements prediction based on received JSON. Old model."""
     body = await request.body()
     return JSONResponse(await predict_elements(body))
 
 
 @api.post("/mui-predict", response_model=PredictionResponseModel)
 async def mui_predict(request: Request, input: PredictionInputModel):
-    """ HTML elements prediction based on received JSON. MUI model. """
+    """HTML elements prediction based on received JSON. MUI model."""
     body = await request.body()
     return JSONResponse(await mui_predict_elements(body))
 
 
 @api.post("/html5-predict", response_model=PredictionResponseModel)
 async def html5_predict(request: Request, input: PredictionInputModel):
-    """ HTML elements prediction based on received JSON. HTML5 model. """
+    """HTML elements prediction based on received JSON. HTML5 model."""
     body = await request.body()
     return JSONResponse(await html5_predict_elements(body))
 
@@ -101,6 +111,16 @@ async def html5_predict(request: Request, input: PredictionInputModel):
 @api.get("/cpu-count")
 async def cpu_count():
     return {"cpu_count": os.cpu_count()}
+
+
+@api.get("/system_info", response_model=SystemInfoModel)
+async def system_info():
+    """Returns cpu count and total available memory in bytes"""
+    total_memory = psutil.virtual_memory().total
+    cpu_count = os.cpu_count()
+    response = {"cpu_count": cpu_count, "total_memory": total_memory}
+
+    return response
 
 
 if __name__ == "__main__":

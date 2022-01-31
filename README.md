@@ -1,5 +1,6 @@
 # JDI-QASP-ml v.2.0
 # Model
+## MUI
 Our model is neural network based on pytorch framework organized as follows:
 ```
 -> Input linear layer
@@ -21,7 +22,10 @@ As input for NN we use following calculated groups of features:
 - **Numerical general features**  (General features about object like numger of followers, children, max max_depth etc.)
 - **Binary general features** (General features with binary values like is the object or his parent hidden or displayed or leaf etc.)
 
+## HTML5 
+Out model is desicion tree, because of simplicity of classic html5 element structure 
 
+Picture of tree can be found in **HTML5_model/model/tree.jpeg**
 # Install environment to train / test model
 
 1. Clone the repository.<br>
@@ -54,33 +58,56 @@ Next go the directory **MUI_model** and run:
 After that in directory **/data/mui_dataset** you will find following structure:
 - /annotations (not used, maybe need to be removed later)
 - /cache-labels (not used, maybe need to be removed later)
-- /df - directory with peakles of site-datasets
+- /df - directory with pickles of site-datasets
 - /html - directory with html files of sites (only for info)
 - /images - directiry with images of sites (only for info)
 - classes.txt - file with all possible labels to detect. Do not change it!!!
 - EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
 ## HTML5
-to be done
+Generator for HTML5 element library sites placed in **generators/HTMLgenerator/**<br>
+To generate sites go in the directory of HTMLgenerator and run:
+````
+    python generate-html.py
+````
+After thet in catalog **/data/html5_dataset/build/** you will find directory named as **"html5"**
+
+Next go the directory **HTML5_model** and run:
+```
+    python build_datasets_for_html5_sites.py
+```
+After that in directory **/data/html5_dataset** you will find following structure:
+- /annotations (empty, maybe need to delete)
+- /cache-labels (empty, maybe need to delete)
+- /df - directory with pickles of site-datasets
+- /html - directory with html files of sites (only for info)
+- /images - directiry with images of sites (only for info)
+- classes.txt - file with all possible labels to detect. Do not change it!!!
+- EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
 
 # Train model
 ## MUI
-
-<span style="color:orange"> If you need to train model from scratch (for example, number of classes is changed), delete all files from "MUI_model/model"
-directory.</span>
 
 To train the model you need to go to the directory **/MUI_model** and run:
 ```
     python train.py
 ```
-If you need to set up training parameters, change following variables for train.py (placed in **vars/train_vars.py**):
-- BATCH_SIZE (1024 by default)
-- train_names and test_names. You need to set up them like (where N and T placed in train_vars defines number of train-test ratio and depend on generated number of sites):
-``` 
-    train_names = DATASET_NAMES[:N]
-    test_names = DATASET_NAMES[N:N+T]
-``` 
-- NUM_EPOCHS (100 by default)
-- EARLY_STOPPING_THRESHOLD (10 by default) 
+If you need to set up training parameters, change following variables for train.py (placed in **vars/mui_train_vars.py**):
+- BATCH_SIZE (2048 by default)
+- TRAIN_LEN and TEST_LEN 
+- NUM_EPOCHS (2 by default)
+- EARLY_STOPPING_THRESHOLD (2 by default) 
+
+At the end of the process the table with training results saves in **MUI_model/tmp/train_metrics.csv**
+
+## HTML5
+
+To train the model you need to go to the directory **/HTML5_model** and run:
+```
+    python train.py
+```
+If you need to set up training parameters, change following variables for train.py (placed in **vars/html5_train_vars.py**):
+- TRAIN_LEN and TEST_LEN 
+- parameters of DT
 
 At the end of the process the table with training results saves in **MUI_model/tmp/train_metrics.csv**
 
@@ -89,20 +116,21 @@ At the end of the process the table with training results saves in **MUI_model/t
 To get predictions we need to run API main.py (better to do it wia docker - will be disscussed below)
 when API is running we can send input json data to following url:
 - http://localhost:5050/mui-predict for mui model
+- http://localhost:5050/html5-predict for html5 model
 - http://localhost:5050/predict  for old version of model
 
-<span style="color:orange">ATTENTION! 
-In main.py flask application works on 5000 port but when we use docker we forward 5000 port in docker to 5050 port in local PC (because on my local PC port 5000 was always busy). So if you need to use another port on your local PC you need to change run_docker.sh file in the root of project.<span>
-
 # Validate model
-
+## MUI
 To validate models quality we use test web-pages, placed in directory **notebooks/MUI/Test-backend**
 
 <span style="color:orange">You can change only notebooks with the "new"-end in the name like "Test-backend_mui-Buttons_new.ipynb"(others are legacy for comparing)<span>
 
 In that notebooks we load specific web-page, creating dataset and predict labels for this dataset. It may be needed to correct some paths in notebooks (especially ports in them)
 
-<span style="color:orange">To use this notebooks main.py need to be run.<span>
+<span style="color:orange">To use this notebooks main.py need to be run or docker needs to be up.<span>
+
+## HTML5
+To validate models quality we use test web-pages, placed in directory **notebooks/HTML5/Test-backend**
 
 
 # Docker

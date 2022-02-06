@@ -24,7 +24,6 @@ from app import html5_df_path
 from app import mui_df_path
 from app import old_df_path
 from app import robula_api
-from app import websocket
 from app.models import PredictionInputModel
 from app.models import PredictionResponseModel
 from app.models import SystemInfoModel
@@ -36,17 +35,9 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 api = FastAPI()
 api.include_router(robula_api.router)
-api.include_router(websocket.router)
 templates = Jinja2Templates(directory="templates")
 
 logger = logging.getLogger("jdi-qasp-ml")
-
-tags_metadata = [
-    {
-        "name": "users",
-        "description": "Operations with users. The **login** logic is also here.",
-    }
-]
 
 
 @api.get("/build")

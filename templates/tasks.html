@@ -1,0 +1,12 @@
+<h3>Active celery tasks:</h3>
+<ul>
+    {% for task in tasks %}
+    <li>
+        {{ task.id }}
+    </li>
+    {% endfor %}
+</ul>
+
+<form action="/revoke_all_tasks" method="post">
+    <input type="submit" value="Kill all">
+</form>

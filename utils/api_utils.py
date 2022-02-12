@@ -43,7 +43,12 @@ async def wait_until_task_reach_status(
             or task.status == CeleryStatuses.SUCCESS
             and expected_status != CeleryStatuses.SUCCESS
         ):
+            response = get_websocket_response(
+                WebSocketResponseActions.STATUS_CHANGED, task.dict()
+            )
+            await ws.send_json(response)
             break
+
         if task.status == expected_status.value:
             await ws.send_json(
                 get_websocket_response(

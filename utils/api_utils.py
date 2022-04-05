@@ -1,14 +1,22 @@
 import asyncio
+import base64
 import json
+import os
 import typing
+from email.encoders import encode_base64
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from io import BytesIO
+from smtplib import SMTP
+
+from redis.client import Redis
+from starlette.websockets import WebSocket
 
 from app.celery_app import celery_app
-from app.constants import CeleryStatuses
-from app.constants import WebSocketResponseActions
-from app.models import TaskStatusModel
-from app.models import XPathGenerationModel
+from app.constants import CeleryStatuses, WebSocketResponseActions
+from app.models import TaskStatusModel, XPathGenerationModel
 from app.tasks import task_schedule_xpath_generation
-from starlette.websockets import WebSocket
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -142,3 +150,35 @@ async def process_incoming_ws_request(
         result = get_celery_tasks_results(payload)
 
     return result
+
+
+def prepare_email_image(screenshot_base64) -> MIMEBase:
+    part = MIMEBase('image', 'jpeg')
+    with BytesIO(screenshot_base64) as input_image, BytesIO() as decoded:
+        base64.decode(input_image, decoded)
+        decoded.seek(0)
+        part.set_payload(decoded.read())
+
+    encode_base64(part)
+    part.add_header('Content-Disposition',
+                    'attachment; filename="screenshot.jpeg"')
+    return part
+
+
+def send_report_email(subject, body, email, screenshot_base64, prediction):
+    msg = MIMEMultipart()
+    msg['From'] = email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body if body else ''))
+    msg.attach(prepare_email_image(screenshot_base64))
+
+    with SMTP('mail') as mail:
+        if prediction:
+            generated_json = MIMEBase('application', "json")
+            generated_json.set_payload(prediction)
+            generated_json.add_header('Content-Disposition',
+                            'attachment; filename="gen.json"')
+            msg.attach(generated_json)
+
+        mail.login('jdi-user', 'jdi-password')
+        mail.sendmail(email, os.getenv('SUPPORT_EMAIL'), msg.as_string())

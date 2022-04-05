@@ -7,14 +7,23 @@ services:
     command: uvicorn app.main:api --host 0.0.0.0 --port 5000
     ports:
       - "5050:5000"
+    environment:
+      - SUPPORT_EMAIL=SupportJDI@epam.com
+    depends_on:
+      - mail
+      - redis
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     container_name: jdi-qasp-ml-celery
     command: celery -A app.celery_app:celery_app worker -l info
+    depends_on:
+      - redis
 
   redis:
     image: "redis:alpine"
     container_name: jdi-qasp-ml-redis
-    ports:
-      - "6379:6379"
+
+  mail:
+    image: "marvambass/versatile-postfix"
+    command: jdi.epam.com jdi-user:jdi-password

@@ -7,26 +7,16 @@ import os
 
 import psutil
 import uvicorn
+from fastapi import FastAPI, HTTPException, Request, status as status
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
+from redis import Redis
+
+from app import html5_df_path, MODEL_VERSION_DIRECTORY, mui_df_path, old_df_path, robula_api, UPLOAD_DIRECTORY
+from app.models import PredictionInputModel, PredictionResponseModel, SystemInfoModel
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
-from fastapi import FastAPI
-from fastapi import HTTPException
-from fastapi import Request
-from fastapi import status as status
-from fastapi.responses import FileResponse
-from fastapi.responses import JSONResponse
-from fastapi.templating import Jinja2Templates
-
-from app import MODEL_VERSION_DIRECTORY
-from app import UPLOAD_DIRECTORY
-from app import html5_df_path
-from app import mui_df_path
-from app import old_df_path
-from app import robula_api
-from app.models import PredictionInputModel
-from app.models import PredictionResponseModel
-from app.models import SystemInfoModel
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
@@ -36,6 +26,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = FastAPI()
 api.include_router(robula_api.router)
 templates = Jinja2Templates(directory="templates")
+redis = Redis('redis')
 
 logger = logging.getLogger("jdi-qasp-ml")
 
@@ -96,7 +87,9 @@ async def mui_predict(request: Request, input: PredictionInputModel):
 async def html5_predict(request: Request, input: PredictionInputModel):
     """HTML elements prediction based on received JSON. HTML5 model."""
     body = await request.body()
-    return JSONResponse(await html5_predict_elements(body))
+    result = await html5_predict_elements(body)
+    redis.set('latest_prediction', result)
+    return JSONResponse(result)
 
 
 @api.get("/cpu-count")

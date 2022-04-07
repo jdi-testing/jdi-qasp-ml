@@ -12,7 +12,6 @@ services:
       - SUPPORT_EMAIL=noreply-jdn@mail.ru
       - SUPPORT_PASSWORD
     depends_on:
-      - mail
       - redis
 
   celery:

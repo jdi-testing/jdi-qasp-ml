@@ -8,9 +8,8 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from io import BytesIO
-from smtplib import SMTP, SMTP_SSL
+from smtplib import SMTP_SSL
 
-from redis.client import Redis
 from starlette.websockets import WebSocket
 
 from app.celery_app import celery_app

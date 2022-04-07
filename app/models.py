@@ -3,7 +3,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic import BaseModel, EmailStr, Json
+from pydantic import BaseModel
 
 from app.constants import CeleryStatuses
 
@@ -69,10 +69,3 @@ class PredictionResponseModel(BaseModel):
 class SystemInfoModel(BaseModel):
     cpu_count: int
     total_memory: int
-
-
-class ReportModel(BaseModel):
-    email: str
-    subject: str
-    body: Union[str, None]
-    screenshot: str

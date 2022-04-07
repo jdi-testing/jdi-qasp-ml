@@ -8,7 +8,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from io import BytesIO
-from smtplib import SMTP
+from smtplib import SMTP, SMTP_SSL
 
 from redis.client import Redis
 from starlette.websockets import WebSocket
@@ -154,7 +154,7 @@ async def process_incoming_ws_request(
 
 def prepare_email_image(screenshot_base64) -> MIMEBase:
     part = MIMEBase('image', 'jpeg')
-    with BytesIO(screenshot_base64) as input_image, BytesIO() as decoded:
+    with BytesIO(bytes(screenshot_base64, 'ascii')) as input_image, BytesIO() as decoded:
         base64.decode(input_image, decoded)
         decoded.seek(0)
         part.set_payload(decoded.read())
@@ -167,12 +167,12 @@ def prepare_email_image(screenshot_base64) -> MIMEBase:
 
 def send_report_email(subject, body, email, screenshot_base64, prediction):
     msg = MIMEMultipart()
-    msg['From'] = email
+    msg['From'] = os.getenv('SUPPORT_EMAIL')
     msg['Subject'] = subject
-    msg.attach(MIMEText(body if body else ''))
+    msg.attach(MIMEText(body + f'\nSender {email}' if body else f'\nSender: {email}'))
     msg.attach(prepare_email_image(screenshot_base64))
 
-    with SMTP('mail') as mail:
+    with SMTP_SSL('smtp.mail.ru') as mail:
         if prediction:
             generated_json = MIMEBase('application', "json")
             generated_json.set_payload(prediction)
@@ -180,5 +180,5 @@ def send_report_email(subject, body, email, screenshot_base64, prediction):
                             'attachment; filename="gen.json"')
             msg.attach(generated_json)
 
-        mail.login('jdi-user', 'jdi-password')
-        mail.sendmail(email, os.getenv('SUPPORT_EMAIL'), msg.as_string())
+        mail.login(os.getenv('SUPPORT_EMAIL'), os.getenv('SUPPORT_PASSWORD'))
+        mail.sendmail(os.getenv('SUPPORT_EMAIL'), os.getenv('SUPPORT_EMAIL_INBOX'), msg.as_string())

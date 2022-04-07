@@ -12,7 +12,9 @@ services:
     volumes:
       - .:/jdi-qasp-ml
     environment:
-      - SUPPORT_EMAIL=SupportJDI@epam.com
+      - SUPPORT_EMAIL_INBOX=vadim_gusev1@epam.com
+      - SUPPORT_EMAIL=noreply-jdn@mail.ru
+      - SUPPORT_PASSWORD
     depends_on:
       - mail
       - redis
@@ -33,7 +35,3 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-
-  mail:
-    image: "marvambass/versatile-postfix"
-    command: jdi.epam.com jdi-user:jdi-password

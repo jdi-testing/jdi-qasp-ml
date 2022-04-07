@@ -1,7 +1,7 @@
 ############################################
 # this is a Flask-based backend
 ############################################
-
+import json
 import logging
 import os
 
@@ -80,7 +80,9 @@ async def predict(request: Request, input: PredictionInputModel):
 async def mui_predict(request: Request, input: PredictionInputModel):
     """HTML elements prediction based on received JSON. MUI model."""
     body = await request.body()
-    return JSONResponse(await mui_predict_elements(body))
+    result = await mui_predict_elements(body)
+    redis.set('latest_prediction', json.dumps(result))
+    return JSONResponse(result)
 
 
 @api.post("/html5-predict", response_model=PredictionResponseModel)
@@ -88,7 +90,7 @@ async def html5_predict(request: Request, input: PredictionInputModel):
     """HTML elements prediction based on received JSON. HTML5 model."""
     body = await request.body()
     result = await html5_predict_elements(body)
-    redis.set('latest_prediction', result)
+    redis.set('latest_prediction', json.dumps(result))
     return JSONResponse(result)
 
 

@@ -34,6 +34,8 @@ import JDITextField from "./controls/TextField";
 import { JDIBox } from "./controls/Box";
 import JDIBadge from "./controls/Badge";
 import JDISnackbar from "./controls/Snackbar";
+import JDIButton from "./controls/Button";
+import JDIInputBase from "./controls/InputBase";
 
 const controlParams = JSON.parse(process.env.REACT_APP_GENERATED_STRUCTURE);
 
@@ -48,6 +50,7 @@ function App() {
         (key === "Avatar" && <JDIAvatar {...value} />) ||
         (key === "Backdrop" && <JDIBackdrop {...value} />) ||
         (key === "Badge" && <JDIBadge {...value} />) ||
+        (key === "Button" && <JDIButton {...value} />) ||
         (key === "ButtonGroup" && <JDIButtonGroup {...value} />) ||
         (key === "Breadcrumbs" && <JDIBreadcrumbs {...value} />) ||
         (key === "BottomNavigation" && <JDIBottomNavigation {...value} />) ||
@@ -62,6 +65,7 @@ function App() {
         (key === "Divider" && <JDIDivider {...value} />) ||
         (key === "Drawer" && <JDIDrawer {...value} />) ||
         (key === "Grid" && <JDIGrid {...value} />) ||
+        (key === "InputBase" && <JDIInputBase {...value} />) ||
         (key === "Link" && <JDILink {...value} />) ||
         (key === "List" && <JDIList {...value} />) ||
         (key === "Menu" && <JDIMenu {...value} />) ||

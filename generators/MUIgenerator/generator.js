@@ -1,4 +1,3 @@
-const { exec } = require('child_process');
 const process = require('process');
 
 const appBar = require('./src/generator/controls/appBar');
@@ -22,6 +21,7 @@ const controls =
         () => ({ key: "Avatar", value: avatar() }),
         () => ({ key: "Backdrop", value: { width: random(1000), height: random(1000), top: random(500), left: random(500), open: randomBool() } }),
         () => ({ key: "Badge", value: { type: random(5) } }),
+        () => ({ key: "Button", value: { type: random(5) } }),
         () => ({ key: "ButtonGroup", value: { type: random(6) } }),
         () => ({ key: "Breadcrumbs", value: { type: random(3) } }),
         () => ({ key: "BottomNavigation", value: { type: random(2) } }),
@@ -36,6 +36,7 @@ const controls =
         () => ({ key: "Divider", value: { type: random(5) } }),
         () => ({ key: "Drawer", value: { type: random(3) } }),
         () => ({ key: "Grid", value: { type: random(2) } }),
+        () => ({ key: "InputBase", value: { type: random(5) } }),
         () => ({ key: "Link", value: { type: random(3) } }),
         () => ({ key: "List", value: { type: random(3) } }),
         () => ({ key: "Menu", value: {} }),

@@ -96,7 +96,7 @@ async def html5_predict(request: Request, input: PredictionInputModel):
 
 @api.get("/cpu-count")
 async def cpu_count():
-    return {"cpu_count": os.cpu_count()}
+    return {"cpu_count": 1000} # TODO: change frontend to send all tasks immediately and remove it
 
 
 @api.get("/system_info", response_model=SystemInfoModel)

@@ -10,7 +10,7 @@ from redis.client import Redis
 from starlette.responses import JSONResponse
 
 from app.models import ReportModel, TaskIdModel, TaskResultModel, TaskStatusModel, XPathGenerationModel
-from app.tasks import task_schedule_xpath_generation
+from app.tasks import task_xpath_generation
 from utils import api_utils
 from utils.api_utils import send_report_email
 
@@ -40,7 +40,7 @@ def schedule_xpath_generation(data: XPathGenerationModel):
     """Creates new celery task for xpath generation. Returns celery task id"""
     page = json.loads(data.document)
 
-    task_result = task_schedule_xpath_generation.delay(
+    task_result = task_xpath_generation.delay(
         api_utils.get_xpath_from_id(data.id), page, data.config.dict()
     )
 

@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr, Json
 
 from app.constants import CeleryStatuses
 
@@ -70,6 +70,7 @@ class SystemInfoModel(BaseModel):
 
 class ReportModel(BaseModel):
     email: str
-    subject: str
-    body: Union[str, None]
+    title: Union[constr(max_length=256), None]
+    description: constr(max_length=10000)
     screenshot: str
+    prediction_json: Json

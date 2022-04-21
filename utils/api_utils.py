@@ -18,7 +18,7 @@ from starlette.websockets import WebSocket
 
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
-from app.models import TaskStatusModel, XPathGenerationModel
+from app.models import ReportModel, TaskStatusModel, XPathGenerationModel
 from app.tasks import task_xpath_generation
 
 
@@ -184,20 +184,19 @@ def prepare_email_image(screenshot_base64) -> MIMEBase:
     return part
 
 
-def send_report_email(subject, body, email, screenshot_base64, prediction):
+def send_report_email(report: ReportModel):
     msg = MIMEMultipart()
     msg['From'] = os.getenv('SUPPORT_EMAIL')
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body + f'\nSender {email}' if body else f'\nSender: {email}'))
-    msg.attach(prepare_email_image(screenshot_base64))
+    msg['Subject'] = report.title
+    msg.attach(MIMEText(report.description + f'\nSender {report.email}'))
+    msg.attach(prepare_email_image(report.screenshot))
 
     with SMTP_SSL('smtp.mail.ru') as mail:
-        if prediction:
-            generated_json = MIMEBase('application', "json")
-            generated_json.set_payload(prediction)
-            generated_json.add_header('Content-Disposition',
-                                      'attachment; filename="gen.json"')
-            msg.attach(generated_json)
+        generated_json = MIMEBase('application', "json")
+        generated_json.set_payload(json.dumps(report.prediction_json))
+        generated_json.add_header('Content-Disposition',
+                                  'attachment; filename="gen.json"')
+        msg.attach(generated_json)
 
         mail.login(os.getenv('SUPPORT_EMAIL'), os.getenv('SUPPORT_PASSWORD'))
         mail.sendmail(os.getenv('SUPPORT_EMAIL'), os.getenv('SUPPORT_EMAIL_INBOX'), msg.as_string())

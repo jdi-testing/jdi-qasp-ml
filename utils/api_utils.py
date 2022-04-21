@@ -196,7 +196,7 @@ def send_report_email(subject, body, email, screenshot_base64, prediction):
             generated_json = MIMEBase('application', "json")
             generated_json.set_payload(prediction)
             generated_json.add_header('Content-Disposition',
-                            'attachment; filename="gen.json"')
+                                      'attachment; filename="gen.json"')
             msg.attach(generated_json)
 
         mail.login(os.getenv('SUPPORT_EMAIL'), os.getenv('SUPPORT_PASSWORD'))

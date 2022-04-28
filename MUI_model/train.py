@@ -76,7 +76,6 @@ def evaluate(model: JDIModel, dataset: MUI_JDNDataset) -> pd.DataFrame:
                     bar.update(1)
 
     results_df = pd.DataFrame(results)
-    results_df["is_hidden"] = dataset.df.is_hidden.values
     return accuracy(results_df)
 
 

@@ -90,7 +90,7 @@ def accuracy(
     """
     total_cnt = df.shape[0]
     df = df[[y_true, y_pred]][
-        ((df[y_true] != dummy) | (df[y_pred] != dummy)) & (df[is_hidden] == 0)
+        ((df[y_true] != dummy) | (df[y_pred] != dummy))
     ]
     n = df.shape[0]
 

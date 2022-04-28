@@ -154,8 +154,6 @@ class BaseFeaturesBuilder(object):
         self.build_features()
 
     def build_features(self) -> pd.DataFrame:
-
-        build_is_hidden(self.df)
         self.df = followers_features(self.df)
         self.build_children_features()
         self.df = build_tree_features(self.df)

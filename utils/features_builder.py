@@ -13,7 +13,6 @@ from sklearn.feature_extraction.text import (
 # from utils.common import build_elements_dict  # noqa
 from utils.common import build_tree_dict
 
-from utils.hidden import build_is_hidden
 from tqdm.auto import trange
 from utils.config import logger
 

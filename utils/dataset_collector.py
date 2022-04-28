@@ -8,14 +8,13 @@ from scipy.sparse import hstack
 from utils.features_builder import SpecialFeaturesBuilder, HTML5SpecialFeaturesBuilder
 
 
-COLS = ["element_id", "tag_name", "attributes", "displayed", "is_hidden"]
+COLS = ["element_id", "tag_name", "attributes", "displayed"]
 
 TARGET_PARENT_COLUMNS = [
     "parent_id",
     "tag_name_parent",
     "attributes_parent",
     "displayed_parent",
-    "is_hidden_parent",
 ]
 
 TARGET_UP_SIBLING_COLUMNS = [
@@ -23,7 +22,6 @@ TARGET_UP_SIBLING_COLUMNS = [
     "tag_name_upsib",
     "attributes_upsib",
     "displayed_upsib",
-    "is_hidden_upsib",
 ]
 
 TARGET_DN_SIBLING_COLUMNS = [
@@ -31,13 +29,12 @@ TARGET_DN_SIBLING_COLUMNS = [
     "tag_name_dnsib",
     "attributes_dnsib",
     "displayed_dnsib",
-    "is_hidden_dnsib",
 ]
 
 
 class DatasetCollector(object):
     """
-        Base calss for dataset collector
+        Base class for dataset collector
         With some base preparations non-depended on type of model
     """
 
@@ -152,16 +149,6 @@ class MUI_DatasetCollector(DatasetCollector):
                     self.dataset_df.displayed_parent.fillna(False)
                     .astype(int)
                     .values.reshape(-1, 1),
-                    # dataset_df.displayed_upsib.fillna(False)
-                    # .astype(int)
-                    # .values.reshape(-1, 1),
-                    # dataset_df.displayed_dnsib.fillna(False)
-                    # .astype(int)
-                    # .values.reshape(-1, 1),
-                    self.dataset_df.is_hidden.fillna(1.0).values.reshape(-1, 1),
-                    self.dataset_df.is_hidden_parent.fillna(1.0).values.reshape(-1, 1),
-                    # dataset_df.is_hidden_upsib.fillna(1.0).values.reshape(-1, 1),
-                    # dataset_df.is_hidden_dnsib.fillna(1.0).values.reshape(-1, 1),
                 ]
             ).todense()
         )  # I hope we have enougth RAM

@@ -1,5 +1,5 @@
 # generate $N_SITES sites
-N_SITES=500
+N_SITES=150
 
 npm install npm lorem-ipsum
 

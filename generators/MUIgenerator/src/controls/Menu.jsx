@@ -22,7 +22,7 @@ export default function JDIMenu() {
                     }
                 }}
                 MenuListProps={{
-                    ["data-label"]: "menu",
+                    "data-label": "menu",
                     style: {
                         padding: 0,
                     },

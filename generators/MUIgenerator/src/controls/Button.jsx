@@ -119,15 +119,6 @@ export default function JDIButton({ type }) {
                     </Button>
                     <Button data-label="button"
                         variant="contained"
-                        disabled
-                        color="secondary"
-                        className={classes.button}
-                        disableRipple
-                    >
-                        Talk
-                    </Button>
-                    <Button data-label="button"
-                        variant="contained"
                         color="primary"
                         size="small"
                         className={classes.button}
@@ -140,7 +131,7 @@ export default function JDIButton({ type }) {
                         color="primary"
                         size="large"
                         className={classes.button}
-                        disableRipple
+                        startIcon={<SaveIcon />}
                     >
                         Save
                     </Button>

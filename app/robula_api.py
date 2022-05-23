@@ -3,15 +3,22 @@ import logging
 import typing
 from functools import wraps
 
-from fastapi import APIRouter, Query, Request, status, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter
+from fastapi import Query
+from fastapi import Request
+from fastapi import WebSocket
+from fastapi import WebSocketDisconnect
+from fastapi import status
 from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from starlette.responses import JSONResponse
-
-from app.models import ReportModel, TaskIdModel, TaskResultModel, TaskStatusModel, XPathGenerationModel
-from app.tasks import task_xpath_generation
 from utils import api_utils
-from utils.api_utils import send_report_email
+
+from app.models import TaskIdModel
+from app.models import TaskResultModel
+from app.models import TaskStatusModel
+from app.models import XPathGenerationModel
+from app.tasks import task_schedule_xpath_generation
 
 logger = logging.getLogger("jdi-qasp-ml")
 router = APIRouter()
@@ -39,7 +46,7 @@ def schedule_xpath_generation(data: XPathGenerationModel):
     """Creates new celery task for xpath generation. Returns celery task id"""
     page = json.loads(data.document)
 
-    task_result = task_xpath_generation.delay(
+    task_result = task_schedule_xpath_generation.delay(
         api_utils.get_xpath_from_id(data.id), page, data.config.dict()
     )
 
@@ -122,14 +129,3 @@ async def websocket(ws: WebSocket):
             for task_result in ws.created_tasks:
                 logger.info(f"Task revoked: {task_result.id}")
                 task_result.revoke(terminate=True, signal="SIGKILL")
-
-
-@router.post("/report_problem")
-def report_problem(report: ReportModel):
-    """
-    Send email to SupportJDI@epam.com
-    Screenshot(base64 encoded image)
-    """
-    send_report_email(report)
-
-    return JSONResponse(status_code=status.HTTP_204_NO_CONTENT)

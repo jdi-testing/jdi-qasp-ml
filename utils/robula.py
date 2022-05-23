@@ -7,7 +7,6 @@ from itertools import combinations
 from lxml import etree
 from lxml import html
 from lxml.etree import XPathEvalError
-from redis.client import Redis
 
 
 class XPathEvaluationTimeExceeded(Exception):
@@ -143,11 +142,10 @@ class RobulaPlus:
 
         self.element = element
         self.document = document
-        self.parent = None
 
     def get_robust_xpath(self):
         start_time = datetime.datetime.now()
-        x_path_list = [XPath(self.parent or "//*")]
+        x_path_list = [XPath("//*")]
         while len(x_path_list) > 0:
             current_xpath = x_path_list.pop(0)
             temp = self.generate_xpaths_for_current_level(current_xpath)
@@ -385,7 +383,7 @@ class RobulaPlus:
     def transf_add_level(self, xpath):
         output = []
         if len(xpath) - 1 < self.get_ancestor_count():
-            output.append(XPath(self.parent or "//*" + xpath.substring(1)))
+            output.append(XPath("//*" + xpath.substring(1)))
         return output
 
     @staticmethod
@@ -449,11 +447,6 @@ def remove_duplicates(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def get_generated_robust_xpath(xpath):
-    with Redis('redis') as redis:
-        return redis.hget("generated_xpaths", xpath)
-
-
 def generate_xpath(xpath, page, config):
     document = html.fromstring(page)
     element = document.xpath(xpath)
@@ -468,10 +461,6 @@ def generate_xpath(xpath, page, config):
     try:
         robust_path = robula.get_robust_xpath()
     except (XPathEvaluationTimeExceeded, XPathCantFindPath):
-        try:
-            robula.parent = get_generated_robust_xpath(tree.getpath(element.getparent()) + '/')
-            robust_path = robula.get_robust_xpath()
-        except XPathCantFindPath:
-            return tree.getpath(element)
+        return tree.getpath(element)
 
     return robust_path

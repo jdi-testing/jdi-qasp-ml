@@ -3,7 +3,7 @@ version: '3'
 services:
   api:
     container_name: jdi-qasp-ml-api
-    command: uvicorn app.main:api --host 0.0.0.0 --port 5050 --reload
+    command: uvicorn app.main:api --host 0.0.0.0 --port 5050
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,12 +11,6 @@ services:
       - "5050:5050"
     volumes:
       - .:/jdi-qasp-ml
-    environment:
-      - SUPPORT_EMAIL_INBOX=vadim_gusev1@epam.com
-      - SUPPORT_EMAIL=noreply-jdn@mail.ru
-      - SUPPORT_PASSWORD
-    depends_on:
-      - redis
 
   celery:
     container_name: jdi-qasp-ml-celery
@@ -26,8 +20,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/jdi-qasp-ml
-    depends_on:
-      - redis
 
   redis:
     container_name: jdi-qasp-ml-redis

@@ -1,6 +1,9 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
-from pydantic import BaseModel, constr, Json
+from pydantic import BaseModel
 
 from app.constants import CeleryStatuses
 
@@ -66,11 +69,3 @@ class PredictionResponseModel(BaseModel):
 class SystemInfoModel(BaseModel):
     cpu_count: int
     total_memory: int
-
-
-class ReportModel(BaseModel):
-    email: str
-    title: Union[constr(max_length=256), None]
-    description: constr(max_length=10000)
-    screenshot: str
-    prediction_json: Json

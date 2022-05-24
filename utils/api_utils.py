@@ -1,25 +1,14 @@
 import asyncio
-import base64
 import json
-import os
 import typing
-from email.encoders import encode_base64
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from io import BytesIO
-from smtplib import SMTP_SSL
-
-from celery.result import AsyncResult
-from lxml import etree, html
-from redis.client import Redis
-from redis.lock import Lock
-from starlette.websockets import WebSocket
 
 from app.celery_app import celery_app
-from app.constants import CeleryStatuses, WebSocketResponseActions
-from app.models import ReportModel, TaskStatusModel, XPathGenerationModel
-from app.tasks import task_xpath_generation
+from app.constants import CeleryStatuses
+from app.constants import WebSocketResponseActions
+from app.models import TaskStatusModel
+from app.models import XPathGenerationModel
+from app.tasks import task_schedule_xpath_generation
+from starlette.websockets import WebSocket
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -114,31 +103,18 @@ def get_active_celery_tasks():
     return celery_tasks
 
 
-def schedule_xpath_generation(payload: XPathGenerationModel) -> AsyncResult:
-    xpath = get_xpath_from_id(payload.id)
-    page = json.loads(payload.document)
-    document = html.fromstring(page)
-    tree = etree.ElementTree(document)
-    priority = tree.getpath(document.xpath(xpath)[0]).count('/')
-    with Redis('redis') as redis, Lock(redis, "priority_lock"):
-        task_by_priority = redis.hget("priority_queue", priority)
-        if task_by_priority:
-            task_by_priority = json.loads(task_by_priority)
-        else:
-            task_by_priority = []
-        task_by_priority.append((xpath, page, payload.config.dict()))
-        redis.hset("priority_queue", priority, json.dumps(task_by_priority))
-
-    return task_xpath_generation.delay()
-
-
 async def process_incoming_ws_request(
     action: str, payload: dict, ws: WebSocket
 ) -> typing.Dict:
     result = {}
     if action == "schedule_xpath_generation":
         payload = XPathGenerationModel(**payload)
-        task_result = schedule_xpath_generation(payload)
+
+        task_result = task_schedule_xpath_generation.delay(
+            get_xpath_from_id(payload.id),
+            json.loads(payload.document),
+            payload.config.dict(),
+        )
         ws.created_tasks.append(task_result)
 
         await ws.send_json(
@@ -147,9 +123,6 @@ async def process_incoming_ws_request(
             )
         )
         for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
-            # if len(get_active_celery_tasks()) == 0:
-            #     with Redis('redis') as redis:
-            #         redis.delete("generated_xpaths")
             asyncio.create_task(
                 wait_until_task_reach_status(ws, task_result.id, status)
             )
@@ -169,34 +142,3 @@ async def process_incoming_ws_request(
         result = get_celery_tasks_results(payload)
 
     return result
-
-
-def prepare_email_image(screenshot_base64) -> MIMEBase:
-    part = MIMEBase('image', 'jpeg')
-    with BytesIO(bytes(screenshot_base64, 'ascii')) as input_image, BytesIO() as decoded:
-        base64.decode(input_image, decoded)
-        decoded.seek(0)
-        part.set_payload(decoded.read())
-
-    encode_base64(part)
-    part.add_header('Content-Disposition',
-                    'attachment; filename="screenshot.jpeg"')
-    return part
-
-
-def send_report_email(report: ReportModel):
-    msg = MIMEMultipart()
-    msg['From'] = os.getenv('SUPPORT_EMAIL')
-    msg['Subject'] = report.title
-    msg.attach(MIMEText(report.description + f'\nSender {report.email}'))
-    msg.attach(prepare_email_image(report.screenshot))
-
-    with SMTP_SSL('smtp.mail.ru') as mail:
-        generated_json = MIMEBase('application', "json")
-        generated_json.set_payload(json.dumps(report.prediction_json))
-        generated_json.add_header('Content-Disposition',
-                                  'attachment; filename="gen.json"')
-        msg.attach(generated_json)
-
-        mail.login(os.getenv('SUPPORT_EMAIL'), os.getenv('SUPPORT_PASSWORD'))
-        mail.sendmail(os.getenv('SUPPORT_EMAIL'), os.getenv('SUPPORT_EMAIL_INBOX'), msg.as_string())

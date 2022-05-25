@@ -59,7 +59,6 @@ async def html5_predict_elements(body):
 
     columns_to_publish = [
         "element_id",
-        "is_hidden",
         "x",
         "y",
         "width",

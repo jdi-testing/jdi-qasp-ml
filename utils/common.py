@@ -79,7 +79,6 @@ def build_tree_dict(df: pd.DataFrame) -> dict:
 def accuracy(
     df: pd.DataFrame,
     y_true: str = "y_true_label",
-    is_hidden: str = "is_hidden",
     y_pred: str = "y_pred_label",
     verbose: bool = True,
     dummy: str = "n/a",

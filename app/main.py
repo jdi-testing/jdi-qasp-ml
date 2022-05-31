@@ -2,7 +2,6 @@
 # this is a Flask-based backend
 ############################################
 
-import logging
 import os
 
 import psutil
@@ -36,8 +35,6 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = FastAPI()
 api.include_router(robula_api.router)
 templates = Jinja2Templates(directory="templates")
-
-logger = logging.getLogger("jdi-qasp-ml")
 
 
 @api.get("/build")

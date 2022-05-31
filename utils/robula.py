@@ -1,12 +1,12 @@
 import datetime
 import re
 from copy import copy
-from itertools import chain
-from itertools import combinations
+from itertools import chain, combinations
 
-from lxml import etree
-from lxml import html
+from lxml import etree, html
 from lxml.etree import XPathEvalError
+
+from app.logger import logger
 
 
 class XPathEvaluationTimeExceeded(Exception):
@@ -447,6 +447,13 @@ def remove_duplicates(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
+def split_full_path_to_current_and_parents_parts(full_path):
+    full_path_split = full_path.split("/")
+    current_level_locator = full_path_split[-1]
+    parent_path = "/".join(full_path_split[:-1])
+    return parent_path, current_level_locator
+
+
 def generate_xpath(xpath, page, config):
     document = html.fromstring(page)
     element = document.xpath(xpath)
@@ -460,7 +467,20 @@ def generate_xpath(xpath, page, config):
 
     try:
         robust_path = robula.get_robust_xpath()
-    except (XPathEvaluationTimeExceeded, XPathCantFindPath):
+    except XPathEvaluationTimeExceeded:
+        logger.info(
+            f"Time Exceeded on element - {element} - "
+            f"using element's parent to generate locator"
+        )
+        current_level_full_path = tree.getpath(element)
+        (
+            parent_path,
+            current_level_locator,
+        ) = split_full_path_to_current_and_parents_parts(current_level_full_path)
+        parent_robust_locator = generate_xpath(parent_path, page, config)
+        return f"{parent_robust_locator}//{current_level_locator}"
+
+    except XPathCantFindPath:
         return tree.getpath(element)
 
     return robust_path

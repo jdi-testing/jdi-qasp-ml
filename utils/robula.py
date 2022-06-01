@@ -468,11 +468,12 @@ def generate_xpath(xpath, page, config):
     try:
         robust_path = robula.get_robust_xpath()
     except XPathEvaluationTimeExceeded:
+        current_level_full_path = tree.getpath(element)
         logger.info(
-            f"Time Exceeded on element - {element} - "
+            f"Time Exceeded on element {element.tag}, "
+            f"its full xpath: {current_level_full_path} - "
             f"using element's parent to generate locator"
         )
-        current_level_full_path = tree.getpath(element)
         (
             parent_path,
             current_level_locator,

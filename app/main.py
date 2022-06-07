@@ -96,6 +96,15 @@ async def html5_predict(request: Request, input: PredictionInputModel):
     return JSONResponse(await html5_predict_elements(body))
 
 
+@api.post("/bootstrap-predict", response_model=PredictionResponseModel)
+async def bootstrap_predict(request: Request, input: PredictionInputModel):
+    """Bootstrap elements prediction based on received JSON (HTML5 model)."""
+    # The html5 model is currently sufficient for predicting the bootstrap
+    # elements. Bootstrap model will be potentially developed and added later
+    body = await request.body()
+    return JSONResponse(await html5_predict_elements(body))
+
+
 @api.get("/cpu-count")
 async def cpu_count():
     return {"cpu_count": os.cpu_count()}

@@ -1,0 +1,74 @@
+from fastapi.testclient import TestClient
+
+from app.main import api as app
+
+
+client = TestClient(app)
+
+
+def test_build_version():
+    response = client.get("/build")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data
+
+    for num in data[0].split("."):
+        assert num.isnumeric()
+
+
+def test_dir_listing():
+    response = client.get("/files")
+    assert response.status_code == 200
+
+    files_data = response.context["files"]
+    assert files_data
+
+    for file_data in files_data:
+        assert file_data.endswith(".json")
+
+
+def test_get_file_positive_case():
+    response0 = client.get("/files")
+    existing_file_name = response0.context["files"][0]
+
+    response = client.get(f"/files/{existing_file_name}")
+    assert response.status_code == 200
+    assert response._content
+
+
+def test_html5_predict():
+    from tests.additional_materials import mock_predict_html_request_body
+
+    response = client.post("/html5-predict", json=mock_predict_html_request_body)
+    assert response.status_code == 200
+    for element in response.json():
+        assert element["predicted_label"]
+        assert element["predicted_probability"]
+
+
+def test_mui_predict():
+    from tests.additional_materials import mock_predict_mui_request_body
+
+    response = client.post("/mui-predict", json=mock_predict_mui_request_body)
+    assert response.status_code == 200
+    for element in response.json():
+        assert element["predicted_label"]
+        assert element["predicted_probability"]
+
+
+def test_get_cpu_count():
+    response = client.get("/cpu-count")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data["cpu_count"], int)
+
+
+def test_get_system_info():
+    response = client.get("/system_info")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data["cpu_count"], int)
+    assert isinstance(data["total_memory"], int)

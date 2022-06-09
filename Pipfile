@@ -30,6 +30,7 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 jinja2 = "*"
 psutil = "*"
+requests = "*"
 
 [dev-packages]
 

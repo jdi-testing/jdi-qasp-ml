@@ -17,7 +17,18 @@ def test_build_version():
         assert num.isnumeric()
 
 
-def test_dir_listing():
+def test_dir_listing(tmp_path, monkeypatch):
+    import app.main
+
+    monkeypatch.setattr(app.main, "UPLOAD_DIRECTORY", f"{tmp_path}/df")
+
+    d = tmp_path / "df"
+    d.mkdir()
+    file1 = d / "123456789.json"
+    file2 = d / "987654321.json"
+    file1.write_text("example")
+    file2.write_text("example")
+
     response = client.get("/files")
     assert response.status_code == 200
 
@@ -28,7 +39,18 @@ def test_dir_listing():
         assert file_data.endswith(".json")
 
 
-def test_get_file_positive_case():
+def test_get_file_positive_case(tmp_path, monkeypatch):
+    import app.main
+
+    monkeypatch.setattr(app.main, "UPLOAD_DIRECTORY", f"{tmp_path}/df")
+
+    d = tmp_path / "df"
+    d.mkdir()
+    file1 = d / "123456789.json"
+    file2 = d / "987654321.json"
+    file1.write_text("example")
+    file2.write_text("example")
+
     response0 = client.get("/files")
     existing_file_name = response0.context["files"][0]
 

@@ -133,4 +133,5 @@ async def websocket(ws: WebSocket):
                 logger.info(f"Task revoked: {task_result.id}")
                 task_result.revoke(terminate=True, signal="SIGKILL")
 
-        if END_LOOP_FOR_TESTING: break  # manually ending the loop while testing
+        if END_LOOP_FOR_TESTING:
+            break  # manually ending the loop while testing

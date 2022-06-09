@@ -64,28 +64,28 @@ mock_html_page_code = """
             </div>
     </footer>
 
- <div id="7531002150863276618099465122" class="jdn-highlight jdn-secondary" 
- jdn-highlight="true" jdn-status="undefined" style="left: 30.4px; top: 43.8375px; 
- height: 75.2px; width: 472px;"><div><span class="jdn-label"><span 
- class="jdn-class">100%, uielementH1</span></span></div></div><div 
- id="7398993944863276624470456479" class="jdn-highlight jdn-secondary" 
- jdn-highlight="true" jdn-status="undefined" style="left: 29px; top: 516.188px; 
- height: 27.2px; width: 474.8px;"><div><span class="jdn-label"><span 
- class="jdn-class">100%, uielementH23</span></span></div></div><div 
- id="5450933298863276620235133171" class="jdn-highlight jdn-secondary" 
- jdn-highlight="true" jdn-status="undefined" style="left: 29px; top: 563.3px; 
- height: 18.4px; width: 474.8px;"><div><span class="jdn-label"><span 
- class="jdn-class">100%, uielementP5</span></span></div></div><div 
- id="6060767279863276627461426417" class="jdn-highlight jdn-secondary" 
- jdn-highlight="true" jdn-status="undefined" style="left: 29px; top: 601.612px; 
- height: 27.2px; width: 474.8px;"><div><span class="jdn-label"><span 
- class="jdn-class">100%, uielementH2</span></span></div></div><div 
- id="5073860463863276623690656873" class="jdn-highlight jdn-secondary" 
+ <div id="7531002150863276618099465122" class="jdn-highlight jdn-secondary"
+ jdn-highlight="true" jdn-status="undefined" style="left: 30.4px; top: 43.8375px;
+ height: 75.2px; width: 472px;"><div><span class="jdn-label"><span
+ class="jdn-class">100%, uielementH1</span></span></div></div><div
+ id="7398993944863276624470456479" class="jdn-highlight jdn-secondary"
+ jdn-highlight="true" jdn-status="undefined" style="left: 29px; top: 516.188px;
+ height: 27.2px; width: 474.8px;"><div><span class="jdn-label"><span
+ class="jdn-class">100%, uielementH23</span></span></div></div><div
+ id="5450933298863276620235133171" class="jdn-highlight jdn-secondary"
+ jdn-highlight="true" jdn-status="undefined" style="left: 29px; top: 563.3px;
+ height: 18.4px; width: 474.8px;"><div><span class="jdn-label"><span
+ class="jdn-class">100%, uielementP5</span></span></div></div><div
+ id="6060767279863276627461426417" class="jdn-highlight jdn-secondary"
+ jdn-highlight="true" jdn-status="undefined" style="left: 29px; top: 601.612px;
+ height: 27.2px; width: 474.8px;"><div><span class="jdn-label"><span
+ class="jdn-class">100%, uielementH2</span></span></div></div><div
+ id="5073860463863276623690656873" class="jdn-highlight jdn-secondary"
  jdn-highlight="true" jdn-status="undefined" style="left: 29px; top: 648.725px;
-  height: 18.4px; width: 474.8px;"><div><span class="jdn-label"><span 
-  class="jdn-class">100%, uielementP</span></span></div></div><div 
-  id="2169648125863276623834615542" class="jdn-highlight jdn-secondary" 
-  jdn-highlight="true" jdn-status="undefined" style="left: 30.4px; 
+  height: 18.4px; width: 474.8px;"><div><span class="jdn-label"><span
+  class="jdn-class">100%, uielementP</span></span></div></div><div
+  id="2169648125863276623834615542" class="jdn-highlight jdn-secondary"
+  jdn-highlight="true" jdn-status="undefined" style="left: 30.4px;
   top: 737.963px; height: 37.6px; width: 472px;"><div><span class="jdn-label">
   <span class="jdn-class">100%, uielementH11</span></span></div></div></body>
 

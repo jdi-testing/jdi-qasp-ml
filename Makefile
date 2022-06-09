@@ -13,7 +13,7 @@ lint:
 .PHONY: unittest
 unittest: clean lint
 	@echo "Unit tests ..."
-	@pytest tests/unit
+	@pytest tests
 
 .PHONY: test
 test: pytest

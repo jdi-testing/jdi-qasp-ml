@@ -16,4 +16,4 @@ unittest: clean lint
 	@pytest tests/unit
 
 .PHONY: test
-test: unittest
+test: pytest

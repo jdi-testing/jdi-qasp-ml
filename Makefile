@@ -9,11 +9,3 @@ clean:
 lint:
 	@echo "Linting ..."
 	@flake8 .
-
-.PHONY: unittest
-unittest: clean lint
-	@echo "Unit tests ..."
-	@pytest tests
-
-.PHONY: test
-test: pytest

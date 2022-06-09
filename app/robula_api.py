@@ -108,6 +108,9 @@ def revoke_all_tasks():
     return {"status": "ok", "tasksRevoked": task_ids}
 
 
+END_LOOP_FOR_TESTING = False
+
+
 @router.websocket("/ws")
 async def websocket(ws: WebSocket):
     await ws.accept()
@@ -129,3 +132,5 @@ async def websocket(ws: WebSocket):
             for task_result in ws.created_tasks:
                 logger.info(f"Task revoked: {task_result.id}")
                 task_result.revoke(terminate=True, signal="SIGKILL")
+
+        if END_LOOP_FOR_TESTING: break  # manually ending the loop while testing

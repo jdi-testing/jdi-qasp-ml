@@ -110,14 +110,22 @@ async def process_incoming_ws_request(
 ) -> typing.Dict:
     result = {}
 
-    if action == "prioritize_existing_task":
+    if action == "prioritize_existing_task" or action == "deprioritize_existing_task":
         """
         We revoke the task from common queue and create task with the same
         signature in 'high_priority' queue.
         'default' and 'high_priority' queues are run in parallel.
-        Example of payload:
 
-        payload = {'task_id": "5a752f2a-7206-4fc3-99f9-1dceed121c54"}
+        Examples of message:
+        {
+            'action': 'prioritize_existing_task',
+            'payload': {'task_id": "5a752f2a-7206-4fc3-99f9-1dceed121c54"}
+        }
+
+        {
+            'action': 'deprioritize_existing_task',
+            'payload': {'task_id": "5a752f2a-7206-4fc3-99f9-1dceed121c54"}
+        }
         """
         initial_task_id = payload["task_id"]
         initial_task_result = AsyncResult(initial_task_id, app=celery_app)
@@ -127,24 +135,30 @@ async def process_incoming_ws_request(
         document = initial_task_kwargs["document"]
         config = initial_task_kwargs["config"]
 
-        celery_app.control.revoke(
+        celery_app.control.revoke(  # Revoking the task from default queue
             initial_task_id, terminate=True
-        )  # Revoking the task from default queue
+        )
         logger.info(
             f"Task with id={initial_task_id} for "
-            f"element={xpath_from_el_id} revoked from default queue"
+            f"element={xpath_from_el_id} revoked from "
+            f"{initial_task_result.queue} queue"
         )
-
-        new_task_result = task_schedule_xpath_generation_prioritized.apply_async(
-            kwargs={
-                "element_id": xpath_from_el_id,
-                "document": document,
-                "config": config,
-            }
-        )
+        new_task_kwargs = {
+            "element_id": xpath_from_el_id,
+            "document": document,
+            "config": config,
+        }
+        if action == "prioritize_existing_task":
+            new_task_result = task_schedule_xpath_generation_prioritized.apply_async(
+                kwargs=new_task_kwargs
+            )
+        elif action == "deprioritize_existing_task":
+            new_task_result = task_schedule_xpath_generation.apply_async(
+                kwargs=new_task_kwargs
+            )
         logger.info(
             f"Task for element={xpath_from_el_id} is created for "
-            f"'high_priority' queue"
+            f"{new_task_result.queue}' queue"
         )
         ws.created_tasks.remove(initial_task_result)
         ws.created_tasks.append(new_task_result)

@@ -2,13 +2,15 @@ import asyncio
 import json
 import typing
 
-from app.celery_app import celery_app
-from app.constants import CeleryStatuses
-from app.constants import WebSocketResponseActions
-from app.models import TaskStatusModel
-from app.models import XPathGenerationModel
-from app.tasks import task_schedule_xpath_generation
+from celery.result import AsyncResult
 from starlette.websockets import WebSocket
+
+from app.celery_app import celery_app
+from app.constants import CeleryStatuses, WebSocketResponseActions
+from app.logger import logger
+from app.models import TaskStatusModel, XPathGenerationModel
+from app.tasks import (task_schedule_xpath_generation,
+                       task_schedule_xpath_generation_prioritized)
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -107,13 +109,67 @@ async def process_incoming_ws_request(
     action: str, payload: dict, ws: WebSocket
 ) -> typing.Dict:
     result = {}
-    if action == "schedule_xpath_generation":
+
+    if action == "prioritize_existing_task":
+        """
+        We revoke the task from common queue and create task with the same
+        signature in 'high_priority' queue.
+        'default' and 'high_priority' queues are run in parallel.
+        Example of payload:
+
+        payload = {'task_id": "5a752f2a-7206-4fc3-99f9-1dceed121c54"}
+        """
+        initial_task_id = payload["task_id"]
+        initial_task_result = AsyncResult(initial_task_id, app=celery_app)
+        initial_task_kwargs = initial_task_result.kwargs
+
+        xpath_from_el_id = initial_task_kwargs["element_id"]
+        document = initial_task_kwargs["document"]
+        config = initial_task_kwargs["config"]
+
+        celery_app.control.revoke(
+            initial_task_id, terminate=True
+        )  # Revoking the task from default queue
+        logger.info(
+            f"Task with id={initial_task_id} for "
+            f"element={xpath_from_el_id} revoked from default queue"
+        )
+
+        new_task_result = task_schedule_xpath_generation_prioritized.apply_async(
+            kwargs={
+                "element_id": xpath_from_el_id,
+                "document": document,
+                "config": config,
+            }
+        )
+        logger.info(
+            f"Task for element={xpath_from_el_id} is created for "
+            f"'high_priority' queue"
+        )
+        ws.created_tasks.remove(initial_task_result)
+        ws.created_tasks.append(new_task_result)
+
+        await ws.send_json(
+            get_websocket_response(
+                WebSocketResponseActions.TASKS_SCHEDULED,
+                {xpath_from_el_id: new_task_result.id},
+            )
+        )
+
+        for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
+            asyncio.create_task(
+                wait_until_task_reach_status(ws, new_task_result.id, status)
+            )
+
+    elif action == "schedule_xpath_generation":
         payload = XPathGenerationModel(**payload)
 
-        task_result = task_schedule_xpath_generation.delay(
-            get_xpath_from_id(payload.id),
-            json.loads(payload.document),
-            payload.config.dict(),
+        task_result = task_schedule_xpath_generation.apply_async(
+            kwargs={
+                "element_id": get_xpath_from_id(payload.id),
+                "document": json.loads(payload.document),
+                "config": payload.config.dict(),
+            }
         )
         ws.created_tasks.append(task_result)
 

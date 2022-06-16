@@ -35,6 +35,13 @@ def get_xpath_from_id(element_id):
     return f"//*[@jdn-hash='{element_id}']"
 
 
+def get_element_id_from_xpath(xpath: str):
+    """
+    "//*[@jdn-hash='{element_id}']" -> "{element_id}"
+    """
+    return xpath.split("'")[1]
+
+
 async def wait_until_task_reach_status(
     ws: WebSocket, task_id: str, expected_status: CeleryStatuses
 ):
@@ -110,7 +117,30 @@ async def process_incoming_ws_request(
 ) -> typing.Dict:
     result = {}
 
-    if action == "prioritize_existing_task" or action == "deprioritize_existing_task":
+    if action == "schedule_xpath_generation":
+        payload = XPathGenerationModel(**payload)
+
+        task_result = task_schedule_xpath_generation.apply_async(
+            kwargs={
+                "element_id": get_xpath_from_id(payload.id),
+                "document": json.loads(payload.document),
+                "config": payload.config.dict(),
+            },
+            task_id=payload.id,
+        )
+        ws.created_tasks.append(task_result)
+
+        await ws.send_json(
+            get_websocket_response(
+                WebSocketResponseActions.TASKS_SCHEDULED, {payload.id: task_result.id}
+            )
+        )
+        for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
+            asyncio.create_task(
+                wait_until_task_reach_status(ws, task_result.id, status)
+            )
+
+    elif action == "prioritize_existing_task" or action == "deprioritize_existing_task":
         """
         We revoke the task from common queue and create task with the same
         signature in 'high_priority' queue.
@@ -150,11 +180,13 @@ async def process_incoming_ws_request(
         }
         if action == "prioritize_existing_task":
             new_task_result = task_schedule_xpath_generation_prioritized.apply_async(
-                kwargs=new_task_kwargs
+                kwargs=new_task_kwargs,
+                task_id=get_element_id_from_xpath(new_task_kwargs["element_id"]),
             )
         elif action == "deprioritize_existing_task":
             new_task_result = task_schedule_xpath_generation.apply_async(
-                kwargs=new_task_kwargs
+                kwargs=new_task_kwargs,
+                task_id=get_element_id_from_xpath(new_task_kwargs["element_id"]),
             )
         logger.info(
             f"Task for element={xpath_from_el_id} is created for "
@@ -175,27 +207,6 @@ async def process_incoming_ws_request(
                 wait_until_task_reach_status(ws, new_task_result.id, status)
             )
 
-    elif action == "schedule_xpath_generation":
-        payload = XPathGenerationModel(**payload)
-
-        task_result = task_schedule_xpath_generation.apply_async(
-            kwargs={
-                "element_id": get_xpath_from_id(payload.id),
-                "document": json.loads(payload.document),
-                "config": payload.config.dict(),
-            }
-        )
-        ws.created_tasks.append(task_result)
-
-        await ws.send_json(
-            get_websocket_response(
-                WebSocketResponseActions.TASKS_SCHEDULED, {payload.id: task_result.id}
-            )
-        )
-        for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
-            asyncio.create_task(
-                wait_until_task_reach_status(ws, task_result.id, status)
-            )
     elif action == "get_task_status":
         result = get_task_status(payload["id"]).dict()
     elif action == "get_tasks_statuses":

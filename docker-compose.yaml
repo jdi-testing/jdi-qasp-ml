@@ -11,7 +11,7 @@ services:
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     container_name: jdi-qasp-ml-celery
-    command: celery -A app.celery_app:celery_app worker -l info -Q high_priority,default
+    command: celery -A app.celery_app:celery_app worker -l info
 
   redis:
     image: "redis:alpine"

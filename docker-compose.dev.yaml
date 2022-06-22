@@ -14,7 +14,7 @@ services:
 
   celery:
     container_name: jdi-qasp-ml-celery
-    command: celery -A app.celery_app:celery_app worker -l info -Q high_priority,default
+    command: celery -A app.celery_app:celery_app worker -l info
     build:
       context: .
       dockerfile: Dockerfile

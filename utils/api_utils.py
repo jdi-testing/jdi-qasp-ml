@@ -78,7 +78,8 @@ def get_websocket_response(action: WebSocketResponseActions, payload: dict) -> d
 
 def revoke_tasks(task_ids: typing.List[str]):
     for task_id in task_ids:
-        celery_app.control.revoke(task_id, terminate=True, signal="SIGKILL")
+        revoked_tasks_ids_set.add(task_id)
+        celery_app.control.revoke(task_id)
 
 
 def get_celery_tasks_results(ids: typing.List) -> typing.List[dict]:
@@ -109,6 +110,9 @@ def get_active_celery_tasks():
     return celery_tasks
 
 
+revoked_tasks_ids_set = set()
+
+
 async def process_incoming_ws_request(
     action: str, payload: dict, ws: WebSocket
 ) -> typing.Dict:
@@ -116,14 +120,19 @@ async def process_incoming_ws_request(
 
     if action == "schedule_xpath_generation":
         payload = XPathGenerationModel(**payload)
-
+        element_id = payload.id
+        new_task_id = (
+            element_id if element_id not in revoked_tasks_ids_set else f"_{element_id}"
+        )
+        # If a task was paused (revoked in celery), we cannot restart it
+        # with the same id. We use "_{oldid}"
         task_result = task_schedule_xpath_generation.apply_async(
             kwargs={
-                "element_id": get_xpath_from_id(payload.id),
+                "element_id": get_xpath_from_id(element_id),
                 "document": json.loads(payload.document),
                 "config": payload.config.dict(),
             },
-            task_id=payload.id,
+            task_id=new_task_id,
         )
         ws.created_tasks.append(task_result)
 

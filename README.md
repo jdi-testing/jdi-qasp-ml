@@ -189,3 +189,103 @@ docker compose -f docker-compose.dev.yaml run --rm api pipenv install <package>=
 
 ## API
 Available API methods you can see in Swagger at http://localhost:5050/docs
+
+
+## Websocket commands
+Those commands could be sent to websocket and be processed by back-end:
+
+###1. Schedule Xpath Generation for an element in some document:
+Request sent:
+```
+{
+    "action": "schedule_xpath_generation",
+    "payload": {
+        "document": '"<head jdn-hash=\\"0352637447734573274412895785\\">....',
+        "id": "1122334455667788990011223344",
+        "config": {
+            "maximum_generation_time": 10,
+            "allow_indexes_at_the_beginning": false,
+            "allow_indexes_in_the_middle": false,
+            "allow_indexes_at_the_end": false,
+        },
+    },
+}
+```
+Response from websocket:
+```
+{
+    "action": "tasks_scheduled",
+    "payload": {"1122334455667788990011223344": "1122334455667788990011223344"},
+}
+```
+###2. Get task status:
+Request sent:
+```
+{
+    "action": "get_task_status",
+    "payload": {"id": "1122334455667788990011223344"},
+}
+```
+###3. Get task statuses:
+Request sent:
+```
+{
+    "action": "get_task_status",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
+    },
+}
+```
+###4. Revoke tasks:
+Request sent:
+```
+{
+    "action": "revoke_tasks",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
+    },
+}
+```
+Response from websocket:
+```
+{
+    "action": "tasks_revoked",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
+    },
+}
+```
+###5. Get task result:
+Request sent:
+```
+{
+    "action": "get_task_result",
+    "payload": {"id": "1122334455667788990011223344"},
+}
+```
+###6. Get task results:
+Request sent:
+```
+{
+    "action": "get_task_results",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
+    },
+}
+```

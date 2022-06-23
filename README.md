@@ -194,7 +194,7 @@ Available API methods you can see in Swagger at http://localhost:5050/docs
 ## Websocket commands
 Those commands could be sent to websocket and be processed by back-end:
 
-###1. Schedule Xpath Generation for an element in some document:
+### 1. Schedule Xpath Generation for an element in some document:
 Request sent:
 ```
 {
@@ -218,7 +218,7 @@ Response from websocket:
     "payload": {"1122334455667788990011223344": "1122334455667788990011223344"},
 }
 ```
-###2. Get task status:
+### 2. Get task status:
 Request sent:
 ```
 {
@@ -226,7 +226,7 @@ Request sent:
     "payload": {"id": "1122334455667788990011223344"},
 }
 ```
-###3. Get task statuses:
+### 3. Get task statuses:
 Request sent:
 ```
 {
@@ -240,7 +240,7 @@ Request sent:
     },
 }
 ```
-###4. Revoke tasks:
+### 4. Revoke tasks:
 Request sent:
 ```
 {
@@ -267,7 +267,7 @@ Response from websocket:
     },
 }
 ```
-###5. Get task result:
+### 5. Get task result:
 Request sent:
 ```
 {
@@ -275,7 +275,7 @@ Request sent:
     "payload": {"id": "1122334455667788990011223344"},
 }
 ```
-###6. Get task results:
+### 6. Get task results:
 Request sent:
 ```
 {

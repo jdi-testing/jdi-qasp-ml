@@ -1,31 +1,23 @@
 ############################################
-# this is a Flask-based backend
+# this is a FastAPI-based backend
 ############################################
 
 import os
 
 import psutil
 import uvicorn
+from fastapi import FastAPI, HTTPException, Request
+from fastapi import status as status
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
+
+from app import (MODEL_VERSION_DIRECTORY, UPLOAD_DIRECTORY, html5_df_path,
+                 mui_df_path, old_df_path, robula_api)
+from app.models import (PredictionInputModel, PredictionResponseModel,
+                        SystemInfoModel)
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
-from fastapi import FastAPI
-from fastapi import HTTPException
-from fastapi import Request
-from fastapi import status as status
-from fastapi.responses import FileResponse
-from fastapi.responses import JSONResponse
-from fastapi.templating import Jinja2Templates
-
-from app import MODEL_VERSION_DIRECTORY
-from app import UPLOAD_DIRECTORY
-from app import html5_df_path
-from app import mui_df_path
-from app import old_df_path
-from app import robula_api
-from app.models import PredictionInputModel
-from app.models import PredictionResponseModel
-from app.models import SystemInfoModel
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)

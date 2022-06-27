@@ -1,9 +1,6 @@
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 from app.constants import CeleryStatuses
 
@@ -64,6 +61,14 @@ class PredictedElement(BaseModel):
 
 class PredictionResponseModel(BaseModel):
     __root__: List[PredictedElement]
+
+
+class ReportMail(BaseModel):
+    email: EmailStr = Field(..., alias="from")
+    subject: Optional[str] = Field(..., max_length=200)
+    body: str = Field(..., max_length=10000)
+    json_from_model: List[dict]
+    screenshot: str
 
 
 class SystemInfoModel(BaseModel):

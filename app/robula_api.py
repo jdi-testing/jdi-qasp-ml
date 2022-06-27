@@ -1,24 +1,19 @@
+import base64
 import json
 import logging
 import typing
 from functools import wraps
 
-from fastapi import APIRouter
-from fastapi import Query
-from fastapi import Request
-from fastapi import WebSocket
-from fastapi import WebSocketDisconnect
-from fastapi import status
+from fastapi import (APIRouter, Query, Request, UploadFile, WebSocket,
+                     WebSocketDisconnect, status)
 from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from starlette.responses import JSONResponse
-from utils import api_utils
 
-from app.models import TaskIdModel
-from app.models import TaskResultModel
-from app.models import TaskStatusModel
-from app.models import XPathGenerationModel
-from app.tasks import task_schedule_xpath_generation
+from app.models import (ReportMail, TaskIdModel, TaskResultModel,
+                        TaskStatusModel, XPathGenerationModel)
+from app.tasks import send_report_mail_task, task_schedule_xpath_generation
+from utils import api_utils
 
 logger = logging.getLogger("jdi-qasp-ml")
 router = APIRouter()
@@ -135,3 +130,15 @@ async def websocket(ws: WebSocket):
 
         if END_LOOP_FOR_TESTING:
             break  # manually ending the loop while testing
+
+
+@router.post("/report_problem")
+async def report_problem(msg_content: ReportMail):
+    send_report_mail_task.apply_async(kwargs={"msg_content": msg_content.dict()})
+
+
+@router.post("/pic_bytes_to_str")
+async def pic_bytes_to_str(pic: UploadFile):
+    screenshot__in_bytes = await pic.read()
+    screenshot_in_str = base64.b64encode(screenshot__in_bytes).decode()
+    return screenshot_in_str

@@ -31,6 +31,9 @@ uvicorn = {extras = ["standard"], version = "*"}
 jinja2 = "*"
 psutil = "*"
 requests = "*"
+email-validator = "*"
+python-multipart = "*"
+aiofiles = "*"
 
 [dev-packages]
 

@@ -79,7 +79,7 @@ def get_websocket_response(action: WebSocketResponseActions, payload: dict) -> d
 def revoke_tasks(task_ids: typing.List[str]):
     for task_id in task_ids:
         revoked_tasks_ids_set.add(task_id)
-        celery_app.control.revoke(task_id)
+        celery_app.control.revoke(task_id, terminate=True)
 
 
 def get_celery_tasks_results(ids: typing.List) -> typing.List[dict]:

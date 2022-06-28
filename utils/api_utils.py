@@ -2,7 +2,7 @@ import asyncio
 import json
 import typing
 
-from starlette.websockets import WebSocket
+from starlette.websockets import WebSocket, WebSocketState
 
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
@@ -42,7 +42,7 @@ def get_element_id_from_xpath(xpath: str):
 async def wait_until_task_reach_status(
     ws: WebSocket, task_id: str, expected_status: CeleryStatuses
 ):
-    while True:
+    while ws.client_state != WebSocketState.DISCONNECTED:
         task = get_task_status(task_id)
         if (
             (task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE))

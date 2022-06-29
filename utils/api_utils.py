@@ -126,31 +126,33 @@ async def process_incoming_ws_request(
 ) -> typing.Dict:
     result = {}
 
-    if action == "schedule_xpath_generation":
+    if action == "schedule_multiple_xpath_generations":
         payload = XPathGenerationModel(**payload)
-        element_id = payload.id
-        new_task_id = convert_task_id_if_in_revoked(element_id)
-        # If a task was paused (revoked in celery), we cannot restart it
-        # with the same id. We use "_{oldid}"
-        task_result = task_schedule_xpath_generation.apply_async(
-            kwargs={
-                "element_id": get_xpath_from_id(element_id),
-                "document": json.loads(payload.document),
-                "config": payload.config.dict(),
-            },
-            task_id=new_task_id,
-        )
-        ws.created_tasks.append(task_result)
+        element_ids = payload.id
+        for element_id in element_ids:
+            new_task_id = convert_task_id_if_in_revoked(element_id)
+            # If a task was paused (revoked in celery), we cannot restart it
+            # with the same id. We use "_{oldid}"
+            task_result = task_schedule_xpath_generation.apply_async(
+                kwargs={
+                    "element_id": get_xpath_from_id(element_id),
+                    "document": json.loads(payload.document),
+                    "config": payload.config.dict(),
+                },
+                task_id=new_task_id,
+            )
+            ws.created_tasks.append(task_result)
 
-        await ws.send_json(
-            get_websocket_response(
-                WebSocketResponseActions.TASKS_SCHEDULED, {payload.id: task_result.id}
+            await ws.send_json(
+                get_websocket_response(
+                    WebSocketResponseActions.TASKS_SCHEDULED,
+                    {element_id: task_result.id},
+                )
             )
-        )
-        for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
-            asyncio.create_task(
-                wait_until_task_reach_status(ws, task_result.id, status)
-            )
+            for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
+                asyncio.create_task(
+                    wait_until_task_reach_status(ws, task_result.id, status)
+                )
     elif action == "get_task_status":
         result = get_task_status(payload["id"]).dict()
     elif action == "get_tasks_statuses":

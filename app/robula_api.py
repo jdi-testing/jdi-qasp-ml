@@ -5,27 +5,15 @@ import typing
 from functools import wraps
 
 import celery.states
-from fastapi import (
-    APIRouter,
-    Query,
-    Request,
-    UploadFile,
-    WebSocket,
-    WebSocketDisconnect,
-    status,
-)
+from fastapi import (APIRouter, Query, Request, UploadFile, WebSocket,
+                     WebSocketDisconnect, status)
 from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from starlette.responses import JSONResponse
 from starlette.websockets import WebSocketState
 
-from app.models import (
-    ReportMail,
-    TaskIdModel,
-    TaskResultModel,
-    TaskStatusModel,
-    XPathGenerationModel,
-)
+from app.models import (ReportMail, TaskIdModel, TaskResultModel,
+                        TaskStatusModel, XPathGenerationModel)
 from app.tasks import send_report_mail_task, task_schedule_xpath_generation
 from utils import api_utils
 
@@ -137,6 +125,9 @@ async def websocket(ws: WebSocket):
         except KeyError:
             await ws.send_json({"error": "Invalid message format."})
         except WebSocketDisconnect:
+            from utils.api_utils import revoked_tasks_ids_set
+
+            revoked_tasks_ids_set.clear()
             logger.info("socket disconnected")
             for task_result in ws.created_tasks:
                 if task_result.state in celery.states.UNREADY_STATES:

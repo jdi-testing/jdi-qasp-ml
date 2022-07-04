@@ -49,20 +49,28 @@ async def wait_until_task_reach_status(
             or task.status == CeleryStatuses.SUCCESS
             and expected_status != CeleryStatuses.SUCCESS
         ):
+            task_dict = task.dict()
+            # deleting underscores in task_id if any to send to frontend
+            task_dict["id"] = task_dict["id"].strip("_")
             response = get_websocket_response(
-                WebSocketResponseActions.STATUS_CHANGED, task.dict()
+                WebSocketResponseActions.STATUS_CHANGED, task_dict
             )
             await ws.send_json(response)
             break
 
         if task.status == expected_status.value:
+            task_dict = task.dict()
+            # deleting underscores in task_id if any to send to frontend
+            task_dict["id"] = task_dict["id"].strip("_")
             await ws.send_json(
                 get_websocket_response(
-                    WebSocketResponseActions.STATUS_CHANGED, task.dict()
+                    WebSocketResponseActions.STATUS_CHANGED, task_dict
                 )
             )
             if expected_status == CeleryStatuses.SUCCESS:
                 result = get_task_result(task_id)
+                # deleting underscores in task_id if any to send to frontend
+                result["id"] = result["id"].strip("_")
                 await ws.send_json(
                     get_websocket_response(
                         WebSocketResponseActions.RESULT_READY, result
@@ -119,6 +127,34 @@ def get_active_celery_tasks():
 
 
 revoked_tasks_ids_set = set()
+tasks_vault = {}
+
+
+async def change_task_priority(ws, payload, priority):
+    id_of_task_to_change_priority = payload["element_id"]
+    revoke_tasks([id_of_task_to_change_priority])
+
+    task_kwargs = tasks_vault[id_of_task_to_change_priority]
+    id_of_task_to_change_priority = convert_task_id_if_in_revoked(
+        id_of_task_to_change_priority
+    )
+    new_task_result = task_schedule_xpath_generation.apply_async(
+        kwargs=task_kwargs, task_id=id_of_task_to_change_priority, zpriority=priority
+    )
+    ws.created_tasks.append(new_task_result)
+
+    task_id_to_show = id_of_task_to_change_priority.strip("_")
+    new_task_result_id_to_show = new_task_result.id.strip("_")
+    await ws.send_json(
+        get_websocket_response(
+            WebSocketResponseActions.TASKS_SCHEDULED,
+            {task_id_to_show: new_task_result_id_to_show},
+        )
+    )
+    for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
+        asyncio.create_task(
+            wait_until_task_reach_status(ws, new_task_result.id, status)
+        )
 
 
 async def process_incoming_ws_request(
@@ -131,28 +167,35 @@ async def process_incoming_ws_request(
         element_ids = payload.id
         for element_id in element_ids:
             new_task_id = convert_task_id_if_in_revoked(element_id)
-            # If a task was paused (revoked in celery), we cannot restart it
-            # with the same id. We use "_{oldid}"
+            task_kwargs = {
+                "element_id": get_xpath_from_id(element_id),
+                "document": json.loads(payload.document),
+                "config": payload.config.dict(),
+            }
+            tasks_vault[element_id] = task_kwargs
             task_result = task_schedule_xpath_generation.apply_async(
-                kwargs={
-                    "element_id": get_xpath_from_id(element_id),
-                    "document": json.loads(payload.document),
-                    "config": payload.config.dict(),
-                },
-                task_id=new_task_id,
+                kwargs=task_kwargs, task_id=new_task_id, zpriority=2
             )
             ws.created_tasks.append(task_result)
 
+            element_id_to_show = element_id.strip("_")
+            task_result_id_to_show = task_result.id.strip("_")
             await ws.send_json(
                 get_websocket_response(
                     WebSocketResponseActions.TASKS_SCHEDULED,
-                    {element_id: task_result.id},
+                    {element_id_to_show: task_result_id_to_show},
                 )
             )
             for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
                 asyncio.create_task(
                     wait_until_task_reach_status(ws, task_result.id, status)
                 )
+    elif action == "prioritize_existing_task":
+        await change_task_priority(ws, payload, priority=1)
+
+    elif action == "deprioritize_existing_task":
+        pass
+
     elif action == "get_task_status":
         result = get_task_status(payload["id"]).dict()
     elif action == "get_tasks_statuses":

@@ -8,6 +8,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import KeyboardVoiceIcon from '@material-ui/icons/KeyboardVoice';
 import Icon from '@material-ui/core/Icon';
 import SaveIcon from '@material-ui/icons/Save';
+import JDIComplexButton from './ComplexButton';
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -135,6 +136,11 @@ export default function JDIButton({ type }) {
                     >
                         Save
                     </Button>
+                </React.Fragment>
+            }
+            {(type === 5) &&
+                <React.Fragment>
+                   <JDIComplexButton />
                 </React.Fragment>
             }
         </React.Fragment>)

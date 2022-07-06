@@ -49,14 +49,15 @@ async def wait_until_task_reach_status(
             or task.status == CeleryStatuses.SUCCESS
             and expected_status != CeleryStatuses.SUCCESS
         ):
-            task_dict = task.dict()
-            # deleting underscores in task_id if any to send to frontend
-            task_dict["id"] = task_dict["id"].strip("_")
-            response = get_websocket_response(
-                WebSocketResponseActions.STATUS_CHANGED, task_dict
-            )
-            await ws.send_json(response)
-            break
+            if task_id not in tasks_with_changed_priority:
+                task_dict = task.dict()
+                # deleting underscores in task_id if any to send to frontend
+                task_dict["id"] = task_dict["id"].strip("_")
+                response = get_websocket_response(
+                    WebSocketResponseActions.STATUS_CHANGED, task_dict
+                )
+                await ws.send_json(response)
+                break
 
         if task.status == expected_status.value:
             task_dict = task.dict()
@@ -128,10 +129,12 @@ def get_active_celery_tasks():
 
 revoked_tasks_ids_set = set()
 tasks_vault = {}
+tasks_with_changed_priority = set()
 
 
 async def change_task_priority(ws, payload, priority):
     id_of_task_to_change_priority = payload["element_id"]
+    tasks_with_changed_priority.add(id_of_task_to_change_priority)
     revoke_tasks([id_of_task_to_change_priority])
 
     task_kwargs = tasks_vault[id_of_task_to_change_priority]
@@ -194,7 +197,7 @@ async def process_incoming_ws_request(
         await change_task_priority(ws, payload, priority=1)
 
     elif action == "deprioritize_existing_task":
-        pass
+        await change_task_priority(ws, payload, priority=3)
 
     elif action == "get_task_status":
         result = get_task_status(payload["id"]).dict()

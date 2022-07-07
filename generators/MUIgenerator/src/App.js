@@ -34,8 +34,9 @@ import JDITextField from "./controls/TextField";
 import { JDIBox } from "./controls/Box";
 import JDIBadge from "./controls/Badge";
 import JDISnackbar from "./controls/Snackbar";
-import JDIButton from "./controls/Button";
+import JDIButton from "./controls/button/Button";
 import JDIInputBase from "./controls/InputBase";
+import JDIModal from "./controls/Modal";
 
 const controlParams = JSON.parse(process.env.REACT_APP_GENERATED_STRUCTURE);
 
@@ -69,6 +70,7 @@ function App() {
         (key === "Link" && <JDILink {...value} />) ||
         (key === "List" && <JDIList {...value} />) ||
         (key === "Menu" && <JDIMenu {...value} />) ||
+        (key === "Modal" && <JDIModal {...value} />) ||
         (key === "Portal" && <JDIPortal />) ||
         (key === "Popover" && <JDIPopover {...value} />) ||
         (key === "Popper" && <JDIPopper {...value} />) ||

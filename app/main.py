@@ -3,18 +3,26 @@
 ############################################
 
 import os
+from io import BytesIO
 
+import aiohttp
 import psutil
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi import status as status
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import HttpUrl
 
-from app import (MODEL_VERSION_DIRECTORY, UPLOAD_DIRECTORY, html5_df_path,
-                 mui_df_path, old_df_path, robula_api)
-from app.models import (PredictionInputModel, PredictionResponseModel,
-                        SystemInfoModel)
+from app import (
+    MODEL_VERSION_DIRECTORY,
+    UPLOAD_DIRECTORY,
+    html5_df_path,
+    mui_df_path,
+    old_df_path,
+    robula_api,
+)
+from app.models import PredictionInputModel, PredictionResponseModel, SystemInfoModel
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
@@ -110,6 +118,24 @@ async def system_info():
     response = {"cpu_count": cpu_count, "total_memory": total_memory}
 
     return response
+
+
+@api.get("/download_template")
+async def download_template(
+    repo_zip_url: HttpUrl = "https://github.com/jdi-templates/jdi-light-testng-template/archive/refs/heads/master.zip",
+):
+    """Takes link to zip archive of repo from Github. Returns downloaded repo as zip"""
+    headers = {"Content-Disposition": 'attachment; filename="template.zip"'}
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(repo_zip_url) as resp:
+                if resp.status == 200:
+                    content = await resp.read()
+
+                    return StreamingResponse(content=BytesIO(content), headers=headers)
+
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"Connection Error: {e}")
 
 
 if __name__ == "__main__":

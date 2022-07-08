@@ -109,7 +109,7 @@ def get_celery_tasks_results(ids: typing.List) -> typing.List[dict]:
 def get_celery_task_statuses(ids: typing.List[str]):
     results = []
     for task_id in ids:
-        results.append(get_task_status(task_id))
+        results.append(get_task_status(task_id).dict())
     return results
 
 
@@ -212,6 +212,6 @@ async def process_incoming_ws_request(
     elif action == "get_task_result":
         result = get_task_result(payload["id"])
     elif action == "get_task_results":
-        result = get_celery_tasks_results(payload)
+        result = get_celery_tasks_results(payload["id"])
 
     return result

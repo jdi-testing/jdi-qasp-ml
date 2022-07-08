@@ -5,15 +5,27 @@ import typing
 from functools import wraps
 
 import celery.states
-from fastapi import (APIRouter, Query, Request, UploadFile, WebSocket,
-                     WebSocketDisconnect, status)
+from fastapi import (
+    APIRouter,
+    Query,
+    Request,
+    UploadFile,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
 from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from starlette.responses import JSONResponse
 from starlette.websockets import WebSocketState
 
-from app.models import (ReportMail, TaskIdModel, TaskResultModel,
-                        TaskStatusModel, XPathGenerationModel)
+from app.models import (
+    ReportMail,
+    TaskIdModel,
+    TaskResultModel,
+    TaskStatusModel,
+    XPathGenerationModel,
+)
 from app.tasks import send_report_mail_task, task_schedule_xpath_generation
 from utils import api_utils
 
@@ -125,8 +137,11 @@ async def websocket(ws: WebSocket):
         except KeyError:
             await ws.send_json({"error": "Invalid message format."})
         except WebSocketDisconnect:
-            from utils.api_utils import (revoked_tasks_ids_set, tasks_vault,
-                                         tasks_with_changed_priority)
+            from utils.api_utils import (
+                revoked_tasks_ids_set,
+                tasks_vault,
+                tasks_with_changed_priority,
+            )
 
             revoked_tasks_ids_set.clear()
             tasks_vault.clear()
@@ -137,8 +152,8 @@ async def websocket(ws: WebSocket):
                     logger.info(f"Task revoked: {task_result.id}")
                     task_result.revoke(terminate=True, signal="SIGKILL")
 
-        if END_LOOP_FOR_TESTING:
-            break  # manually ending the loop while testing
+        # if END_LOOP_FOR_TESTING:
+        #     break  # manually ending the loop while testing
 
 
 @router.post("/report_problem")

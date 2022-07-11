@@ -3,11 +3,11 @@ import gc
 import json
 import logging
 import os
-
-import pandas as pd
 import pickle
 
-from app import UPLOAD_DIRECTORY, html5_df_path, html5_model, html5_classes_path
+import pandas as pd
+
+from app import UPLOAD_DIRECTORY, html5_classes_path, html5_df_path, html5_model
 from utils.dataset import HTML5_JDNDataset
 
 logger = logging.getLogger("jdi-qasp-ml")
@@ -65,6 +65,7 @@ async def html5_predict_elements(body):
         "height",
         "predicted_label",
         "predicted_probability",
+        "childs",
     ]
 
     results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")][
@@ -73,6 +74,26 @@ async def html5_predict_elements(body):
     # # sort in descending order: big controls first
     results_df["sort_key"] = results_df.height * results_df.width
     results_df = results_df.sort_values(by="sort_key", ascending=False)
+
+    #########################
+    # current model returns partially non-existing elements' children
+    # here we're cleaning it, but it should be corrected on model's side
+    def clean_childs():
+        elements_ids = list(results_df["element_id"])
+
+        result = []
+        for element_childs in list(results_df["childs"]):
+            if element_childs:
+                cleaned_childs = [
+                    item for item in element_childs if item in elements_ids
+                ]
+                result.append(cleaned_childs)
+            else:
+                result.append([])
+        results_df["childs"] = result
+
+    clean_childs()
+    #########################
 
     if results_df.shape[0] == 0:
         gc.collect()

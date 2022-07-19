@@ -35,6 +35,7 @@ email-validator = "*"
 python-multipart = "*"
 aiofiles = "*"
 aiohttp = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

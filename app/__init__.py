@@ -1,27 +1,37 @@
 import os
 import sys
 
+from dotenv import load_dotenv
+
 from vars.path_vars import (
-    UPLOAD_DIRECTORY,
-    TEMPLATES_PATH,
-    MODEL_VERSION_DIRECTORY,
     JS_DIRECTORY,
+    MODEL_VERSION_DIRECTORY,
+    TEMPLATES_PATH,
+    UPLOAD_DIRECTORY,
+    html5_classes_path,
+    html5_df_path,
+    html5_model,
     mui_df_path,
     mui_model,
     old_df_path,
     old_model,
-    redis_address,
-    html5_df_path,
-    html5_model,
-    html5_classes_path,
 )
+
+load_dotenv()
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
 
-REDIS_URL = os.getenv("REDIS_ADDRESS", redis_address)
-BASE_DIR = os.path.join(prefix, "jdi-qasp-ml")
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
+if REDIS_PASSWORD:
+    REDIS_BROKER = f"redispriorityasync://:{REDIS_PASSWORD}@redis:6379"
+    REDIS_BACKEND = f"redis://:{REDIS_PASSWORD}@redis:6379"
+else:
+    REDIS_BROKER = "redispriorityasync://redis:6379"
+    REDIS_BACKEND = "redis://redis:6379"
 
+
+BASE_DIR = os.path.join(prefix, "jdi-qasp-ml")
 UPLOAD_DIRECTORY = os.getenv(
     "UPLOAD_DIRECTORY", os.path.join(BASE_DIR, UPLOAD_DIRECTORY)
 )

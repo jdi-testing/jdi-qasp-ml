@@ -24,3 +24,5 @@ services:
   redis:
     container_name: jdi-qasp-ml-redis
     image: "redis:alpine"
+    ports:
+      - "6379"

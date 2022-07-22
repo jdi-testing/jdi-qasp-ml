@@ -165,7 +165,10 @@ async def process_incoming_ws_request(
 ) -> typing.Dict:
     result = {}
 
-    if action == "schedule_multiple_xpath_generations":
+    if action == "ping":
+        await ws.send_json({"pong": payload})
+
+    elif action == "schedule_multiple_xpath_generations":
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
         for element_id in element_ids:

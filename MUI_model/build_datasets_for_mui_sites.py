@@ -7,6 +7,8 @@ from time import sleep
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 dataset_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset")
 
+print("0")
+
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
 
 from utils.config import logger  # noqa
@@ -24,7 +26,7 @@ SITE_URLS = [
 ]
 DATASET_NAMES = [re.search("site-[0-9]+", nm)[0] for nm in SITE_URLS]
 
-
+print("1")
 class JDIDatasetBuilder(DatasetBuilder):
     def setUp(self, driver):
         self.logger.info("getting page")
@@ -32,6 +34,7 @@ class JDIDatasetBuilder(DatasetBuilder):
         maximize_window(driver=driver)
         sleep(WAIT_TIME_SECONDS)
 
+print("2")
 
 i = 1
 for site, ds_name in zip(SITE_URLS, DATASET_NAMES):
@@ -40,3 +43,5 @@ for site, ds_name in zip(SITE_URLS, DATASET_NAMES):
     )
     logger.info(f"\n------------\n{len(SITE_URLS)-i} SITES LEFT TO PROCESS!")
     i += 1
+
+print("3")

@@ -7,6 +7,7 @@ import gc
 from tqdm.auto import trange
 import pandas as pd
 from glob import glob
+import logging
 
 
 import torch
@@ -27,10 +28,10 @@ from vars.mui_train_vars import (  # noqa
     SCHEDULER_STEP,  # noqa
 )  # noqa
 
-from utils.config import logger  # noqa
+
 from utils.dataset import MUI_JDNDataset  # noqa
 from utils.model_new import JDIModel  # noqa
-from utils.common import accuracy  # noqa
+from utils.common import accuracy, accuracy_each_class, recall, precision  # noqa
 
 model_path = os.path.join(prefix, "jdi-qasp-ml", "MUI_model/model")
 df_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/df")
@@ -42,6 +43,13 @@ train_names = DATASET_NAMES[:TRAIN_LEN]
 test_names = DATASET_NAMES[TRAIN_LEN : TRAIN_LEN + TEST_LEN]  # noqa
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+LOG_FILENAME = "C:/Users/Iuliia_Elizarova/Desktop/JDI/jdi-qasp-ml/data/mui_dataset/logfile.log"
+logging.basicConfig(filename=LOG_FILENAME,
+                format='%(asctime)s %(message)s',
+                filemode='w')
+logger = logging.getLogger()
+
 logger.info(f"device: {DEVICE}")
 
 
@@ -76,50 +84,11 @@ def evaluate(model: JDIModel, dataset: MUI_JDNDataset) -> pd.DataFrame:
                     bar.update(1)
 
     results_df = pd.DataFrame(results)
-    return accuracy(results_df)
+    return accuracy(results_df), accuracy_each_class(results_df), recall(results_df), precision(results_df)
 
 
-if __name__ == "__main__":
-
-    freeze_support()
-
-    train_dataset = MUI_JDNDataset(
-        datasets_list=train_names, dataset_type="mui", rebalance_and_shuffle=True
-    )
-    test_dataset = MUI_JDNDataset(
-        datasets_list=test_names, dataset_type="mui", rebalance_and_shuffle=False
-    )
-
-    logger.info(
-        f"Train dataset shape:  {train_dataset.X.shape}; Test dataset shape: {test_dataset.X.shape}"
-    )
-
-    train_dataloader = DataLoader(
-        train_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=True,
-        pin_memory=True,
-        drop_last=True,
-        num_workers=0,
-    )
-
-    IN_FEATURES = next(iter(train_dataloader))[0][0].shape[0]
-    OUT_FEATURES = len(train_dataset.classes_dict)
-
-    if os.path.exists(f"{model_path}/model.pth"):
-        print("WARNING: load saved model weights")
-        model = torch.load(f"{model_path}/model.pth", map_location="cpu").to(DEVICE)
-        best_accuracy = evaluate(model=model, dataset=test_dataset)
-    else:
-        print("WARNING: Create brand new model")
-        model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
-        best_accuracy = 0.0
-
-    logger.info(f"START TRAINING THE MODEL WITH THE BEST ACCURACY: {best_accuracy}")
-
-    # just for test purpose:
-    # model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
-
+def train_model(model):
+    
     train_metrics = []
     gc.collect()
 
@@ -132,7 +101,7 @@ if __name__ == "__main__":
     NUM_BATCHES = len(train_dataloader)
 
     early_stopping_steps = EARLY_STOPPING_THRESHOLD
-
+    best_accuracy = 0
     for epoch in range(NUM_EPOCHS):
 
         model.train()
@@ -161,11 +130,11 @@ if __name__ == "__main__":
             bar.update(1)
 
         early_stopping_steps -= 1
-        test_accuracy = evaluate(model=model, dataset=test_dataset)
+        test_accuracy = evaluate(model=model, dataset=test_dataset)[0]
         if test_accuracy > best_accuracy:
             best_accuracy = test_accuracy
             logger.info(f"SAVING MODEL WITH THE BEST ACCURACY: {best_accuracy}")
-            torch.save(model, f"{model_path}/model.pth")
+            #torch.save(model, f"{model_path}/model.pth")
             early_stopping_steps = EARLY_STOPPING_THRESHOLD
 
         train_metrics.append(
@@ -182,7 +151,6 @@ if __name__ == "__main__":
         for r in train_metrics:
             table_data.append([r["epoch"], r["mean(loss)"], r["accuracy(test)"]])
 
-        print(DoubleTable(table_data=table_data).table)
         print(f"Best accuracy: {best_accuracy}, attempts left: {early_stopping_steps}")
 
         if early_stopping_steps <= 0:
@@ -193,4 +161,76 @@ if __name__ == "__main__":
     pd.DataFrame(train_metrics, index=list(range(len(train_metrics)))).to_csv(
         "tmp/train_metrics.csv"
     )
-    exit(0)
+ 
+    print(DoubleTable(table_data=table_data).table)
+    
+
+if __name__ == "__main__":
+
+    freeze_support()
+
+    train_dataset = MUI_JDNDataset(
+        datasets_list=train_names, dataset_type="mui", rebalance_and_shuffle=True
+    )
+    test_dataset = MUI_JDNDataset(
+        datasets_list=test_names, dataset_type="mui", rebalance_and_shuffle=False
+    )
+
+    logger.info(
+        f"Train dataset shape:  {train_dataset.X.shape}; Test dataset shape: {test_dataset.X.shape}"
+    )
+
+    train_dataloader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=True,
+        pin_memory=True,
+        drop_last=True,
+        num_workers=0,
+    )
+
+    IN_FEATURES = next(iter(train_dataloader))[0][0].shape[0]
+    OUT_FEATURES = len(train_dataset.classes_dict)
+
+
+    # LOG_FILENAME = "logfile.log"
+    # logging.basicConfig(filename=LOG_FILENAME,
+    #                 format='%(asctime)s %(message)s',
+    #                 filemode='w')
+    # logger = logging.getLogger()
+
+    # for n1 in [256, 512, 1024]:
+    #     for n2 in [64, 128, 256]:
+    #for n1 in [0.05, 0.1, 0.2]:
+    for n2 in [0.05, 0.1, 0.2, 0.5]:
+        print(f"LeakyRelu {n2}")
+        # if os.path.exists(f"{model_path}/model.pth"):
+        #     print("WARNING: load saved model weights")
+        #     model = torch.load(f"{model_path}/model.pth", map_location="cpu").to(DEVICE)
+        #     best_accuracy, \
+        #     best_accuracy_each_class, \
+        #     best_recall_each_class, \
+        #     best_precision_each_class = evaluate(model=model, dataset=test_dataset)
+        # else:
+        # print("WARNING: Create brand new model")
+        model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES, n2=n2)
+        #best_accuracy = 0.0
+        train_model(model)
+        best_accuracy, \
+        best_accuracy_each_class, \
+        best_recall_each_class, \
+        best_precision_each_class = evaluate(model=model, dataset=test_dataset)
+
+        #logger.info(f"N neurons {n1}, {n2}")
+        logger.info(f"START TRAINING THE MODEL WITH THE BEST ACCURACY: {best_accuracy}, \
+            best accuracy for each class {best_accuracy_each_class}, \
+            best recall for each class {best_recall_each_class}, \
+            best precision for each class {best_precision_each_class}, \
+            leakyrelu {n2}")
+        logger.info("\n")
+
+    # just for test purpose:
+    # model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
+
+
+

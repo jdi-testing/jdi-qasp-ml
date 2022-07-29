@@ -139,5 +139,10 @@ async def download_template(
             raise HTTPException(status_code=503, detail=f"Connection Error: {e}")
 
 
+@api.get("/show_request_info")
+def show_request_data(request: Request):
+    return {"client_host": request.client.host, "request_headers": request.headers}
+
+
 if __name__ == "__main__":
     uvicorn.run("app.main:api", host="127.0.0.1", port=5000, log_level="info")

@@ -117,9 +117,6 @@ def revoke_all_tasks():
     return {"status": "ok", "tasksRevoked": task_ids}
 
 
-END_LOOP_FOR_TESTING = False
-
-
 @router.websocket("/ws")
 async def websocket(ws: WebSocket):
     await ws.accept()

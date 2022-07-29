@@ -122,7 +122,7 @@ async def system_info():
 
 @api.get("/download_template")
 async def download_template(
-    repo_zip_url: HttpUrl = "https://github.com/jdi-templates/jdi-light-testng-template/archive/refs/heads/master.zip",
+    repo_zip_url: HttpUrl = "https://github.com/jdi-templates/jdi-light-testng-empty-template/archive/refs/heads/main.zip",
 ):
     """Takes link to zip archive of repo from Github. Returns downloaded repo as zip"""
     headers = {"Content-Disposition": 'attachment; filename="template.zip"'}

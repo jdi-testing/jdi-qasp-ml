@@ -141,7 +141,12 @@ async def download_template(
 
 @api.get("/show_request_info")
 def show_request_data(request: Request):
-    return {"client_host": request.client.host, "request_headers": request.headers}
+    return {
+        "client_host": request.client.host,
+        "X-Real-Ip": request.headers.get("X-Real-Ip", None),
+        "X-Forwarded-For": request.headers.get("X-Forwarded-For", None),
+        "request_headers": request.headers,
+    }
 
 
 if __name__ == "__main__":

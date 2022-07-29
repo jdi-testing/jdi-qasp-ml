@@ -36,6 +36,7 @@ python-multipart = "*"
 aiofiles = "*"
 aiohttp = "*"
 python-dotenv = "*"
+pymongo = "*"
 
 [dev-packages]
 

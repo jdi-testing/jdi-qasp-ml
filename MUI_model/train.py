@@ -134,7 +134,7 @@ def train_model(model):
         if test_accuracy > best_accuracy:
             best_accuracy = test_accuracy
             logger.info(f"SAVING MODEL WITH THE BEST ACCURACY: {best_accuracy}")
-            #torch.save(model, f"{model_path}/model.pth")
+            torch.save(model, f"{model_path}/model.pth")
             early_stopping_steps = EARLY_STOPPING_THRESHOLD
 
         train_metrics.append(
@@ -192,45 +192,13 @@ if __name__ == "__main__":
     IN_FEATURES = next(iter(train_dataloader))[0][0].shape[0]
     OUT_FEATURES = len(train_dataset.classes_dict)
 
+    model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES, n2=0.1)
+    train_model(model)
+    best_accuracy, best_accuracy_each_class, \
+    best_recall_each_class, best_precision_each_class = evaluate(model=model, dataset=test_dataset)
 
-    # LOG_FILENAME = "logfile.log"
-    # logging.basicConfig(filename=LOG_FILENAME,
-    #                 format='%(asctime)s %(message)s',
-    #                 filemode='w')
-    # logger = logging.getLogger()
-
-    # for n1 in [256, 512, 1024]:
-    #     for n2 in [64, 128, 256]:
-    #for n1 in [0.05, 0.1, 0.2]:
-    for n2 in [0.05, 0.1, 0.2, 0.5]:
-        print(f"LeakyRelu {n2}")
-        # if os.path.exists(f"{model_path}/model.pth"):
-        #     print("WARNING: load saved model weights")
-        #     model = torch.load(f"{model_path}/model.pth", map_location="cpu").to(DEVICE)
-        #     best_accuracy, \
-        #     best_accuracy_each_class, \
-        #     best_recall_each_class, \
-        #     best_precision_each_class = evaluate(model=model, dataset=test_dataset)
-        # else:
-        # print("WARNING: Create brand new model")
-        model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES, n2=n2)
-        #best_accuracy = 0.0
-        train_model(model)
-        best_accuracy, \
-        best_accuracy_each_class, \
-        best_recall_each_class, \
-        best_precision_each_class = evaluate(model=model, dataset=test_dataset)
-
-        #logger.info(f"N neurons {n1}, {n2}")
-        logger.info(f"START TRAINING THE MODEL WITH THE BEST ACCURACY: {best_accuracy}, \
-            best accuracy for each class {best_accuracy_each_class}, \
-            best recall for each class {best_recall_each_class}, \
-            best precision for each class {best_precision_each_class}, \
-            leakyrelu {n2}")
-        logger.info("\n")
-
-    # just for test purpose:
-    # model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES)
-
-
-
+    logger.info(f"START TRAINING THE MODEL WITH THE BEST ACCURACY: {best_accuracy}, \
+        best accuracy for each class {best_accuracy_each_class}, \
+        best recall for each class {best_recall_each_class}, \
+        best precision for each class {best_precision_each_class}")
+    logger.info("\n")

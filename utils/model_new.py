@@ -22,7 +22,6 @@ class JDIModel(torch.nn.Module):
             in_features=self.hidden1.out_features, out_features=out_features, bias=False
         )
 
-
     def forward(self, x):
         x = self.input_layer(x)
         x = self.leaky_relu1(x)

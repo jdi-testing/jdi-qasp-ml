@@ -24,6 +24,7 @@ SITE_URLS = [
 ]
 DATASET_NAMES = [re.search("site-[0-9]+", nm)[0] for nm in SITE_URLS]
 
+
 class JDIDatasetBuilder(DatasetBuilder):
     def setUp(self, driver):
         self.logger.info("getting page")

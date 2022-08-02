@@ -46,8 +46,8 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 LOG_FILENAME = "C:/Users/Iuliia_Elizarova/Desktop/JDI/jdi-qasp-ml/data/mui_dataset/logfile.log"
 logging.basicConfig(filename=LOG_FILENAME,
-                format='%(asctime)s %(message)s',
-                filemode='w')
+                    format='%(asctime)s %(message)s',
+                    filemode='w')
 logger = logging.getLogger()
 
 logger.info(f"device: {DEVICE}")
@@ -108,7 +108,6 @@ def train_model(model):
         model.to(DEVICE)
 
         cumulative_loss = 0.0
-        cumulative_main_loss = 0.0
 
         with trange(NUM_BATCHES) as bar:
 
@@ -195,7 +194,7 @@ if __name__ == "__main__":
     model = JDIModel(in_features=IN_FEATURES, out_features=OUT_FEATURES, n2=0.1)
     train_model(model)
     best_accuracy, best_accuracy_each_class, \
-    best_recall_each_class, best_precision_each_class = evaluate(model=model, dataset=test_dataset)
+        best_recall_each_class, best_precision_each_class = evaluate(model=model, dataset=test_dataset)
 
     logger.info(f"START TRAINING THE MODEL WITH THE BEST ACCURACY: {best_accuracy}, \
         best accuracy for each class {best_accuracy_each_class}, \

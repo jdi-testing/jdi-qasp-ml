@@ -28,7 +28,7 @@ class JDIModel(torch.nn.Module):
         x = self.batchNorm1(x)
         x = self.hidden1(x)
         x = self.leaky_relu2(x)
-        x = self.hidden2(x)  
+        x = self.hidden2(x)
 
         return x
 

@@ -88,7 +88,7 @@ def evaluate(model: JDIModel, dataset: MUI_JDNDataset) -> pd.DataFrame:
 
 
 def train_model(model):
-    
+
     train_metrics = []
     gc.collect()
 
@@ -160,9 +160,9 @@ def train_model(model):
     pd.DataFrame(train_metrics, index=list(range(len(train_metrics)))).to_csv(
         "tmp/train_metrics.csv"
     )
- 
+
     print(DoubleTable(table_data=table_data).table)
-    
+
 
 if __name__ == "__main__":
 

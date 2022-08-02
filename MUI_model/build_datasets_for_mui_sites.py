@@ -32,6 +32,7 @@ class JDIDatasetBuilder(DatasetBuilder):
         maximize_window(driver=driver)
         sleep(WAIT_TIME_SECONDS)
 
+
 i = 1
 for site, ds_name in zip(SITE_URLS, DATASET_NAMES):
     JDIDatasetBuilder(

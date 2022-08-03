@@ -126,12 +126,16 @@ async def websocket(ws: WebSocket):
             data = await ws.receive_json()
             action = data["action"]
             payload = data["payload"]
+            logging_info = data.get("logging_info")
 
-            result = await api_utils.process_incoming_ws_request(action, payload, ws)
+            result = await api_utils.process_incoming_ws_request(
+                action, payload, ws, logging_info
+            )
 
             if result:
                 await ws.send_json(result)
-        except KeyError:
+        except KeyError as e:
+            logger.error(e)
             await ws.send_json({"error": "Invalid message format."})
         except WebSocketDisconnect:
             from utils.api_utils import (
@@ -148,9 +152,6 @@ async def websocket(ws: WebSocket):
                 if task_result.state in celery.states.UNREADY_STATES:
                     logger.info(f"Task revoked: {task_result.id}")
                     task_result.revoke(terminate=True, signal="SIGKILL")
-
-        # if END_LOOP_FOR_TESTING:
-        #     break  # manually ending the loop while testing
 
 
 @router.post("/report_problem")

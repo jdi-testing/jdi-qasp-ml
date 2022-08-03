@@ -10,5 +10,6 @@ celery_app = Celery(
     task_track_started=True,
     task_acks_late=True,
     worker_prefetch_multiplier=1,
+    result_extended=True
 )
 celery_app.autodiscover_tasks(["app.tasks"], force=True)

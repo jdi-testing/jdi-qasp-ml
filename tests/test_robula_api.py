@@ -1,3 +1,6 @@
+from asyncio import coroutine
+from unittest.mock import Mock, patch
+
 from fastapi.testclient import TestClient
 
 from app.main import api
@@ -50,6 +53,12 @@ def test_schedule_multiple_xpath_generation():
                     "allow_indexes_at_the_end": False,
                 },
             },
+            "logging_info": {
+                "session_id": 1,
+                "page_object_creation": "PageObjectCreationName",
+                "element_library": "HTML5",
+                "website_url": "www.google.com",
+            },
         }
 
         websocket.send_json(mock_message)
@@ -93,6 +102,12 @@ def test_revoke_tasks():
                     "allow_indexes_at_the_end": False,
                 },
             },
+            "logging_info": {
+                "session_id": 2,
+                "page_object_creation": "PageObjectCreationName",
+                "element_library": "HTML5",
+                "website_url": "www.google.com",
+            },
         }
 
         websocket.send_json(scheduling_message)
@@ -110,7 +125,19 @@ def test_revoke_tasks():
         assert data1["payload"]["id"] == ["3189676561559760661294561923"]
 
 
-def test_get_task_status():
+def CoroMock():
+    coro = Mock(name="CoroutineResult")
+    corofunc = Mock(name="CoroutineFunction", side_effect=coroutine(coro))
+    corofunc.coro = coro
+    return corofunc
+
+
+@patch(
+    "utils.api_utils.mongodb.enrich_logs_with_generated_locators", new_callable=CoroMock
+)
+def test_get_task_status(corofunc):
+    corofunc.coro.return_value = "corotine mock result"
+
     client = TestClient(api)
     with client.websocket_connect("/ws") as websocket:
         scheduling_message = {
@@ -124,6 +151,12 @@ def test_get_task_status():
                     "allow_indexes_in_the_middle": False,
                     "allow_indexes_at_the_end": False,
                 },
+            },
+            "logging_info": {
+                "session_id": 3,
+                "page_object_creation": "PageObjectCreationName",
+                "element_library": "HTML5",
+                "website_url": "www.google.com",
             },
         }
 
@@ -148,7 +181,12 @@ def test_get_task_status():
         assert data == {"id": "0496233594559760661051207166", "status": "SUCCESS"}
 
 
-def test_get_task_statuses():
+@patch(
+    "utils.api_utils.mongodb.enrich_logs_with_generated_locators", new_callable=CoroMock
+)
+def test_get_task_statuses(corofunc):
+    corofunc.coro.return_value = "corotine mock result"
+
     client = TestClient(api)
     with client.websocket_connect("/ws") as websocket:
         el_ids = ["0112389422559760667916905668", "0486422498559760669553972716"]
@@ -163,6 +201,12 @@ def test_get_task_statuses():
                     "allow_indexes_in_the_middle": False,
                     "allow_indexes_at_the_end": False,
                 },
+            },
+            "logging_info": {
+                "session_id": 1234,
+                "page_object_creation": "PageObjectCreationName",
+                "element_library": "HTML5",
+                "website_url": "www.google.com",
             },
         }
 
@@ -187,7 +231,12 @@ def test_get_task_statuses():
         ]
 
 
-def test_get_task_result():
+@patch(
+    "utils.api_utils.mongodb.enrich_logs_with_generated_locators", new_callable=CoroMock
+)
+def test_get_task_result(corofunc):
+    corofunc.coro.return_value = "corotine mock result"
+
     client = TestClient(api)
     with client.websocket_connect("/ws") as websocket:
         scheduling_message = {
@@ -201,6 +250,12 @@ def test_get_task_result():
                     "allow_indexes_in_the_middle": False,
                     "allow_indexes_at_the_end": False,
                 },
+            },
+            "logging_info": {
+                "session_id": 1234,
+                "page_object_creation": "PageObjectCreationName",
+                "element_library": "HTML5",
+                "website_url": "www.google.com",
             },
         }
 
@@ -228,7 +283,12 @@ def test_get_task_result():
         }
 
 
-def test_get_task_results():
+@patch(
+    "utils.api_utils.mongodb.enrich_logs_with_generated_locators", new_callable=CoroMock
+)
+def test_get_task_results(corofunc):
+    corofunc.coro.return_value = "corotine mock result"
+
     client = TestClient(api)
     with client.websocket_connect("/ws") as websocket:
         el_ids = ["0112389422559760667916905668", "0486422498559760669553972716"]
@@ -243,6 +303,12 @@ def test_get_task_results():
                     "allow_indexes_in_the_middle": False,
                     "allow_indexes_at_the_end": False,
                 },
+            },
+            "logging_info": {
+                "session_id": 1234,
+                "page_object_creation": "PageObjectCreationName",
+                "element_library": "HTML5",
+                "website_url": "www.google.com",
             },
         }
 

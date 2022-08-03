@@ -2,11 +2,13 @@ import asyncio
 import json
 import typing
 
+from celery.result import AsyncResult
 from starlette.websockets import WebSocket, WebSocketState
 
+import app.mongodb as mongodb
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
-from app.models import TaskStatusModel, XPathGenerationModel
+from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel
 from app.tasks import task_schedule_xpath_generation
 
 
@@ -40,9 +42,12 @@ def get_element_id_from_xpath(xpath: str):
 
 
 async def wait_until_task_reach_status(
-    ws: WebSocket, task_id: str, expected_status: CeleryStatuses
+    ws: WebSocket,
+    task_result_obj: AsyncResult,
+    expected_status: CeleryStatuses,
 ):
     while ws.client_state != WebSocketState.DISCONNECTED:
+        task_id = task_result_obj.id
         task = get_task_status(task_id)
         if (
             (task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE))
@@ -72,6 +77,12 @@ async def wait_until_task_reach_status(
                 result = get_task_result(task_id)
                 # deleting underscores in task_id if any to send to frontend
                 result["id"] = result["id"].strip("_")
+
+                session_id = task_result_obj.kwargs.get("session_id")
+                website_url = task_result_obj.kwargs.get("website_url")
+                await mongodb.enrich_logs_with_generated_locators(
+                    session_id, website_url, result
+                )
                 await ws.send_json(
                     get_websocket_response(
                         WebSocketResponseActions.RESULT_READY, result
@@ -155,13 +166,11 @@ async def change_task_priority(ws, payload, priority):
         )
     )
     for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
-        asyncio.create_task(
-            wait_until_task_reach_status(ws, new_task_result.id, status)
-        )
+        asyncio.create_task(wait_until_task_reach_status(ws, new_task_result, status))
 
 
 async def process_incoming_ws_request(
-    action: str, payload: dict, ws: WebSocket
+    action: str, payload: dict, ws: WebSocket, logging_info: dict
 ) -> typing.Dict:
     result = {}
 
@@ -169,11 +178,16 @@ async def process_incoming_ws_request(
         await ws.send_json({"pong": payload})
 
     elif action == "schedule_multiple_xpath_generations":
+        logging_info = LoggingInfoModel(**logging_info)
+        mongodb.create_initial_log_entry(logging_info)
+
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
         for element_id in element_ids:
             new_task_id = convert_task_id_if_in_revoked(element_id)
             task_kwargs = {
+                "session_id": logging_info.session_id,
+                "website_url": logging_info.website_url,
                 "element_id": get_xpath_from_id(element_id),
                 "document": json.loads(payload.document),
                 "config": payload.config.dict(),
@@ -194,7 +208,7 @@ async def process_incoming_ws_request(
             )
             for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
                 asyncio.create_task(
-                    wait_until_task_reach_status(ws, task_result.id, status)
+                    wait_until_task_reach_status(ws, task_result, status)
                 )
     elif action == "prioritize_existing_task":
         await change_task_priority(ws, payload, priority=1)

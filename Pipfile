@@ -37,6 +37,8 @@ aiofiles = "*"
 aiohttp = "*"
 python-dotenv = "*"
 pymongo = "*"
+bson = "*"
+motor = "*"
 
 [dev-packages]
 

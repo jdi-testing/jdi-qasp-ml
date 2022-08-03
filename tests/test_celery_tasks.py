@@ -101,7 +101,11 @@ def test_task_schedule_xpath_generation_positive_case():
         "allow_indexes_at_the_end": False,
     }
     result = task_schedule_xpath_generation(
-        element_id=element_id, document=mock_html_page_code, config=config
+        element_id=element_id,
+        document=mock_html_page_code,
+        config=config,
+        session_id=123,
+        website_url="example.com",
     )
     assert result == "//*[contains(text(), 'Какой-то контент')]"
 
@@ -119,5 +123,9 @@ def test_task_schedule_xpath_generation_element_not_found():
 
     with pytest.raises(XPathDocumentDoesntContainElement):
         task_schedule_xpath_generation(
-            element_id=element_id, document=mock_html_page_code, config=config
+            element_id=element_id,
+            document=mock_html_page_code,
+            config=config,
+            session_id=123,
+            website_url="example.com",
         )

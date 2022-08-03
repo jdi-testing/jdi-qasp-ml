@@ -29,6 +29,14 @@ class XPathGenerationModel(TaskIdModel):
     config: RobulaSettingsModel
 
 
+class LoggingInfoModel(BaseModel):
+    session_id: int
+    element_library: str
+    page_object_creation: str
+    website_url: str
+    locator_list: List = []
+
+
 class PredictionRequestElement(BaseModel):
     tag_name: Union[str, None]
     element_id: Union[str, None]

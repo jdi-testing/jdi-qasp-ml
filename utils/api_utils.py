@@ -80,8 +80,11 @@ async def wait_until_task_reach_status(
 
                 session_id = task_result_obj.kwargs.get("session_id")
                 website_url = task_result_obj.kwargs.get("website_url")
+                start_time = task_result_obj.kwargs.get("start_time")
+                task_duration = task_result_obj.kwargs.get("task_duration")
+
                 await mongodb.enrich_logs_with_generated_locators(
-                    session_id, website_url, result
+                    session_id, website_url, result, start_time, task_duration
                 )
                 await ws.send_json(
                     get_websocket_response(

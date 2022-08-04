@@ -1,13 +1,23 @@
+import datetime
+
 import app.mail_backend as backends
 from app.celery_app import celery_app
 from utils.robula import generate_xpath
 
 
-@celery_app.task
+@celery_app.task(bind=True)
 def task_schedule_xpath_generation(
-    element_id, document, config, session_id, website_url
+    self, element_id, document, config, session_id, website_url
 ):
-    return generate_xpath(element_id, document, config)
+    start_time = datetime.datetime.utcnow()
+    result = generate_xpath(element_id, document, config)
+    end_time = datetime.datetime.utcnow()
+    task_duration = end_time - start_time
+
+    task_kwargs = self.request.kwargs
+    task_kwargs["task_duration"] = str(task_duration)
+    task_kwargs["start_time"] = str(start_time)
+    return result
 
 
 @celery_app.task(

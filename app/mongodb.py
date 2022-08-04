@@ -38,7 +38,7 @@ def create_initial_log_entry(logging_info):
 
 
 async def enrich_logs_with_generated_locators(
-    session_id, website_url, result, start_time, task_duration
+    session_id, website_url, full_xpath, nesting_num, result, start_time, task_duration
 ):
     logs_collection = async_mongo_db.logs
     await logs_collection.update_one(
@@ -47,6 +47,8 @@ async def enrich_logs_with_generated_locators(
             "$push": {
                 "locator_list": {
                     "jdn-hash": result["id"],
+                    "full_xpath": full_xpath,
+                    "nesting_num": nesting_num,
                     "generated_locator": result["result"],
                     "start_time": start_time,
                     "task_duration": task_duration,

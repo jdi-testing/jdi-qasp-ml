@@ -1,4 +1,3 @@
-import datetime
 import json
 
 import motor.motor_asyncio
@@ -38,7 +37,9 @@ def create_initial_log_entry(logging_info):
     logs_collection.insert_one(logging_info.dict())
 
 
-async def enrich_logs_with_generated_locators(session_id, website_url, result):
+async def enrich_logs_with_generated_locators(
+    session_id, website_url, full_xpath, nesting_num, result, start_time, task_duration
+):
     logs_collection = async_mongo_db.logs
     await logs_collection.update_one(
         {"session_id": session_id, "website_url": website_url},
@@ -46,8 +47,11 @@ async def enrich_logs_with_generated_locators(session_id, website_url, result):
             "$push": {
                 "locator_list": {
                     "jdn-hash": result["id"],
+                    "full_xpath": full_xpath,
+                    "nesting_num": nesting_num,
                     "generated_locator": result["result"],
-                    "timestamp": str(datetime.datetime.utcnow()),
+                    "start_time": start_time,
+                    "task_duration": task_duration,
                 }
             }
         },

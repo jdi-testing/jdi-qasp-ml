@@ -36,10 +36,3 @@ services:
       - "6379"
     env_file:
       - .env
-
-  mongodb:
-    image: mongo:5.0
-    ports:
-      - 27017:27017
-    volumes:
-      - ~/apps/mongo:/data/db

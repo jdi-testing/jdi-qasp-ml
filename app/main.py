@@ -23,7 +23,6 @@ from app import (
     robula_api,
 )
 from app.models import PredictionInputModel, PredictionResponseModel, SystemInfoModel
-import app.mongodb as mongodb
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
@@ -148,11 +147,6 @@ def show_request_data(request: Request):
         "X-Forwarded-For": request.headers.get("X-Forwarded-For", None),
         "request_headers": request.headers,
     }
-
-
-@api.get("/get_session_id")
-def get_session_id():
-    return mongodb.get_session_id()
 
 
 if __name__ == "__main__":

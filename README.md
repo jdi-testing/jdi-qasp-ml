@@ -165,7 +165,39 @@ curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-te
 ```shell
 curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
+## Installing version from any other repository branch:
+Example with branch "rc-1":
 
+Installing for the first time:
+1. Clone repository to your machine:
+```
+git clone https://github.com/jdi-testing/jdi-qasp-ml.git
+```
+2. After process finished go to the project folder:
+```
+cd jdi-qasp-ml
+```
+3. Checkout to a branch needed:
+```
+git checkout rc-1
+```
+4. build and start containers:
+```
+docker-compose -f docker-compose.dev.yaml up --build
+```
+Next time if you want to run/rerun containers, use following commands:
+1. Stop running containers:
+```
+docker-compose -f docker-compose.dev.yaml down -v
+```
+2. Update repository with new commits:
+```
+git pull
+```
+3. Restart containers:
+```
+docker-compose -f docker-compose.dev.yaml up
+```
 # Docker - get debugging info:
 - http://localhost:5050/build  - get the docker image build's datetime
 - http://localhost:5050/files  - get data sent by browser to model

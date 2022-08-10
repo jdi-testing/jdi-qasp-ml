@@ -62,15 +62,9 @@ def test_schedule_multiple_xpath_generation():
         }
 
         websocket.send_json(mock_message)
-        data0 = websocket.receive_json()
-        assert data0["action"] == "tasks_scheduled"
-        data1 = websocket.receive_json()
-        assert data1["action"] == "status_changed"
-        data2 = websocket.receive_json()
-        assert data2["action"] == "status_changed"
-        data3 = websocket.receive_json()
-        assert data3["action"] == "result_ready"
-        assert data3["payload"]["result"]
+        data = websocket.receive_json()
+        assert data["action"] == "result_ready"
+        assert data["payload"]["result"]
 
 
 def test_revoke_tasks():
@@ -117,9 +111,6 @@ def test_revoke_tasks():
         }
         websocket.send_json(revoking_message)
 
-        for id in ids:
-            websocket.receive_json()
-
         data1 = websocket.receive_json()
         assert data1["action"] == "tasks_revoked"
         assert data1["payload"]["id"] == ["3189676561559760661294561923"]
@@ -162,14 +153,8 @@ def test_get_task_status(corofunc):
 
         websocket.send_json(scheduling_message)
 
-        data0 = websocket.receive_json()
-        assert data0["action"] == "tasks_scheduled"
-        data1 = websocket.receive_json()
-        assert data1["action"] == "status_changed"
-        data3 = websocket.receive_json()
-        assert data3["action"] == "status_changed"
-        data4 = websocket.receive_json()
-        assert data4["action"] == "result_ready"
+        data = websocket.receive_json()
+        assert data["action"] == "result_ready"
 
         websocket.send_json(
             {
@@ -212,16 +197,8 @@ def test_get_task_statuses(corofunc):
 
         websocket.send_json(scheduling_message)
 
-        actions = [
-            "tasks_scheduled",
-            "status_changed",
-            "status_changed",
-            "result_ready",
-        ]
-
         for el_id in el_ids:
-            for action in actions:
-                websocket.receive_json()
+            websocket.receive_json()
 
         websocket.send_json({"action": "get_tasks_statuses", "payload": {"id": el_ids}})
         data = websocket.receive_json()
@@ -261,14 +238,8 @@ def test_get_task_result(corofunc):
 
         websocket.send_json(scheduling_message)
 
-        data0 = websocket.receive_json()
-        assert data0["action"] == "tasks_scheduled"
-        data1 = websocket.receive_json()
-        assert data1["action"] == "status_changed"
-        data3 = websocket.receive_json()
-        assert data3["action"] == "status_changed"
-        data4 = websocket.receive_json()
-        assert data4["action"] == "result_ready"
+        data = websocket.receive_json()
+        assert data["action"] == "result_ready"
 
         websocket.send_json(
             {
@@ -314,16 +285,8 @@ def test_get_task_results(corofunc):
 
         websocket.send_json(scheduling_message)
 
-        actions = [
-            "tasks_scheduled",
-            "status_changed",
-            "status_changed",
-            "result_ready",
-        ]
-
         for el_id in el_ids:
-            for action in actions:
-                websocket.receive_json()
+            websocket.receive_json()
 
         websocket.send_json({"action": "get_task_results", "payload": {"id": el_ids}})
         data1 = websocket.receive_json()

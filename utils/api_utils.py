@@ -44,9 +44,8 @@ async def wait_until_task_reach_status(
 ):
     while ws.client_state != WebSocketState.DISCONNECTED:
         task = get_task_status(task_id)
-        if (
-            (task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE))
-            or task.status == CeleryStatuses.SUCCESS
+        if (task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE)) or (
+            task.status == CeleryStatuses.SUCCESS
             and expected_status != CeleryStatuses.SUCCESS
         ):
             if task_id not in tasks_with_changed_priority:
@@ -63,11 +62,7 @@ async def wait_until_task_reach_status(
             task_dict = task.dict()
             # deleting underscores in task_id if any to send to frontend
             task_dict["id"] = task_dict["id"].strip("_")
-            await ws.send_json(
-                get_websocket_response(
-                    WebSocketResponseActions.STATUS_CHANGED, task_dict
-                )
-            )
+
             if expected_status == CeleryStatuses.SUCCESS:
                 result = get_task_result(task_id)
                 # deleting underscores in task_id if any to send to frontend
@@ -146,18 +141,11 @@ async def change_task_priority(ws, payload, priority):
     )
     ws.created_tasks.append(new_task_result)
 
-    task_id_to_show = id_of_task_to_change_priority.strip("_")
-    new_task_result_id_to_show = new_task_result.id.strip("_")
-    await ws.send_json(
-        get_websocket_response(
-            WebSocketResponseActions.TASKS_SCHEDULED,
-            {task_id_to_show: new_task_result_id_to_show},
+    asyncio.create_task(
+        wait_until_task_reach_status(
+            ws=ws, task_id=new_task_result.id, expected_status=CeleryStatuses.SUCCESS
         )
     )
-    for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
-        asyncio.create_task(
-            wait_until_task_reach_status(ws, new_task_result.id, status)
-        )
 
 
 async def process_incoming_ws_request(
@@ -184,18 +172,13 @@ async def process_incoming_ws_request(
             )
             ws.created_tasks.append(task_result)
 
-            element_id_to_show = element_id.strip("_")
-            task_result_id_to_show = task_result.id.strip("_")
-            await ws.send_json(
-                get_websocket_response(
-                    WebSocketResponseActions.TASKS_SCHEDULED,
-                    {element_id_to_show: task_result_id_to_show},
+            asyncio.create_task(
+                wait_until_task_reach_status(
+                    ws=ws,
+                    task_id=task_result.id,
+                    expected_status=CeleryStatuses.SUCCESS,
                 )
             )
-            for status in [CeleryStatuses.STARTED, CeleryStatuses.SUCCESS]:
-                asyncio.create_task(
-                    wait_until_task_reach_status(ws, task_result.id, status)
-                )
     elif action == "prioritize_existing_task":
         await change_task_priority(ws, payload, priority=1)
 

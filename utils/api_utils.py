@@ -159,12 +159,14 @@ async def process_incoming_ws_request(
     elif action == "schedule_multiple_xpath_generations":
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
+        document = json.loads(payload.document)
+        config = payload.config.dict()
         for element_id in element_ids:
             new_task_id = convert_task_id_if_in_revoked(element_id)
             task_kwargs = {
                 "element_id": get_xpath_from_id(element_id),
-                "document": json.loads(payload.document),
-                "config": payload.config.dict(),
+                "document": document,
+                "config": config,
             }
             tasks_vault[element_id] = task_kwargs
             task_result = task_schedule_xpath_generation.apply_async(

@@ -146,14 +146,14 @@ sh run_docker.sh (for mac)
 
 Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
 ## Take docker image from github:
-### Stable version
+### RC-1 version
 #### macOS/Linux
 ```shell
-curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose-stable.yaml && docker compose up
+curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-1/docker-compose-rc-1.yaml && docker compose up
 ```
 #### Windows
 ```shell
-curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose-stable.yaml && docker compose up
+curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-1/docker-compose-rc-1.yaml && docker compose up
 ```
 
 ### Development version
@@ -166,7 +166,7 @@ curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-te
 curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
 ## Installing version from any other repository branch:
-Example with branch "rc-1":
+Example with branch "branch_name":
 
 Installing for the first time:
 1. Clone repository to your machine:
@@ -179,7 +179,7 @@ cd jdi-qasp-ml
 ```
 3. Checkout to a branch needed:
 ```
-git checkout rc-1
+git checkout branch_name
 ```
 4. build and start containers:
 ```

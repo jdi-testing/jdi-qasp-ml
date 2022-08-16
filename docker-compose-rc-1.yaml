@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  api:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc-1"
+    container_name: jdi-qasp-ml-api
+    command: uvicorn app.main:api --host 0.0.0.0 --port 5000
+    ports:
+      - "5050:5000"
+
+  celery:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc-1"
+    container_name: jdi-qasp-ml-celery
+    command: celery -A app.celery_app:celery_app worker -l info
+
+  redis:
+    image: "redis:alpine"
+    container_name: jdi-qasp-ml-redis
+    command: redis-server --maxmemory 1024mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379"

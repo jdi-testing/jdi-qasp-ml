@@ -1,5 +1,8 @@
+import uuid
+
 import pytest
 
+from app.redis_app import redis_app
 from app.tasks import task_schedule_xpath_generation
 
 mock_html_page_code = """
@@ -100,12 +103,10 @@ def test_task_schedule_xpath_generation_positive_case():
         "allow_indexes_in_the_middle": False,
         "allow_indexes_at_the_end": False,
     }
+    random_document_key = str(uuid.uuid4())
+    redis_app.set(name=random_document_key, value=mock_html_page_code)
     result = task_schedule_xpath_generation(
-        element_id=element_id,
-        document=mock_html_page_code,
-        config=config,
-        session_id=123,
-        website_url="example.com",
+        element_id=element_id, document_uuid=random_document_key, config=config
     )
     assert result == "//*[contains(text(), 'Какой-то контент')]"
 
@@ -119,13 +120,12 @@ def test_task_schedule_xpath_generation_element_not_found():
         "allow_indexes_at_the_end": False,
     }
 
+    random_document_key = str(uuid.uuid4())
+    redis_app.set(name=random_document_key, value=mock_html_page_code)
+
     from utils.robula import XPathDocumentDoesntContainElement
 
     with pytest.raises(XPathDocumentDoesntContainElement):
         task_schedule_xpath_generation(
-            element_id=element_id,
-            document=mock_html_page_code,
-            config=config,
-            session_id=123,
-            website_url="example.com",
+            element_id=element_id, document_uuid=random_document_key, config=config
         )

@@ -2,6 +2,7 @@ import asyncio
 import json
 import typing
 
+from celery.result import AsyncResult
 from starlette.websockets import WebSocket, WebSocketState
 
 from app.celery_app import celery_app
@@ -80,18 +81,24 @@ def get_websocket_response(action: WebSocketResponseActions, payload: dict) -> d
     return {"action": action.value, "payload": payload}
 
 
-def convert_task_id_if_in_revoked(task_id: str):
-    if task_id in revoked_tasks_ids_set:
-        return convert_task_id_if_in_revoked(f"_{task_id}")
+def task_is_revoked(task_id: str):
+    task_instance = AsyncResult(task_id)
+    print(f"task_id = {task_instance.id}")
+    task_status = task_instance.status
+    return task_status == "REVOKED"
+
+
+def convert_task_id_if_revoked(task_id: str):
+    if task_is_revoked(task_id):
+        return convert_task_id_if_revoked(f"_{task_id}")
 
     return task_id
 
 
 def revoke_tasks(task_ids: typing.List[str]):
     for task_id in task_ids:
-        task_id = convert_task_id_if_in_revoked(task_id)
+        task_id = convert_task_id_if_revoked(task_id)
         celery_app.control.revoke(task_id, terminate=True)
-        revoked_tasks_ids_set.add(task_id)
 
 
 def get_celery_tasks_results(ids: typing.List) -> typing.List[dict]:
@@ -122,7 +129,6 @@ def get_active_celery_tasks():
     return celery_tasks
 
 
-revoked_tasks_ids_set = set()
 tasks_vault = {}
 tasks_with_changed_priority = set()
 
@@ -133,7 +139,7 @@ async def change_task_priority(ws, payload, priority):
     revoke_tasks([id_of_task_to_change_priority])
 
     task_kwargs = tasks_vault[id_of_task_to_change_priority]
-    id_of_task_to_change_priority = convert_task_id_if_in_revoked(
+    id_of_task_to_change_priority = convert_task_id_if_revoked(
         id_of_task_to_change_priority
     )
     new_task_result = task_schedule_xpath_generation.apply_async(
@@ -162,7 +168,7 @@ async def process_incoming_ws_request(
         document = json.loads(payload.document)
         config = payload.config.dict()
         for element_id in element_ids:
-            new_task_id = convert_task_id_if_in_revoked(element_id)
+            new_task_id = convert_task_id_if_revoked(element_id)
             task_kwargs = {
                 "element_id": get_xpath_from_id(element_id),
                 "document": document,

@@ -134,13 +134,8 @@ async def websocket(ws: WebSocket):
         except KeyError:
             await ws.send_json({"error": "Invalid message format."})
         except WebSocketDisconnect:
-            from utils.api_utils import (
-                revoked_tasks_ids_set,
-                tasks_vault,
-                tasks_with_changed_priority,
-            )
+            from utils.api_utils import tasks_vault, tasks_with_changed_priority
 
-            revoked_tasks_ids_set.clear()
             tasks_vault.clear()
             tasks_with_changed_priority.clear()
             logger.info("socket disconnected")

@@ -37,6 +37,7 @@ aiofiles = "*"
 aiohttp = "*"
 python-dotenv = "*"
 pymongo = "*"
+redis = "*"
 
 [dev-packages]
 

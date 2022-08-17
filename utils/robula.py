@@ -7,6 +7,7 @@ from lxml import etree, html
 from lxml.etree import XPathEvalError
 
 from app.logger import logger
+from app.redis_app import redis_app
 
 
 class XPathEvaluationTimeExceeded(Exception):
@@ -454,7 +455,8 @@ def split_full_path_to_current_and_parents_parts(full_path):
     return parent_path, current_level_locator
 
 
-def generate_xpath(xpath, page, config):
+def generate_xpath(xpath, document_uuid, config):
+    page = redis_app.get(document_uuid)
     document = html.fromstring(page)
     element = document.xpath(xpath)
     if element is None or len(element) == 0:
@@ -478,7 +480,7 @@ def generate_xpath(xpath, page, config):
             parent_path,
             current_level_locator,
         ) = split_full_path_to_current_and_parents_parts(current_level_full_path)
-        parent_robust_locator = generate_xpath(parent_path, page, config)
+        parent_robust_locator = generate_xpath(parent_path, document_uuid, config)
         return f"{parent_robust_locator}//{current_level_locator}"
 
     except XPathCantFindPath:

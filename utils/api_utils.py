@@ -1,6 +1,7 @@
 import asyncio
 import json
 import typing
+import uuid
 
 from celery.result import AsyncResult
 from starlette.websockets import WebSocket, WebSocketState
@@ -8,6 +9,7 @@ from starlette.websockets import WebSocket, WebSocketState
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
 from app.models import TaskStatusModel, XPathGenerationModel
+from app.redis_app import redis_app
 from app.tasks import task_schedule_xpath_generation
 
 
@@ -83,7 +85,6 @@ def get_websocket_response(action: WebSocketResponseActions, payload: dict) -> d
 
 def task_is_revoked(task_id: str):
     task_instance = AsyncResult(task_id)
-    print(f"task_id = {task_instance.id}")
     task_status = task_instance.status
     return task_status == "REVOKED"
 
@@ -166,12 +167,16 @@ async def process_incoming_ws_request(
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
         document = json.loads(payload.document)
+
+        random_document_key = str(uuid.uuid4())
+        redis_app.set(name=random_document_key, value=document)
+
         config = payload.config.dict()
         for element_id in element_ids:
             new_task_id = convert_task_id_if_revoked(element_id)
             task_kwargs = {
                 "element_id": get_xpath_from_id(element_id),
-                "document": document,
+                "document_uuid": random_document_key,
                 "config": config,
             }
             tasks_vault[element_id] = task_kwargs

@@ -149,7 +149,7 @@ class RobulaPlus:
         x_path_list = [XPath("//*")]
         while len(x_path_list) > 0:
             current_xpath = x_path_list.pop(0)
-            temp = self.generate_xpaths_for_current_level(current_xpath)
+            temp = self.generate_xpaths_for_current_level(current_xpath, start_time)
 
             for el in temp:
                 evaluation_time_in_seconds = (
@@ -173,14 +173,14 @@ class RobulaPlus:
                     pass
         raise XPathCantFindPath
 
-    def generate_xpaths_for_current_level(self, xpath):
+    def generate_xpaths_for_current_level(self, xpath, start_time):
         """Returns array of xpaths possible for current level"""
         temp = []
         temp.extend(self.transf_convert_star(xpath))
         temp.extend(self.transf_add_id(xpath))
         temp.extend(self.transf_add_text(xpath))
         temp.extend(self.transf_add_attribute(xpath))
-        temp.extend(self.transf_add_attribute_set(xpath))
+        temp.extend(self.transf_add_attribute_set(xpath, start_time))
         temp.extend(self.transf_add_position(xpath))
         temp.extend(self.transf_add_level(xpath))
         temp = remove_duplicates(temp)
@@ -311,7 +311,7 @@ class RobulaPlus:
                 output.append(new_xpath)
         return output
 
-    def transf_add_attribute_set(self, xpath):
+    def transf_add_attribute_set(self, xpath, start_time):
         """Generates xpaths with all possible permutations of attributes with len > 2"""
         output = []
         try:
@@ -348,6 +348,7 @@ class RobulaPlus:
 
             # convert to predicate
             for attr_set in attribute_power_set:
+
                 predicate = f"[@{attr_set[0][0]}='{self.remove_invalid_characters(attr_set[0][1])}'"
                 for i in range(1, len(attr_set)):
                     predicate += f" and @{attr_set[i][0]}='{self.remove_invalid_characters(attr_set[i][1])}'"
@@ -355,6 +356,17 @@ class RobulaPlus:
                 new_xpath = XPath(xpath.get_value())
                 new_xpath.add_predicate_to_head(predicate)
                 output.append(new_xpath)
+
+                evaluation_time_in_seconds = (
+                    datetime.datetime.now() - start_time
+                ).total_seconds()
+                if (
+                    self.maximum_generation_time_in_seconds is not None
+                    and evaluation_time_in_seconds
+                    > self.maximum_generation_time_in_seconds
+                ):
+                    raise XPathEvaluationTimeExceeded
+
         return output
 
     def transf_add_position(self, xpath):

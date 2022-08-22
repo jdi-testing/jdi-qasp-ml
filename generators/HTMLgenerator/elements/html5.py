@@ -283,6 +283,42 @@ class TextField(HTML5BaseElement):
         )
 
 
+class PasswordField(HTML5BaseElement):
+    self_closing_tag = True
+
+    @property
+    def label(self):
+        return "password_field"
+
+    def __init__(self):
+        super().__init__()
+        self.tag = "input"
+
+    def add_specific_attributes(self):
+        super().add_specific_attributes()
+        specific_attributes = {
+            "type": "password",
+        }
+        self.html_attributes.update(specific_attributes)
+        self.add_unnecessary_html_attribute("minlength", random.randint(4, 14), 70)
+        if (
+            "minlength" in specific_attributes
+        ):  # if minlength exists maxlength cannot be greater
+            maxlength = random.randint(int(specific_attributes["minlength"]), 30)
+        else:
+            maxlength = random.randint(1, 30)
+        self.add_unnecessary_html_attribute("maxlength", maxlength, 70)
+        self.add_unnecessary_html_attribute(
+            "value", fake.sentence(nb_words=random.randint(1, 10)), 40
+        )
+        self.add_unnecessary_html_attribute("pattern", fake.sentence(1), 20)
+        self.add_unnecessary_html_attribute(
+            "placeholder", fake.sentence(nb_words=random.randint(3, 8)), 30
+        )
+        self.add_unnecessary_html_attribute("readonly", True, 10)
+        self.add_unnecessary_html_attribute("size", random.randint(1, 30), 10)
+
+
 class TextArea(HTML5BaseElement):
     @property
     def label(self):
@@ -869,6 +905,7 @@ elements = [
     Range,
     Table,
     Paragraph,
+    PasswordField,
     Link,
     TextField,
     TextArea,

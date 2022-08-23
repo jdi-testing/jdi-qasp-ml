@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from IPython.display import HTML
 from IPython.display import display as ipython_displpay
+from selenium.webdriver.common.by import By
 
 import numba
 
@@ -18,7 +19,7 @@ def maximize_window(driver=None, extend_pix=0):
         return driver.execute_script("return document.body.parentNode.scroll" + X)
 
     driver.set_window_size(width=S("Width"), height=S("Height") + extend_pix)
-    driver.find_element_by_tag_name("body")
+    driver.find_element(By.TAG_NAME, "body")
     logger.info("Window maximized")
 
 

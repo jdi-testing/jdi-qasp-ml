@@ -47,7 +47,7 @@ const outputPath = process.argv[2];
 console.log('Build to ' + outputPath);
 
 // require('child_process').exec("ng build --output-path=" + outputPath, function (err, stdout, stderr) {
-require('child_process').exec("ng serve", function (err, stdout, stderr) {
+require('child_process').exec("ng build", function (err, stdout, stderr) {
   err && console.log(err);
   stdout && console.log(stdout);
   stderr && console.log(stderr);

@@ -31,7 +31,7 @@ services:
       # - Surround by quotes, so that the shell does not split the password
       # - The ${variable:?message} syntax causes shell to exit with a non-zero
       #   code and print a message, when the variable is not set or empty
-      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}" --maxmemory 1024mb --maxmemory-policy allkeys-lru
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}" --maxmemory 2048mb --maxmemory-policy allkeys-lru
     ports:
       - "6379"
     env_file:

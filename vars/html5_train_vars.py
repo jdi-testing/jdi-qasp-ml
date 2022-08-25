@@ -1,5 +1,5 @@
 # variables for using in MUI_model/train.py
-TRAIN_LEN = 200
+TRAIN_LEN = 100
 TEST_LEN = 50
 
 parameters = {

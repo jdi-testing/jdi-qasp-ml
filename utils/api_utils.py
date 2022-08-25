@@ -7,10 +7,11 @@ from celery.result import AsyncResult
 from starlette.websockets import WebSocket, WebSocketState
 from websockets.exceptions import ConnectionClosedOK
 
+import app.mongodb as mongodb
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
 from app.logger import logger
-from app.models import TaskStatusModel, XPathGenerationModel
+from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel
 from app.redis_app import redis_app
 from app.tasks import task_schedule_xpath_generation
 
@@ -45,12 +46,16 @@ def get_element_id_from_xpath(xpath: str):
 
 
 async def wait_until_task_reach_status(
-    ws: WebSocket, task_id: str, expected_status: CeleryStatuses
+    ws: WebSocket,
+    task_result_obj: AsyncResult,
+    expected_status: CeleryStatuses,
 ):
     while ws.client_state != WebSocketState.DISCONNECTED:
+        task_id = task_result_obj.id
         task = get_task_status(task_id)
-        if (task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE)) or (
-            task.status == CeleryStatuses.SUCCESS
+        if (
+            (task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE))
+            or task.status == CeleryStatuses.SUCCESS
             and expected_status != CeleryStatuses.SUCCESS
         ):
             if task_id not in tasks_with_changed_priority:
@@ -75,6 +80,22 @@ async def wait_until_task_reach_status(
                 result = get_task_result(task_id)
                 # deleting underscores in task_id if any to send to frontend
                 result["id"] = result["id"].strip("_")
+
+                session_id = task_result_obj.kwargs.get("session_id")
+                website_url = task_result_obj.kwargs.get("website_url")
+                start_time = task_result_obj.kwargs.get("start_time")
+                task_duration = task_result_obj.kwargs.get("task_duration")
+                full_xpath = task_result_obj.kwargs.get("full_xpath")
+                nesting_num = task_result_obj.kwargs.get("nesting_num")
+                await mongodb.enrich_logs_with_generated_locators(
+                    session_id,
+                    website_url,
+                    full_xpath,
+                    nesting_num,
+                    result,
+                    start_time,
+                    task_duration,
+                )
                 try:
                     await ws.send_json(
                         get_websocket_response(
@@ -158,13 +179,15 @@ async def change_task_priority(ws, payload, priority):
 
     asyncio.create_task(
         wait_until_task_reach_status(
-            ws=ws, task_id=new_task_result.id, expected_status=CeleryStatuses.SUCCESS
+            ws=ws,
+            task_result_obj=new_task_result,
+            expected_status=CeleryStatuses.SUCCESS,
         )
     )
 
 
 async def process_incoming_ws_request(
-    action: str, payload: dict, ws: WebSocket
+    action: str, payload: dict, ws: WebSocket, logging_info: dict
 ) -> typing.Dict:
     result = {}
 
@@ -173,6 +196,9 @@ async def process_incoming_ws_request(
         logger.info("ANSWER TO PING WEBSOCKET MESSAGE FOR IS SENT")
 
     elif action == "schedule_multiple_xpath_generations":
+        logging_info = LoggingInfoModel(**logging_info)
+        mongodb.create_initial_log_entry(logging_info)
+
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
         document = json.loads(payload.document)
@@ -181,9 +207,12 @@ async def process_incoming_ws_request(
         redis_app.set(name=random_document_key, value=document)
 
         config = payload.config.dict()
+
         for element_id in element_ids:
             new_task_id = convert_task_id_if_revoked(element_id)
             task_kwargs = {
+                "session_id": logging_info.session_id,
+                "website_url": logging_info.website_url,
                 "element_id": get_xpath_from_id(element_id),
                 "document_uuid": random_document_key,
                 "config": config,
@@ -197,7 +226,7 @@ async def process_incoming_ws_request(
             asyncio.create_task(
                 wait_until_task_reach_status(
                     ws=ws,
-                    task_id=task_result.id,
+                    task_result_obj=task_result,
                     expected_status=CeleryStatuses.SUCCESS,
                 )
             )

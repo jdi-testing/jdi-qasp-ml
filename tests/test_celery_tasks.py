@@ -106,7 +106,11 @@ def test_task_schedule_xpath_generation_positive_case():
     random_document_key = str(uuid.uuid4())
     redis_app.set(name=random_document_key, value=mock_html_page_code)
     result = task_schedule_xpath_generation(
-        element_id=element_id, document_uuid=random_document_key, config=config
+        element_id=element_id,
+        document_uuid=random_document_key,
+        config=config,
+        session_id=12345,
+        website_url="example.com",
     )
     assert result == "//*[contains(text(), 'Какой-то контент')]"
 
@@ -127,5 +131,9 @@ def test_task_schedule_xpath_generation_element_not_found():
 
     with pytest.raises(XPathDocumentDoesntContainElement):
         task_schedule_xpath_generation(
-            element_id=element_id, document_uuid=random_document_key, config=config
+            element_id=element_id,
+            document_uuid=random_document_key,
+            config=config,
+            session_id=12345,
+            website_url="example.com",
         )

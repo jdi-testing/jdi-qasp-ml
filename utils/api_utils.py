@@ -5,9 +5,11 @@ import uuid
 
 from celery.result import AsyncResult
 from starlette.websockets import WebSocket, WebSocketState
+from websockets.exceptions import ConnectionClosedOK
 
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
+from app.logger import logger
 from app.models import TaskStatusModel, XPathGenerationModel
 from app.redis_app import redis_app
 from app.tasks import task_schedule_xpath_generation
@@ -58,7 +60,10 @@ async def wait_until_task_reach_status(
                 response = get_websocket_response(
                     WebSocketResponseActions.STATUS_CHANGED, task_dict
                 )
-                await ws.send_json(response)
+                try:
+                    await ws.send_json(response)
+                except (ConnectionClosedOK, RuntimeError):
+                    break
                 break
 
         if task.status == expected_status.value:
@@ -70,11 +75,14 @@ async def wait_until_task_reach_status(
                 result = get_task_result(task_id)
                 # deleting underscores in task_id if any to send to frontend
                 result["id"] = result["id"].strip("_")
-                await ws.send_json(
-                    get_websocket_response(
-                        WebSocketResponseActions.RESULT_READY, result
+                try:
+                    await ws.send_json(
+                        get_websocket_response(
+                            WebSocketResponseActions.RESULT_READY, result
+                        )
                     )
-                )
+                except (ConnectionClosedOK, RuntimeError):
+                    break
             break
         await asyncio.sleep(0.5)
 
@@ -162,6 +170,7 @@ async def process_incoming_ws_request(
 
     if action == "ping":
         await ws.send_json({"pong": payload})
+        logger.info("ANSWER TO PING WEBSOCKET MESSAGE FOR IS SENT")
 
     elif action == "schedule_multiple_xpath_generations":
         payload = XPathGenerationModel(**payload)

@@ -484,8 +484,7 @@ def generate_xpath(xpath, document_uuid, config):
     except XPathEvaluationTimeExceeded:
         current_level_full_path = tree.getpath(element)
         logger.info(
-            f"Time Exceeded on element {element.tag}, "
-            f"its full xpath: {current_level_full_path} - "
+            f"Time Exceeded on element {element.tag} - "
             f"using element's parent to generate locator"
         )
         (

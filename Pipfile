@@ -38,6 +38,7 @@ aiohttp = "*"
 python-dotenv = "*"
 pymongo = "*"
 redis = "*"
+motor = "*"
 
 [dev-packages]
 

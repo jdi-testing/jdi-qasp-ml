@@ -24,6 +24,6 @@ services:
   redis:
     container_name: jdi-qasp-ml-redis
     image: "redis:alpine"
-    command: redis-server --maxmemory 1024mb --maxmemory-policy allkeys-lru
+    command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
     ports:
       - "6379"

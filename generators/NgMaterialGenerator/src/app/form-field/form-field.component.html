@@ -1,0 +1,58 @@
+<div class="example-container">
+    <form [formGroup]="options">
+
+      <mat-form-field data-label="form-field" *ngIf="type === 0" appearance="fill"
+          [hideRequiredMarker]="hideRequiredControl.value"
+          [floatLabel]="floatLabelControl.value">
+        <input matInput data-label="input-text-field" placeholder="Simple placeholder" required>
+      </mat-form-field>
+  
+      <mat-form-field data-label="form-field" *ngIf="type === 1" appearance="fill" [floatLabel]="floatLabelControl.value">
+        <mat-label>Both a label and a placeholder</mat-label>
+        <input matInput data-label="input-text-field" placeholder="Simple placeholder">
+      </mat-form-field>
+  
+      <mat-form-field data-label="form-field" *ngIf="type === 2" appearance="fill"
+          [hideRequiredMarker]="hideRequiredControl.value"
+          [floatLabel]="floatLabelControl.value">
+        <mat-select data-label="select-material-selector" required>
+          <mat-option>-- None --</mat-option>
+          <mat-option value="option">Option</mat-option>
+        </mat-select>
+        <mat-label><mat-icon data-label="icon">favorite</mat-icon> <b> Fancy</b> <i> label</i></mat-label>
+      </mat-form-field>
+    </form>
+  </div>
+  <p>
+    <mat-form-field data-label="form-field" *ngIf="type === 3" appearance="legacy">
+      <mat-label>Legacy form field</mat-label>
+      <input matInput data-label="input-text-field" placeholder="Placeholder">
+      <mat-icon data-label="icon" matSuffix>sentiment_very_satisfied</mat-icon>
+      <mat-hint>Hint</mat-hint>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field data-label="form-field" *ngIf="type === 4" appearance="standard">
+      <mat-label>Standard form field</mat-label>
+      <input matInput data-label="input-text-field" placeholder="Placeholder">
+      <mat-icon data-label="icon" matSuffix>sentiment_very_satisfied</mat-icon>
+      <mat-hint>Hint</mat-hint>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field data-label="form-field" *ngIf="type === 5" appearance="fill">
+      <mat-label>Fill form field</mat-label>
+      <input matInput data-label="input-text-field" placeholder="Placeholder">
+      <mat-icon data-label="icon" matSuffix>sentiment_very_satisfied</mat-icon>
+      <mat-hint>Hint</mat-hint>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field data-label="form-field" *ngIf="type === 6" appearance="outline">
+      <mat-label>Outline form field</mat-label>
+      <input matInput data-label="input-text-field" placeholder="Placeholder">
+      <mat-icon data-label="icon" matSuffix>sentiment_very_satisfied</mat-icon>
+      <mat-hint>Hint</mat-hint>
+    </mat-form-field>
+  </p>
+    

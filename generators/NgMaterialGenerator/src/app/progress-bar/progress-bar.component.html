@@ -1,0 +1,9 @@
+<mat-progress-bar data-label="progress-bar" *ngIf="type === 0" class="example-margin" [color]="color" [mode]="mode" [value]="value" [bufferValue]="bufferValue">
+</mat-progress-bar>
+<mat-progress-bar data-label="progress-bar" *ngIf="type === 1" class="example-margin" color="accent" mode="indeterminate" [value]="value"
+    [bufferValue]="bufferValue">
+</mat-progress-bar>
+<mat-progress-bar data-label="progress-bar" *ngIf="type === 2" class="example-margin" color="warn" mode="buffer" [value]="value" [bufferValue]="bufferValue">
+</mat-progress-bar>
+<mat-progress-bar data-label="progress-bar" *ngIf="type === 3" class="example-margin" [color]="color" mode="query" [value]="value" [bufferValue]="bufferValue">
+</mat-progress-bar>

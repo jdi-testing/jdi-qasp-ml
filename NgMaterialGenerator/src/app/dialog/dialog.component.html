@@ -1,0 +1,22 @@
+<div *ngIf="type === 0">
+  <h1 data-label="dialog" mat-dialog-title>Hi {{data.name}}</h1>
+  <div data-label="dialog" mat-dialog-content>
+    <p>What's your favorite animal?</p>
+    <mat-form-field data-label="formField" appearance="fill">
+      <mat-label>Favorite Animal</mat-label>
+      <input matInput data-label="input" [(ngModel)]="data.animal">
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button data-label="button" mat-button>No Thanks</button>
+    <button data-label="button" mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button>
+  </div>
+</div>
+
+<div *ngIf="type === 1">
+  <h1 mat-dialog-title>Dialog with elements</h1>
+  <div data-label="dialog" mat-dialog-content>This dialog showcases the title, close, content and actions elements.</div>
+  <div data-label="dialog" mat-dialog-actions>
+    <button data-label="button" mat-button mat-dialog-close>Close</button>
+  </div>
+</div>

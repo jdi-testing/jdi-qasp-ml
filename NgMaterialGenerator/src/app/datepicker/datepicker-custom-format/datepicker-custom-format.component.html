@@ -1,0 +1,7 @@
+<mat-form-field data-label="formField" appearance="fill">
+    <mat-label>Verbose datepicker</mat-label>
+    <input matInput data-label="input" [matDatepicker]="dp" [formControl]="date">
+    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker data-label="datepicker" #dp></mat-datepicker>
+  </mat-form-field>
+  

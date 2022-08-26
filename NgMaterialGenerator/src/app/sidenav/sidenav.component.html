@@ -1,0 +1,45 @@
+<mat-drawer-container *ngIf="type === 0" class="example-container" autosize>
+  <mat-drawer data-label="sidenav" #drawer class="example-sidenav" mode="side">
+    <p>Auto-resizing sidenav</p>
+    <p *ngIf="showFiller">Lorem, ipsum dolor sit amet consectetur.</p>
+    <button data-label="button" (click)="showFiller = !showFiller" mat-raised-button>
+      Toggle extra text
+    </button>
+  </mat-drawer>
+
+  <div class="example-sidenav-content">
+    <button data-label="button" type="button" mat-button (click)="drawer.toggle()">
+      Toggle sidenav
+    </button>
+  </div>
+
+</mat-drawer-container>
+
+<mat-drawer-container *ngIf="type === 1" class="example-container" [hasBackdrop]="hasBackdrop.value">
+  <mat-drawer data-label="sidenav" #drawer [mode]="mode.value">I'm a drawer</mat-drawer>
+  <mat-drawer-content>
+    <mat-form-field data-label="formField" appearance="fill">
+      <mat-label>Sidenav mode</mat-label>
+      <mat-select data-label="select" #mode value="side">
+        <mat-option value="side">Side</mat-option>
+        <mat-option value="over">Over</mat-option>
+        <mat-option value="push">Push</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field data-label="formField" appearance="fill">
+      <mat-label>Has backdrop</mat-label>
+      <mat-select data-label="select" #hasBackdrop>
+        <mat-option>Unset</mat-option>
+        <mat-option [value]="true">True</mat-option>
+        <mat-option [value]="false">False</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button data-label="button" mat-raised-button (click)="drawer.toggle()">Toggle drawer</button>
+  </mat-drawer-content>
+</mat-drawer-container>
+
+<mat-sidenav-container *ngIf="type === 2" class="example-container">
+  <mat-sidenav data-label="sidenav" opened mode="side">Start content</mat-sidenav>
+  <mat-sidenav data-label="sidenav" opened mode="side" position="end">End content</mat-sidenav>
+  Implicit main content
+</mat-sidenav-container>

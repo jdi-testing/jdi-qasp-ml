@@ -13,7 +13,7 @@ def task_schedule_xpath_generation(
     self, element_id, document_uuid, config, session_id, website_url
 ):
     start_time = datetime.datetime.utcnow()
-    page = redis_app.get(document_uuid)
+    page = redis_app.get(document_uuid).decode("utf-8")
     result = generate_xpath(element_id, page, config)
     end_time = datetime.datetime.utcnow()
     task_duration = end_time - start_time

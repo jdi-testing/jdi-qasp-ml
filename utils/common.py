@@ -6,6 +6,8 @@ from IPython.display import HTML
 from IPython.display import display as ipython_displpay
 from selenium.webdriver.common.by import By
 
+from selenium.webdriver.common.by import By
+
 import numba
 
 from .config import logger

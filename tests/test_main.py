@@ -2,19 +2,7 @@ from fastapi.testclient import TestClient
 
 from app.main import api as app
 
-
 client = TestClient(app)
-
-
-def test_build_version():
-    response = client.get("/build")
-    assert response.status_code == 200
-
-    data = response.json()
-    assert data
-
-    for num in data[0].split("."):
-        assert num.isnumeric()
 
 
 def test_dir_listing(tmp_path, monkeypatch):

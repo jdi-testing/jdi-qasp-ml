@@ -288,7 +288,7 @@ class PasswordField(HTML5BaseElement):
 
     @property
     def label(self):
-        return "password_field"
+        return "textfield"
 
     def __init__(self):
         super().__init__()

@@ -55,7 +55,10 @@ async def html5_predict_elements(body):
         .apply(lambda x: decoder_dict.get(x, "n/a"))
         .values
     )
+
     dataset.df["predicted_probability"] = model.predict_proba(dataset.X).max(axis=1)
+    dataset.df["predicted_label"] = dataset.df.apply(
+        lambda x: x.predicted_label if x.predicted_probability >= 0.999 else "UIElement", axis=1)
 
     columns_to_publish = [
         "element_id",

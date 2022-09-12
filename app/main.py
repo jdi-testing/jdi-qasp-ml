@@ -24,6 +24,7 @@ from app import (
     robula_api,
 )
 from app.models import PredictionInputModel, PredictionResponseModel, SystemInfoModel
+from ds_methods.angular_predict import angular_predict_elements
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
@@ -88,6 +89,13 @@ async def mui_predict(request: Request, input: PredictionInputModel):
     """HTML elements prediction based on received JSON. MUI model."""
     body = await request.body()
     return JSONResponse(await mui_predict_elements(body))
+
+
+@api.post("/angular-predict", response_model=PredictionResponseModel)
+async def angular_predict(request: Request, input: PredictionInputModel):
+    """HTML elements prediction based on received JSON. Angular model."""
+    body = await request.body()
+    return JSONResponse(await angular_predict_elements(body))
 
 
 @api.post("/html5-predict", response_model=PredictionResponseModel)

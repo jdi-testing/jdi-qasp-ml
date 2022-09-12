@@ -22,6 +22,9 @@ As input for NN we use following calculated groups of features:
 - **Numerical general features**  (General features about object like numger of followers, children, max max_depth etc.)
 - **Binary general features** (General features with binary values like is the object or his parent hidden or displayed or leaf etc.)
 
+## Angular 
+Same model as for MUI.
+
 ## HTML5 
 Out model is desicion tree, because of simplicity of classic html5 element structure 
 
@@ -63,6 +66,28 @@ After that in directory **/data/mui_dataset** you will find following structure:
 - /images - directiry with images of sites (only for info)
 - classes.txt - file with all possible labels to detect. Do not change it!!!
 - EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
+
+## Angular
+Generator for Angular element library sites placed in **generators/NgMaterialGenerator/**<br>
+To generate sites go in the directory of NgMaterialGenerator and run:
+````
+    sh generate_data.sh
+````
+After thet in catalog **/data/angular_dataset/build** you will find directories named like **"site-N"**
+
+Next go the directory **Angular_model** and run:
+```
+    python build_datasets_for_angular_sites.py
+```
+After that in directory **/data/angular_dataset** you will find following structure:
+- /annotations (not used, maybe need to be removed later)
+- /cache-labels (not used, maybe need to be removed later)
+- /df - directory with pickles of site-datasets
+- /html - directory with html files of sites (only for info)
+- /images - directiry with images of sites (only for info)
+- classes.txt - file with all possible labels to detect. Do not change it!!!
+- EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
+
 ## HTML5
 Generator for HTML5 element library sites placed in **generators/HTMLgenerator/**<br>
 To generate sites go in the directory of HTMLgenerator and run:
@@ -99,6 +124,12 @@ If you need to set up training parameters, change following variables for train.
 
 At the end of the process the table with training results saves in **MUI_model/tmp/train_metrics.csv**
 
+## Angular
+To train the model you need to go to the directory **/Angular_model** and run:
+```
+    python train.py
+```
+
 ## HTML5
 
 To train the model you need to go to the directory **/HTML5_model** and run:
@@ -116,6 +147,7 @@ At the end of the process the table with training results saves in **MUI_model/t
 To get predictions we need to run API main.py (better to do it wia docker - will be disscussed below)
 when API is running we can send input json data to following url:
 - http://localhost:5050/mui-predict for mui model
+- http://localhost:5050/angular-predict for angular model
 - http://localhost:5050/html5-predict for html5 model
 - http://localhost:5050/predict  for old version of model
 

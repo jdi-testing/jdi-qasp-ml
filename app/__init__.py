@@ -15,6 +15,8 @@ from vars.path_vars import (
     mui_model,
     old_df_path,
     old_model,
+    angular_df_path,
+    angular_model
 )
 
 load_dotenv()
@@ -50,3 +52,6 @@ html5_model = os.getenv("html5_model", os.path.join(BASE_DIR, html5_model))
 html5_classes_path = os.getenv(
     "html5_classes_path", os.path.join(BASE_DIR, html5_classes_path)
 )
+
+angular_df_path = os.getenv("angular_df_path", os.path.join(BASE_DIR, angular_df_path))
+angular_model = os.getenv("angular_model", os.path.join(BASE_DIR, angular_model))

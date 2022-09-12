@@ -118,16 +118,37 @@ def task_is_revoked(task_id: str):
     return task_status == "REVOKED"
 
 
-def convert_task_id_if_revoked(task_id: str):
-    if task_is_revoked(task_id):
-        return convert_task_id_if_revoked(f"_{task_id}")
+def task_exists(task_id: str):
+    task_instance = AsyncResult(task_id)
+    task_status = task_instance.status
+    return task_status != "PENDING"
+
+
+def task_started_and_running(task_id: str):
+    task_instance = AsyncResult(task_id)
+    task_status = task_instance.status
+    logger.info(f"task_status = {task_status}")
+    return task_status == "STARTED"
+
+
+def convert_task_id_if_exists(task_id: str):
+    if task_exists(task_id):
+        return convert_task_id_if_exists(f"_{task_id}")
+
+    return task_id
+
+
+def convert_task_id_if_not_running(task_id: str):
+    logger.info(f"INSIDE 'convert_task_id_if_not_running' with task_id = {task_id}")
+    if not task_started_and_running(task_id):
+        return convert_task_id_if_not_running(f"_{task_id}")
 
     return task_id
 
 
 def revoke_tasks(task_ids: typing.List[str]):
     for task_id in task_ids:
-        task_id = convert_task_id_if_revoked(task_id)
+        task_id = convert_task_id_if_not_running(task_id)
         celery_app.control.revoke(task_id, terminate=True)
 
 
@@ -169,7 +190,7 @@ async def change_task_priority(ws, payload, priority):
     revoke_tasks([id_of_task_to_change_priority])
 
     task_kwargs = tasks_vault[id_of_task_to_change_priority]
-    id_of_task_to_change_priority = convert_task_id_if_revoked(
+    id_of_task_to_change_priority = convert_task_id_if_exists(
         id_of_task_to_change_priority
     )
     new_task_result = task_schedule_xpath_generation.apply_async(
@@ -209,7 +230,7 @@ async def process_incoming_ws_request(
         config = payload.config.dict()
 
         for element_id in element_ids:
-            new_task_id = convert_task_id_if_revoked(element_id)
+            new_task_id = convert_task_id_if_exists(element_id)
             task_kwargs = {
                 "session_id": logging_info.session_id,
                 "website_url": logging_info.website_url,

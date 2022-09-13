@@ -1,32 +1,32 @@
 version: '3'
 
 services:
-  api:
-    container_name: jdi-qasp-ml-api
+  api-dev:
+    container_name: jdi-qasp-ml-api-dev
     command: uvicorn app.main:api --host 0.0.0.0 --port 80
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "5000:80"
     volumes:
-      - .:/jdi-qasp-ml
+      - .:/jdi-qasp-ml/dev
     env_file:
-      - .env.rc
+      - .env.dev
 
-  celery:
-    container_name: jdi-qasp-ml-celery
+  celery-dev:
+    container_name: jdi-qasp-ml-celery-dev
     command: celery -A app.celery_app:celery_app worker -l info
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/jdi-qasp-ml
+      - .:/jdi-qasp-ml/dev
     env_file:
-      - .env.rc
+      - .env.dev
 
-  redis:
-    container_name: jdi-qasp-ml-redis
+  redis-dev:
+    container_name: jdi-qasp-ml-redis-dev
     image: "redis:alpine"
     command:
       - /bin/sh
@@ -37,15 +37,15 @@ services:
       #   code and print a message, when the variable is not set or empty
       - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}" --maxmemory 2048mb --maxmemory-policy allkeys-lru
     ports:
-      - "6379"
+      - "6380"
     env_file:
-      - .env.rc
+      - .env.dev
 
-  mongodb:
+  mongodb-dev:
     image: mongo:5.0
     ports:
-      - 27017:27017
+      - 27000:27000
     volumes:
-      - ~/apps/mongo:/data/db
+      - ~/apps/mongo:/data/db/dev
     env_file:
-      - .env.rc
+      - .env.dev

@@ -49,4 +49,5 @@ coverage.xml
 .DS_Store
 
 **/.DS_Store
-.env
+.env.rc
+.env.dev

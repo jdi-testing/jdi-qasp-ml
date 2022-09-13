@@ -24,7 +24,7 @@ load_dotenv()
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
 
-REDIS_HOST = os.getenv("REDIS_HOST", "")
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
 if REDIS_PASSWORD:
     REDIS_BROKER = f"redispriorityasync://:{REDIS_PASSWORD}@{REDIS_HOST}:6379"
@@ -33,7 +33,7 @@ else:
     REDIS_BROKER = f"redispriorityasync://{REDIS_HOST}:6379"
     REDIS_BACKEND = f"redis://{REDIS_HOST}:6379"
 
-MONGO_DB_PORT = int(os.getenv("MONGO_DB_PORT", ""))
+MONGO_DB_PORT = int(os.getenv("MONGO_DB_PORT", 27017))
 
 BASE_DIR = os.path.join(prefix, "jdi-qasp-ml")
 UPLOAD_DIRECTORY = os.getenv(

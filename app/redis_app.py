@@ -1,5 +1,5 @@
 import redis
 
-from app import REDIS_PASSWORD
+from app import REDIS_PASSWORD, REDIS_HOST
 
-redis_app = redis.Redis(host="redis", port=6379, password=REDIS_PASSWORD)
+redis_app = redis.Redis(host=REDIS_HOST, port=6379, password=REDIS_PASSWORD)

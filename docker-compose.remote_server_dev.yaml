@@ -46,6 +46,6 @@ services:
     ports:
       - 27000:27000
     volumes:
-      - ~/apps/mongo:/data/db
+      - ~/apps/mongo:/data/db_dev
     env_file:
       - .env.dev

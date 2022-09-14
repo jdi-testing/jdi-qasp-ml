@@ -10,7 +10,7 @@ services:
     ports:
       - "5000:80"
     volumes:
-      - .:/jdi-qasp-ml/dev
+      - .:/jdi-qasp-ml
     env_file:
       - .env.dev
 
@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/jdi-qasp-ml/dev
+      - .:/jdi-qasp-ml
     env_file:
       - .env.dev
 
@@ -46,6 +46,6 @@ services:
     ports:
       - 27000:27000
     volumes:
-      - ~/apps/mongo:/data/db/dev
+      - ~/apps/mongo:/data/db
     env_file:
       - .env.dev

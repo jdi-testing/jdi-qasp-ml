@@ -4,12 +4,12 @@ import motor.motor_asyncio
 import pymongo
 from bson.json_util import dumps
 
-from app import MONGO_DB_PORT
+from app import MONGO_DB_HOST, MONGO_DB_PORT
 
-client = pymongo.MongoClient("mongodb", MONGO_DB_PORT)
+client = pymongo.MongoClient(MONGO_DB_HOST, MONGO_DB_PORT)
 mongo_db = client.jdn
 
-async_client = motor.motor_asyncio.AsyncIOMotorClient("mongodb", MONGO_DB_PORT)
+async_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DB_HOST, MONGO_DB_PORT)
 async_mongo_db = async_client.jdn
 
 

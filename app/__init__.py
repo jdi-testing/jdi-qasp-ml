@@ -33,6 +33,7 @@ else:
     REDIS_BROKER = f"redispriorityasync://{REDIS_HOST}:6379"
     REDIS_BACKEND = f"redis://{REDIS_HOST}:6379"
 
+MONGO_DB_HOST = os.getenv("MONGO_DB_HOST", "mongodb")
 MONGO_DB_PORT = int(os.getenv("MONGO_DB_PORT", 27017))
 
 BASE_DIR = os.path.join(prefix, "jdi-qasp-ml")

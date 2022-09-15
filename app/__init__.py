@@ -17,6 +17,8 @@ from vars.path_vars import (
     mui_model,
     old_df_path,
     old_model,
+    angular_df_path,
+    angular_model
 )
 
 load_dotenv()

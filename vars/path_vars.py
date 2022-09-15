@@ -16,6 +16,7 @@ model_dict = {
 
 # paths for using in main.py
 UPLOAD_DIRECTORY = "data/uploaded_dataset/df"
+ANGULAR_UPLOAD_DIRECTORY = "data/angular_dataset/df"
 TEMPLATES_PATH = "templates"
 MODEL_VERSION_DIRECTORY = "model/version"
 JS_DIRECTORY = "js"

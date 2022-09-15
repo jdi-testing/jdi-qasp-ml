@@ -9,7 +9,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
-from app import UPLOAD_DIRECTORY, angular_df_path, angular_model
+from app import angular_df_path_full, angular_model_full
 from utils.dataset import MUI_JDNDataset
 
 logger = logging.getLogger("jdi-qasp-ml")
@@ -20,7 +20,7 @@ async def angular_predict_elements(body):
     softmax = torch.nn.Softmax(dim=1)
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
-    with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
+    with open(os.path.join(angular_df_path_full, filename), "wb") as fp:
         logger.info(f"saving {filename}")
         fp.write(body)
         fp.flush()
@@ -30,15 +30,16 @@ async def angular_predict_elements(body):
     # fix bad data which can come in 'onmouseover', 'onmouseenter'
     df.onmouseover = df.onmouseover.apply(lambda x: "true" if x is not None else None)
     df.onmouseenter = df.onmouseenter.apply(lambda x: "true" if x is not None else None)
-    df.to_pickle(f"{angular_df_path}/{filename}")
+    df.to_pickle(f"{angular_df_path_full}/{filename}")
     logger.info("Creating JDNDataset")
     dataset = MUI_JDNDataset(
-        datasets_list=[filename.split(".")[0]], rebalance_and_shuffle=False
+        datasets_list=[filename.split(".")[0]], rebalance_and_shuffle=False, 
+        dataset_type='angular'
     )
     dataloader = DataLoader(dataset, shuffle=False, batch_size=1)
     device = "cpu"
     logger.info(f"Load model with hardcoded device: {device}")
-    model = torch.load(f"{angular_model}/model.pth", map_location="cpu").to(device=device)
+    model = torch.load(f"{angular_model_full}/model.pth", map_location="cpu").to(device=device)
     model.eval()
     logger.info("Predicting...")
     results = []

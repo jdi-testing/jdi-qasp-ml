@@ -53,5 +53,5 @@ html5_classes_path = os.getenv(
     "html5_classes_path", os.path.join(BASE_DIR, html5_classes_path)
 )
 
-angular_df_path = os.getenv("angular_df_path", os.path.join(BASE_DIR, angular_df_path))
-angular_model = os.getenv("angular_model", os.path.join(BASE_DIR, angular_model))
+angular_df_path_full = os.getenv("angular_df_path", os.path.join(BASE_DIR, angular_df_path))
+angular_model_full = os.getenv("angular_model", os.path.join(BASE_DIR, angular_model))

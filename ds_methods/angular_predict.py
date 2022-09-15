@@ -33,7 +33,7 @@ async def angular_predict_elements(body):
     df.to_pickle(f"{angular_df_path_full}/{filename}")
     logger.info("Creating JDNDataset")
     dataset = MUI_JDNDataset(
-        datasets_list=[filename.split(".")[0]], rebalance_and_shuffle=False, 
+        datasets_list=[filename.split(".")[0]], rebalance_and_shuffle=False,
         dataset_type='angular'
     )
     dataloader = DataLoader(dataset, shuffle=False, batch_size=1)

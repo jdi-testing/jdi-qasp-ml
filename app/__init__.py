@@ -8,8 +8,6 @@ from vars.path_vars import (
     MODEL_VERSION_DIRECTORY,
     TEMPLATES_PATH,
     UPLOAD_DIRECTORY,
-    angular_df_path,
-    angular_model,
     html5_classes_path,
     html5_df_path,
     html5_model,

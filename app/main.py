@@ -40,14 +40,17 @@ templates = Jinja2Templates(directory="templates")
 
 
 @api.get("/build")
-async def build_version():
+def build_version():
     """Build version."""
     files = []
     for filename in os.listdir(MODEL_VERSION_DIRECTORY):
         path = os.path.join(MODEL_VERSION_DIRECTORY, filename)
         if os.path.isfile(path):
             files.append(filename)
-    return JSONResponse(files)
+    return files[-1]
+
+
+api.version = build_version()
 
 
 @api.get("/files")

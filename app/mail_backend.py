@@ -6,8 +6,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from app.logger import logger
-from utils.config import (EMAIL_SENDER_LOGIN, EMAIL_SENDER_PASSWORD,
-                          RECIPIENT_EMAILS, SMTP_HOST)
+from utils.config import (
+    EMAIL_SENDER_LOGIN,
+    EMAIL_SENDER_PASSWORD,
+    RECIPIENT_EMAILS,
+    SMTP_HOST,
+)
 
 
 def send_support_jdi(msg_content):
@@ -37,12 +41,19 @@ def send_support_jdi(msg_content):
             "utf-8",
         )
     )
-    screenshot_in_bytes = base64.b64decode(msg_content["screenshot"])
-    part = MIMEApplication(_data=screenshot_in_bytes, Name="screenshot.jpg")
 
-    part["Content-Disposition"] = 'attachment; filename="screenshot.jpg"'
-    part["Content-Transfer-Encoding"] = "base64"
-    msg_to_send.attach(part)
+    attachments_list = msg_content["attachments"]
+    for file_dict in attachments_list:
+        filename = file_dict["filename"]
+        logger.info(f'File {filename} is attached to "Report Problem" email')
+        file_content = file_dict["file_content"]
+
+        file_content_in_bytes = base64.b64decode(file_content)
+        part = MIMEApplication(_data=file_content_in_bytes, Name=filename)
+
+        part["Content-Disposition"] = f"attachment; filename={filename}"
+        part["Content-Transfer-Encoding"] = "base64"
+        msg_to_send.attach(part)
 
     s = smtplib.SMTP(smtp_host, 587, timeout=10)
     try:

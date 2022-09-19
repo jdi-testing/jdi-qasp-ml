@@ -154,8 +154,8 @@ async def report_problem(msg_content: ReportMail):
     send_report_mail_task.apply_async(kwargs={"msg_content": msg_content.dict()})
 
 
-@router.post("/pic_bytes_to_str")
-async def pic_bytes_to_str(pic: UploadFile):
-    screenshot__in_bytes = await pic.read()
-    screenshot_in_str = base64.b64encode(screenshot__in_bytes).decode()
-    return screenshot_in_str
+@router.post("/file_bytes_to_str")
+async def file_bytes_to_str(file: UploadFile):
+    file_in_bytes = await file.read()
+    file_in_str = base64.b64encode(file_in_bytes).decode()
+    return file_in_str

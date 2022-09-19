@@ -71,12 +71,17 @@ class PredictionResponseModel(BaseModel):
     __root__: List[PredictedElement]
 
 
+class Attachment(BaseModel):
+    filename: str
+    file_content: str
+
+
 class ReportMail(BaseModel):
     email: EmailStr = Field(..., alias="from")
     subject: Optional[str] = Field(..., max_length=200)
     body: str = Field(..., max_length=10000)
     json_from_model: List[dict]
-    screenshot: str
+    attachments: Optional[List[Attachment]]
 
 
 class SystemInfoModel(BaseModel):

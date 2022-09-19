@@ -17,11 +17,27 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Increment version
+        run: |
+          cd model/version
+          OLD_VERSION=$(ls)
+          FIRST_DIGIT=$(echo $OLD_VERSION | cut -d '.' -f 1)
+          SECOND_DIGIT=$(echo $OLD_VERSION | cut -d '.' -f 2)
+          THIRD_DIGIT=$(echo $OLD_VERSION | cut -d '.' -f 3)
+          NEW_THIRD_DIGIT=$((THIRD_DIGIT+1))
+          NEW_VERSION=$FIRST_DIGIT.$SECOND_DIGIT.$NEW_THIRD_DIGIT
+          mv ./$OLD_VERSION ./$NEW_VERSION
+          cd ../..
+      - name: Commit incremented version
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: increment version
+          branch: develop
       - name: Build
         run: docker compose -f docker-compose.dev.yaml up -d
       - name: Lint and Test

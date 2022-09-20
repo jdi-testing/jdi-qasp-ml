@@ -24,7 +24,6 @@ def send_support_jdi(msg_content):
     subject = msg_content["subject"]
     header = f"{msg_content['subject']} from user {msg_content['email']}"
     body = f'<p>{msg_content["body"]}</p>'
-    json_from_model = f"{msg_content['json_from_model']}"
 
     msg_to_send = MIMEMultipart()
     msg_to_send["Subject"] = Header(subject, "utf-8")
@@ -35,8 +34,7 @@ def send_support_jdi(msg_content):
             '<h2 style="margin: 0; padding: 10px; color: #ffffff; background: #4b9fc5">'
             + header
             + "</h2>"
-            + body
-            + f"Response from model: {json_from_model}",
+            + body,
             "html",
             "utf-8",
         )

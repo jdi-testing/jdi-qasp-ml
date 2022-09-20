@@ -80,7 +80,6 @@ class ReportMail(BaseModel):
     email: EmailStr = Field(..., alias="from")
     subject: Optional[str] = Field(..., max_length=200)
     body: str = Field(..., max_length=10000)
-    json_from_model: List[dict]
     attachments: Optional[List[Attachment]]
 
 

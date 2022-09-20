@@ -13,6 +13,8 @@ flask-temp-storage/*
 
 generators/HTMLgenerator/output
 generators/HTMLgenerator/dataset
+generators/VuetifyGenerator/node_modules
+generators/VuetifyGenerator/dist
 venv/
 
 data/mui_dataset/*

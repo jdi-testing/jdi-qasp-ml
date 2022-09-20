@@ -146,7 +146,7 @@ class MUI_JDNDataset(JDNDataset):
         with trange(len(self.ds_files)) as bar:
             for df_file_path in self.ds_files:
                 if not os.path.exists(df_file_path):
-                    logger.error(f"File: {df_file_path} does not extst")
+                    logger.error(f"File: {df_file_path} does not exist")
                 else:
                     bar.set_postfix_str(f"{df_file_path}")
                     #                     df = pd.read_parquet(df_file_path)

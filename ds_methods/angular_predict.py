@@ -46,20 +46,16 @@ async def angular_predict_elements(body):
     with trange(len(dataloader)) as bar:
         with torch.no_grad():
             for x, y in dataloader:
-
                 x.to(device)
                 y.to(device)
                 y_prob = softmax(model(x.to(device)).to("cpu")).detach().numpy()
-
                 y_pred = y_prob[0].argmax()
-
                 if y != torch.tensor([0]):
                     logger.info(f"y is\n {y} ")
                     logger.info(f"y_pred is\n {y_pred} ")
 
                 y = y.item()
                 y_prob = y_prob[0, y_pred].item()
-
                 results.append(
                     {
                         "y_true": y,

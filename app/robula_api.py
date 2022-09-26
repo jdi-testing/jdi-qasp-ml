@@ -138,10 +138,15 @@ async def websocket(ws: WebSocket):
             logger.error(e)
             await ws.send_json({"error": "Invalid message format."})
         except WebSocketDisconnect:
-            from utils.api_utils import tasks_vault, tasks_with_changed_priority
+            from utils.api_utils import (
+                revoked_tasks,
+                tasks_vault,
+                tasks_with_changed_priority,
+            )
 
             tasks_vault.clear()
             tasks_with_changed_priority.clear()
+            revoked_tasks.clear()
             logger.info("socket disconnected")
             for task_result in ws.created_tasks:
                 if task_result.state in celery.states.UNREADY_STATES:

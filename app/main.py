@@ -3,6 +3,7 @@
 ############################################
 
 import os
+import smtplib
 from io import BytesIO
 
 import aiohttp
@@ -23,11 +24,13 @@ from app import (
     old_df_path,
     robula_api,
 )
+from app.logger import logger
 from app.models import PredictionInputModel, PredictionResponseModel, SystemInfoModel
 from ds_methods.angular_predict import angular_predict_elements
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from ds_methods.old_predict import predict_elements
+from utils.config import SMTP_HOST
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
@@ -170,6 +173,18 @@ def get_session_id():
 def export_logs():
     mongodb.create_logs_json_file()
     return FileResponse("logs.json", filename="logs.json")
+
+
+@api.get("/ping_smtp")
+def ping_smtp():
+    try:
+        s = smtplib.SMTP(SMTP_HOST, 587, timeout=10)
+        s.starttls()
+    except Exception as e:
+        logger.info(f"Got Exception during pinging smtp.yandex.ru: '{e}'")
+        return f"Got Exception during pinging smtp.yandex.ru: '{e}'"
+    else:
+        return 1
 
 
 if __name__ == "__main__":

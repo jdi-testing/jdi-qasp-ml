@@ -113,19 +113,19 @@ def get_websocket_response(action: WebSocketResponseActions, payload: dict) -> d
 
 
 def task_is_revoked(task_id: str):
-    task_instance = AsyncResult(task_id)
+    task_instance = celery_app.AsyncResult(task_id)
     task_status = task_instance.status
     return task_status == "REVOKED"
 
 
 def task_exists(task_id: str):
-    task_instance = AsyncResult(task_id)
+    task_instance = celery_app.AsyncResult(task_id)
     task_status = task_instance.status
     return task_status != "PENDING"
 
 
 def task_started_and_running(task_id: str):
-    task_instance = AsyncResult(task_id)
+    task_instance = celery_app.AsyncResult(task_id)
     task_status = task_instance.status
     return task_status == "STARTED"
 

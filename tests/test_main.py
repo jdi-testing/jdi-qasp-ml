@@ -47,8 +47,7 @@ def test_get_file_positive_case(tmp_path, monkeypatch):
     assert response._content
 
 
-def test_html5_predict():
-    from tests.additional_materials import mock_predict_html_request_body
+def test_html5_predict(mock_predict_html_request_body):
 
     response = client.post("/html5-predict", json=mock_predict_html_request_body)
     assert response.status_code == 200
@@ -57,8 +56,7 @@ def test_html5_predict():
         assert element["predicted_probability"]
 
 
-def test_mui_predict():
-    from tests.additional_materials import mock_predict_mui_request_body
+def test_mui_predict(mock_predict_mui_request_body):
 
     response = client.post("/mui-predict", json=mock_predict_mui_request_body)
     assert response.status_code == 200

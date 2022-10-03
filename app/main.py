@@ -154,14 +154,14 @@ async def download_template(
             raise HTTPException(status_code=503, detail=f"Connection Error: {e}")
 
 
-@api.get("/show_request_info")
-def show_request_data(request: Request):
-    return {
-        "client_host": request.client.host,
-        "X-Real-Ip": request.headers.get("X-Real-Ip", None),
-        "X-Forwarded-For": request.headers.get("X-Forwarded-For", None),
-        "request_headers": request.headers,
-    }
+# @api.get("/show_request_info")
+# def show_request_data(request: Request):
+#     return {
+#         "client_host": request.client.host,
+#         "X-Real-Ip": request.headers.get("X-Real-Ip", None),
+#         "X-Forwarded-For": request.headers.get("X-Forwarded-For", None),
+#         "request_headers": request.headers,
+#     }
 
 
 @api.get("/get_session_id")

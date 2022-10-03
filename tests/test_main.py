@@ -80,3 +80,16 @@ def test_get_system_info():
     data = response.json()
     assert isinstance(data["cpu_count"], int)
     assert isinstance(data["total_memory"], int)
+
+
+def test_build_version():
+    response = client.get("/build")
+    assert response.json() == client.app.version
+
+
+def test_ping_smtp():
+    response = client.get("/ping_smtp")
+    response_json = response.json()
+    assert response_json == 1 or response_json.startswith(
+        "Got Exception during pinging smtp.yandex.ru:"
+    )

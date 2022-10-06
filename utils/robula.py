@@ -131,6 +131,7 @@ class RobulaPlus:
             "xml:space",
             "fill",
             "xmlns",
+            "data-label",
         ]
         self.forbidden_tags = ["svg", "rect"]
 

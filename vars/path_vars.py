@@ -5,13 +5,15 @@ dataset_dict = {
     "html5": "data/html5_dataset",
     "bs": "data/bs_dataset",
     "angular": "data/angular_dataset",
+    "vuetify": "data/vuetify_dataset"
 }
 
 model_dict = {
     "mui": "MUI_model/model",
     "html5": "HTML5_model/model",
     "bs": "BS_model/model",
-    "angular": "Angular_model/model"
+    "angular": "Angular_model/model",
+    "vuetify": "Vuetify_model/model"
 }
 
 # paths for using in main.py
@@ -31,5 +33,6 @@ mui_model = "MUI_model/model"
 html5_df_path = "data/html5_dataset/df"
 html5_model = "HTML5_model/model"
 angular_model = "Angular_model/model"
+vuetify_model = "Vuetify_model/model"
 
 redis_address = "redis://redis:6379"

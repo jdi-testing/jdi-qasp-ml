@@ -43,8 +43,6 @@ services:
 
   mongodb:
     image: mongo:5.0
-    ports:
-      - 27017:27017
     volumes:
       - ~/apps/mongo:/data/db
     env_file:

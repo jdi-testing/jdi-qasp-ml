@@ -44,8 +44,6 @@ services:
   mongodb-dev:
     container_name: jdi-qasp-ml-mongodb-dev
     image: mongo:5.0
-    ports:
-      - "27018:27017"
     volumes:
       - ~/apps/mongo:/data/db_dev
     env_file:

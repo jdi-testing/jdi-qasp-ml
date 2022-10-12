@@ -35,8 +35,11 @@ classes_path = os.path.join(prefix, "jdi-qasp-ml", "data/html5_dataset/classes.t
 ds_files = glob(f"{df_path}/html5-*.pkl")
 DATASET_NAMES = [os.path.basename(path)[:-4] for path in ds_files]
 
-train_names = DATASET_NAMES[:TRAIN_LEN]
-test_names = DATASET_NAMES[TRAIN_LEN : TRAIN_LEN + TEST_LEN]  # noqa
+# train_names = DATASET_NAMES[:TRAIN_LEN]y
+# test_names = DATASET_NAMES[TRAIN_LEN : TRAIN_LEN + TEST_LEN]  # noqa
+
+train_names = DATASET_NAMES[TEST_LEN: (TRAIN_LEN + TEST_LEN)]
+test_names = DATASET_NAMES[:TEST_LEN]
 
 
 if __name__ == "__main__":

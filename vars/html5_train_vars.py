@@ -1,6 +1,6 @@
 # variables for using in MUI_model/train.py
-TRAIN_LEN = 100
-TEST_LEN = 50
+TRAIN_LEN = 360
+TEST_LEN = 147
 
 parameters = {
     "max_depth": range(10, 25),

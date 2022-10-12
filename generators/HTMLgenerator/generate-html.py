@@ -25,7 +25,7 @@ builders = (HTML5Builder, BootstrapBuilder)
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def all(
     output_dir: str = f"{data_path}/general_dataset/build",
-    num_of_pages: int = 150,
+    num_of_pages: int = 500,
     elements_on_page: int = 40,
 ):
     """Generate html pages using all available frameworks"""
@@ -41,11 +41,11 @@ def all(
 @argh.arg(
     "--output_dir", default=f"{data_path}/html5_dataset/build", help="Output directory"
 )
-@argh.arg("--num_of_pages", default=150, help="Number of pages to generate")
+@argh.arg("--num_of_pages", default=500, help="Number of pages to generate")
 @argh.arg("--elements_on_page", default=40, help="Num of elements per page")
 def html5(
     output_dir: str = f"{data_path}/html5_dataset/build",
-    num_of_pages: int = 150,
+    num_of_pages: int = 500,
     elements_on_page: int = 40,
 ):
     """Generate HTML-5 html pages"""

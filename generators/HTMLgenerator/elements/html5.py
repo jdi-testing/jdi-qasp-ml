@@ -826,11 +826,66 @@ class Span(HTML5BaseElement):
 class Form(HTML5BaseElement):
     @property
     def label(self):
-        return "n/a"
+        return "form"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.tag = "form"
+
+    def markup(self):
+        # Form Attributes: #
+        action_attr = f"action = {fake.sentence(1)}{fake.sentence(1)[:3]}"
+        target_attr = (
+            f'target="{random.choice(["_blank", "_self", "_parent", "_top"])}"'
+        )
+        method_attr = f'method="{random.choice(["get", "post"])}"'
+        autocomplete_attr = f'autocomplete="{random.choice(["on", "off"])}"'
+        novalidate_attr = "novalidate"
+
+        optional_attributes = (
+            action_attr,
+            target_attr,
+            method_attr,
+            autocomplete_attr,
+            novalidate_attr,
+        )
+        optional_attributes_chosen = random.sample(
+            population=optional_attributes,
+            k=random.randint(0, len(optional_attributes)),
+        )
+        optional_attributes_chosen_markup = (
+            self.generate_html_attributes_string()
+            + " ".join(optional_attributes_chosen)
+        )
+
+        # Form Elements: #
+        applicable_elements_classes = (
+            Input,
+            TextField,
+            Label,
+            RadioButton,
+            CheckBox,
+            Button,
+            MultiSelector,
+            TextArea,
+            PasswordField,
+            Datalist,
+            Option,
+            SubmitButton,
+        )
+        elements_chosen_classes = random.choices(
+            population=applicable_elements_classes, k=random.randint(2, 10)
+        )
+        elements_chosen_markups = [item().markup() for item in elements_chosen_classes]
+        resulting_html_string = "".join(elements_chosen_markups)
+
+        # Result: #
+        result = f"""
+        <form {optional_attributes_chosen_markup}>
+        {resulting_html_string}
+        </form>
+        """
+        return result
 
 
 class Input(HTML5BaseElement):
@@ -850,6 +905,13 @@ class Input(HTML5BaseElement):
         self.add_unnecessary_html_attribute(
             "placeholder", fake.sentence(nb_words=random.randint(1, 4)), 70
         )
+
+
+class SubmitButton(Input):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        specific_attributes = {"type": "submit", "value": fake.sentence(1)}
+        self.html_attributes.update(specific_attributes)
 
 
 class HorizontalLine(HTML5BaseElement):
@@ -917,4 +979,6 @@ elements = [
     Progress,
     NumberInput,
     Header,
+    Form,
+    Input,
 ]

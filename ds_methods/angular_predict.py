@@ -9,7 +9,11 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
+<<<<<<< Updated upstream
 from app import angular_df_path_full, angular_model_full
+=======
+from app import angular_df_path, angular_model
+>>>>>>> Stashed changes
 from utils.dataset import MUI_JDNDataset
 
 logger = logging.getLogger("jdi-qasp-ml")
@@ -20,7 +24,11 @@ async def angular_predict_elements(body):
     softmax = torch.nn.Softmax(dim=1)
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
+<<<<<<< Updated upstream
     with open(os.path.join(angular_df_path_full, filename), "wb") as fp:
+=======
+    with open(os.path.join(angular_df_path, filename), "wb") as fp:
+>>>>>>> Stashed changes
         logger.info(f"saving {filename}")
         fp.write(body)
         fp.flush()
@@ -33,7 +41,11 @@ async def angular_predict_elements(body):
     df.to_pickle(f"{angular_df_path_full}/{filename}")
     logger.info("Creating JDNDataset")
     dataset = MUI_JDNDataset(
+<<<<<<< Updated upstream
         datasets_list=[filename.split(".")[0]], rebalance_and_shuffle=False,
+=======
+        datasets_list=[filename.split(".")[0]], rebalance_and_shuffle=False, 
+>>>>>>> Stashed changes
         dataset_type='angular'
     )
     dataloader = DataLoader(dataset, shuffle=False, batch_size=1)

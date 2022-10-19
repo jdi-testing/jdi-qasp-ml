@@ -31,7 +31,7 @@ from vars.mui_train_vars import (  # noqa
 
 from utils.dataset import MUI_JDNDataset  # noqa
 from utils.model_new import JDIModel  # noqa
-from utils.common import accuracy #, accuracy_each_class, recall, precision  # noqa
+from utils.common import accuracy, accuracy_each_class, recall, precision  # noqa
 
 model_path = os.path.join(prefix, "jdi-qasp-ml", "MUI_model/model")
 df_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/df")

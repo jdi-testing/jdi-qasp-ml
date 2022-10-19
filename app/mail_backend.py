@@ -15,7 +15,6 @@ from utils.config import (
 
 
 def send_support_jdi(msg_content):
-
     email_sender_login = EMAIL_SENDER_LOGIN
     email_sender_password = EMAIL_SENDER_PASSWORD
     smtp_host = SMTP_HOST

@@ -166,26 +166,15 @@ To validate models quality we use test web-pages, placed in directory **notebook
 
 
 # Docker
-- build image: 
-```
- sh build_docker.sh (for mac)
-```
-- run docker-compose:
-```
-sh run_docker.sh (for mac)
-```
-<span style="color:orange">Attention! The first time you will build the docker image can take significant time<span>
-
-Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
 ## Take docker image from github:
-### RC-1 version
+### RC-2 version
 #### macOS/Linux
 ```shell
-curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-1/docker-compose-rc-1.yaml && docker compose up
+curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-2/docker-compose-rc.yaml && docker compose up
 ```
 #### Windows
 ```shell
-curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-1/docker-compose-rc-1.yaml && docker compose up
+curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-2/docker-compose-rc.yaml && docker compose up
 ```
 
 ### Development version

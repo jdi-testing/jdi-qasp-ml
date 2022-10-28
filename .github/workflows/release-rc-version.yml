@@ -2,7 +2,7 @@ name: JDI QASP RC-1 version
 
 on:
   push:
-    branches: [ "rc" ]
+    branches: [ "rc-2" ]
 
 jobs:
   release:

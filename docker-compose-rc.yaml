@@ -19,3 +19,8 @@ services:
     command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
     ports:
       - "6379"
+
+  mongodb:
+    image: mongo:5.0
+    ports:
+      - 27017:27017

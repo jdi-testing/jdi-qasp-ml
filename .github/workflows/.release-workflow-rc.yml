@@ -37,7 +37,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: increment version
-          branch: develop
+          branch: rc-2
       - name: Build
         run: docker compose -f docker-compose.dev.yaml up -d
       - name: Lint and Test

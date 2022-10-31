@@ -6,7 +6,6 @@ on:
 
 jobs:
   release:
-    uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow.yml@rc-2
+    uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow-rc.yml@rc-2
     with:
       image_tag: rc
-      branch_name: rc-2

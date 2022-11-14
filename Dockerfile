@@ -21,3 +21,6 @@ RUN pipenv install --ignore-pipfile --system --deploy
 COPY . ${APP_HOME}
 
 ENV PYTHONPATH=${PYTHONPATH}:/jdi-qasp-ml
+#
+#RUN python ./kombu-redis-priority/setup.py build
+#RUN python ./kombu-redis-priority/setup.py install

@@ -1,0 +1,3 @@
+[submodule "kombu-redis-priority"]
+	path = kombu-redis-priority
+	url = https://github.com/Captricity/kombu-redis-priority.git

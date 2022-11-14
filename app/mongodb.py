@@ -5,6 +5,7 @@ import pymongo
 from bson.json_util import dumps
 
 from app import MONGO_DB_HOST, MONGO_DB_PORT
+from app.models import LoggingInfoModel
 
 client = pymongo.MongoClient(MONGO_DB_HOST, MONGO_DB_PORT)
 mongo_db = client.jdn
@@ -13,7 +14,7 @@ async_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DB_HOST, MONGO_DB_PO
 async_mongo_db = async_client.jdn
 
 
-def get_session_id():
+def get_session_id() -> int:
     session_id_entry = mongo_db.sesion_id_collection.find_one()
     if session_id_entry:
         new_result = session_id_entry["session_id"] + 1
@@ -26,7 +27,7 @@ def get_session_id():
         return 1
 
 
-def create_logs_json_file():
+def create_logs_json_file() -> None:
     logs_collection = mongo_db.logs
     all_logs = logs_collection.find()
 
@@ -34,7 +35,7 @@ def create_logs_json_file():
         json.dump(json.loads(dumps(all_logs)), output_file)
 
 
-def create_initial_log_entry(logging_info):
+def create_initial_log_entry(logging_info: LoggingInfoModel):
     logs_collection = mongo_db.logs
     logs_collection.insert_one(logging_info.dict())
 

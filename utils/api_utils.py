@@ -227,13 +227,17 @@ async def process_incoming_ws_request(
 
     elif action == "schedule_multiple_xpath_generations":
         logging_info = LoggingInfoModel(**logging_info)
-        mongodb.create_initial_log_entry(logging_info)
+        mongodb.create_initial_log_entry(
+            logging_info
+        )  # for custom metrics logging purposes
 
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
         document = json.loads(payload.document)
 
         random_document_key = str(uuid.uuid4())
+        # saving document (website content) to redis -
+        # we cache it because we'll reuse it n times, where 'n' - number of elements
         redis_app.set(name=random_document_key, value=document)
 
         config = payload.config.dict()
@@ -241,22 +245,23 @@ async def process_incoming_ws_request(
         for element_id in element_ids:
             new_task_id = convert_task_id_if_exists(element_id)
             task_kwargs = {
-                "session_id": logging_info.session_id,
-                "website_url": logging_info.website_url,
+                "session_id": logging_info.session_id,  # for custom metrics logging purposes
+                "website_url": logging_info.website_url,  # for custom metrics logging purposes
                 "element_id": get_xpath_from_id(element_id),
                 "document_uuid": random_document_key,
                 "config": config,
             }
             tasks_vault[element_id] = task_kwargs
-            task_result = task_schedule_xpath_generation.apply_async(
+
+            task_result_obj = task_schedule_xpath_generation.apply_async(
                 kwargs=task_kwargs, task_id=new_task_id, zpriority=2
             )
-            ws.created_tasks.append(task_result)
+            ws.created_tasks.append(task_result_obj)
 
             asyncio.create_task(
                 wait_until_task_reach_status(
                     ws=ws,
-                    task_result_obj=task_result,
+                    task_result_obj=task_result_obj,
                     expected_status=CeleryStatuses.SUCCESS,
                 )
             )

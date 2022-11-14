@@ -1,15 +1,16 @@
 ############################################
 # this is a FastAPI-based backend
 ############################################
-
+import base64
 import os
 import smtplib
 from io import BytesIO
+from typing import Dict, Union
 
 import aiohttp
 import psutil
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi import status as status
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
@@ -25,11 +26,16 @@ from app import (
     robula_api,
 )
 from app.logger import logger
-from app.models import PredictionInputModel, PredictionResponseModel, SystemInfoModel
+from app.models import (
+    PredictionInputModel,
+    PredictionResponseModel,
+    ReportMail,
+    SystemInfoModel,
+)
+from app.tasks import send_report_mail_task
 from ds_methods.angular_predict import angular_predict_elements
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
-from ds_methods.old_predict import predict_elements
 from utils.config import SMTP_HOST
 
 os.makedirs(mui_df_path, exist_ok=True)
@@ -43,7 +49,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 @api.get("/build")
-def build_version():
+def build_version() -> str:
     """Build version."""
     files = []
     for filename in os.listdir(MODEL_VERSION_DIRECTORY):
@@ -57,7 +63,7 @@ api.version = build_version()
 
 
 @api.get("/files")
-async def dir_listing(request: Request):
+async def dir_listing(request: Request) -> templates.TemplateResponse:
     # Joining the base and the requested path
 
     if not os.path.exists(UPLOAD_DIRECTORY):
@@ -74,7 +80,7 @@ async def dir_listing(request: Request):
 
 
 @api.get("/files/{path:path}")
-async def get_file(path: str):
+async def get_file(path: str) -> FileResponse:
     """Download a file."""
     return FileResponse(
         filename=path,
@@ -83,50 +89,36 @@ async def get_file(path: str):
     )
 
 
-@api.post("/predict", response_model=PredictionResponseModel)
-async def predict(request: Request, input: PredictionInputModel):
-    """HTML elements prediction based on received JSON. Old model."""
-    body = await request.body()
-    return JSONResponse(await predict_elements(body))
-
-
 @api.post("/mui-predict", response_model=PredictionResponseModel)
-async def mui_predict(request: Request, input: PredictionInputModel):
+async def mui_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
     """HTML elements prediction based on received JSON. MUI model."""
     body = await request.body()
     return JSONResponse(await mui_predict_elements(body))
 
 
 @api.post("/angular-predict", response_model=PredictionResponseModel)
-async def angular_predict(request: Request, input: PredictionInputModel):
+async def angular_predict(
+    request: Request, input: PredictionInputModel
+) -> JSONResponse:
     """HTML elements prediction based on received JSON. Angular model."""
     body = await request.body()
     return JSONResponse(await angular_predict_elements(body))
 
 
 @api.post("/html5-predict", response_model=PredictionResponseModel)
-async def html5_predict(request: Request, input: PredictionInputModel):
+async def html5_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
     """HTML elements prediction based on received JSON. HTML5 model."""
     body = await request.body()
     return JSONResponse(await html5_predict_elements(body))
 
 
-@api.post("/bootstrap-predict", response_model=PredictionResponseModel)
-async def bootstrap_predict(request: Request, input: PredictionInputModel):
-    """Bootstrap elements prediction based on received JSON (HTML5 model)."""
-    # The html5 model is currently sufficient for predicting the bootstrap
-    # elements. Bootstrap model will be potentially developed and added later
-    body = await request.body()
-    return JSONResponse(await html5_predict_elements(body))
-
-
 @api.get("/cpu-count")
-async def cpu_count():
+async def cpu_count() -> Dict:
     return {"cpu_count": os.cpu_count()}
 
 
 @api.get("/system_info", response_model=SystemInfoModel)
-async def system_info():
+async def system_info() -> Dict:
     """Returns cpu count and total available memory in bytes"""
     total_memory = psutil.virtual_memory().total
     cpu_count = os.cpu_count()
@@ -139,7 +131,7 @@ async def system_info():
 async def download_template(
     repo_zip_url: HttpUrl = "https://github.com/jdi-templates/"
     "jdi-light-testng-empty-template/archive/refs/heads/main.zip",
-):
+) -> StreamingResponse:
     """Takes link to zip archive of repo from Github. Returns downloaded repo as zip"""
     headers = {"Content-Disposition": 'attachment; filename="template.zip"'}
     async with aiohttp.ClientSession() as session:
@@ -155,18 +147,18 @@ async def download_template(
 
 
 @api.get("/get_session_id")
-def get_session_id():
+def get_session_id() -> int:
     return mongodb.get_session_id()
 
 
 @api.get("/export_logs")
-def export_logs():
+def export_logs() -> FileResponse:
     mongodb.create_logs_json_file()
     return FileResponse("logs.json", filename="logs.json")
 
 
 @api.get("/ping_smtp")
-def ping_smtp():
+def ping_smtp() -> Union[str, int]:
     try:
         s = smtplib.SMTP(SMTP_HOST, 587, timeout=10)
         s.starttls()
@@ -175,6 +167,18 @@ def ping_smtp():
         return f"Got Exception during pinging smtp.yandex.ru: '{e}'"
     else:
         return 1
+
+
+@api.post("/report_problem")
+async def report_problem(msg_content: ReportMail):
+    send_report_mail_task.apply_async(kwargs={"msg_content": msg_content.dict()})
+
+
+@api.post("/file_bytes_to_str")
+async def file_bytes_to_str(file: UploadFile):
+    file_in_bytes = await file.read()
+    file_in_str = base64.b64encode(file_in_bytes).decode()
+    return file_in_str
 
 
 if __name__ == "__main__":

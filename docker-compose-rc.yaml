@@ -7,11 +7,19 @@ services:
     command: uvicorn app.main:api --host 0.0.0.0 --port 5000
     ports:
       - "5050:5000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"
     container_name: jdi-qasp-ml-celery
     command: celery -A app.celery_app:celery_app worker -l info
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   redis:
     image: "redis:alpine"
@@ -19,8 +27,16 @@ services:
     command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
     ports:
       - "6379"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   mongodb:
     image: mongo:5.0
     ports:
       - 27017:27017
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"

@@ -11,6 +11,10 @@ services:
       - "5050:5050"
     volumes:
       - .:/jdi-qasp-ml
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   celery:
     container_name: jdi-qasp-ml-celery
@@ -20,6 +24,10 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/jdi-qasp-ml
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   redis:
     container_name: jdi-qasp-ml-redis
@@ -27,6 +35,10 @@ services:
     command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
     ports:
       - "6379"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   mongodb:
     image: mongo:5.0
@@ -34,3 +46,7 @@ services:
       - 27017:27017
     volumes:
       - ~/apps/mongo:/data/db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"

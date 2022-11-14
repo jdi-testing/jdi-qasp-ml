@@ -5,7 +5,7 @@ dataset_dict = {
     "html5": "data/html5_dataset",
     "bs": "data/bs_dataset",
     "angular": "data/angular_dataset",
-    "vuetify": "data/vuetify_dataset"
+    "vuetify": "data/vuetify_dataset",
 }
 
 model_dict = {
@@ -13,7 +13,7 @@ model_dict = {
     "html5": "HTML5_model/model",
     "bs": "BS_model/model",
     "angular": "Angular_model/model",
-    "vuetify": "Vuetify_model/model"
+    "vuetify": "Vuetify_model/model",
 }
 
 # paths for using in main.py

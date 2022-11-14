@@ -2,15 +2,15 @@ import enum
 
 
 class CeleryStatuses(str, enum.Enum):
-    PENDING = 'PENDING'
-    RECEIVED = 'RECEIVED'
-    STARTED = 'STARTED'
-    SUCCESS = 'SUCCESS'
-    FAILURE = 'FAILURE'
-    REVOKED = 'REVOKED'
-    REJECTED = 'REJECTED'
-    RETRY = 'RETRY'
-    IGNORED = 'IGNORED'
+    PENDING = "PENDING"
+    RECEIVED = "RECEIVED"
+    STARTED = "STARTED"
+    SUCCESS = "SUCCESS"
+    FAILURE = "FAILURE"
+    REVOKED = "REVOKED"
+    REJECTED = "REJECTED"
+    RETRY = "RETRY"
+    IGNORED = "IGNORED"
 
 
 class WebSocketResponseActions(str, enum.Enum):

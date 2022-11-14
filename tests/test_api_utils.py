@@ -1,7 +1,4 @@
-from utils.api_utils import (
-    get_element_id_from_xpath,
-    get_xpath_from_id,
-)
+from utils.api_utils import get_element_id_from_xpath, get_xpath_from_id
 
 
 def test_get_xpath_from_id():

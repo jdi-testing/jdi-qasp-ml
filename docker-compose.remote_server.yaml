@@ -13,6 +13,10 @@ services:
       - .:/jdi-qasp-ml
     env_file:
       - .env.rc
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   celery:
     container_name: jdi-qasp-ml-celery
@@ -24,6 +28,10 @@ services:
       - .:/jdi-qasp-ml
     env_file:
       - .env.rc
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   redis:
     container_name: jdi-qasp-ml-redis
@@ -40,6 +48,10 @@ services:
       - "6379"
     env_file:
       - .env.rc
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
 
   mongodb:
     image: mongo:5.0
@@ -47,3 +59,7 @@ services:
       - ~/apps/mongo:/data/db
     env_file:
       - .env.rc
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"

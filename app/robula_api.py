@@ -1,35 +1,24 @@
-import base64
 import json
-import logging
 import typing
 from functools import wraps
 
 import celery.states
-from fastapi import (
-    APIRouter,
-    Query,
-    Request,
-    UploadFile,
-    WebSocket,
-    WebSocketDisconnect,
-    status,
-)
+from fastapi import APIRouter, Query, Request, WebSocket, WebSocketDisconnect, status
 from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from starlette.responses import JSONResponse
 from starlette.websockets import WebSocketState
 
+from app.logger import logger
 from app.models import (
-    ReportMail,
     TaskIdModel,
     TaskResultModel,
     TaskStatusModel,
     XPathGenerationModel,
 )
-from app.tasks import send_report_mail_task, task_schedule_xpath_generation
+from app.tasks import task_schedule_xpath_generation
 from utils import api_utils
 
-logger = logging.getLogger("jdi-qasp-ml")
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
@@ -152,15 +141,3 @@ async def websocket(ws: WebSocket):
                 if task_result.state in celery.states.UNREADY_STATES:
                     logger.info(f"Task revoked: {task_result.id}")
                     task_result.revoke(terminate=True, signal="SIGKILL")
-
-
-@router.post("/report_problem")
-async def report_problem(msg_content: ReportMail):
-    send_report_mail_task.apply_async(kwargs={"msg_content": msg_content.dict()})
-
-
-@router.post("/file_bytes_to_str")
-async def file_bytes_to_str(file: UploadFile):
-    file_in_bytes = await file.read()
-    file_in_str = base64.b64encode(file_in_bytes).decode()
-    return file_in_str

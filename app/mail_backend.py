@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from app.logger import logger
+from app.models import ReportMail
 from utils.config import (
     EMAIL_SENDER_LOGIN,
     EMAIL_SENDER_PASSWORD,
@@ -14,11 +15,7 @@ from utils.config import (
 )
 
 
-def send_support_jdi(msg_content):
-    email_sender_login = EMAIL_SENDER_LOGIN
-    email_sender_password = EMAIL_SENDER_PASSWORD
-    smtp_host = SMTP_HOST
-    recipients_emails = RECIPIENT_EMAILS
+def send_support_jdi(msg_content: ReportMail.dict) -> None:
 
     subject = msg_content["subject"]
     header = f"{msg_content['subject']} from user {msg_content['email']}"
@@ -26,8 +23,8 @@ def send_support_jdi(msg_content):
 
     msg_to_send = MIMEMultipart()
     msg_to_send["Subject"] = Header(subject, "utf-8")
-    msg_to_send["From"] = email_sender_login
-    msg_to_send["To"] = recipients_emails
+    msg_to_send["From"] = EMAIL_SENDER_LOGIN
+    msg_to_send["To"] = RECIPIENT_EMAILS
     msg_to_send.attach(
         MIMEText(
             '<h2 style="margin: 0; padding: 10px; color: #ffffff; background: #4b9fc5">'
@@ -52,11 +49,11 @@ def send_support_jdi(msg_content):
         part["Content-Transfer-Encoding"] = "base64"
         msg_to_send.attach(part)
 
-    s = smtplib.SMTP(smtp_host, 587, timeout=10)
+    s = smtplib.SMTP(SMTP_HOST, 587, timeout=10)
     try:
         s.starttls()
-        s.login(email_sender_login, email_sender_password)
-        s.sendmail(msg_to_send["From"], recipients_emails, msg_to_send.as_string())
+        s.login(EMAIL_SENDER_LOGIN, EMAIL_SENDER_PASSWORD)
+        s.sendmail(msg_to_send["From"], RECIPIENT_EMAILS, msg_to_send.as_string())
     except Exception as e:
         logger.error(e)
         raise e

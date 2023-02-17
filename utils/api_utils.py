@@ -145,9 +145,12 @@ def convert_task_id_if_not_running(task_id: str):
 
 
 def convert_task_id_if_in_revoked(task_id: str):
-    if task_id in revoked_tasks:
-        return convert_task_id_if_in_revoked(f"_{task_id}")
-
+    task_instance = celery_app.AsyncResult(task_id)
+    task_status = task_instance.status
+    logger.info("Command to revoke task - %s with status %s", task_id, task_status)
+    if task_status == "REVOKED":
+        logger.info("Task is already revoked. task_id -> _task_id")
+        return f"_{task_id}"
     return task_id
 
 

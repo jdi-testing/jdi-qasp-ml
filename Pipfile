@@ -39,6 +39,7 @@ python-dotenv = "*"
 pymongo = "*"
 redis = "*"
 motor = "*"
+async-lru = "==1.0.3"
 
 [dev-packages]
 

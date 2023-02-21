@@ -17,7 +17,9 @@ from app.tasks import task_schedule_xpath_generation
 
 
 def get_task_status(task_id) -> TaskStatusModel:
-    result = TaskStatusModel(id=task_id, status=celery_app.AsyncResult(task_id).status)
+    result = TaskStatusModel(
+        id=task_id, status=celery_app.AsyncResult(task_id).status
+    )
     return result
 
 
@@ -108,7 +110,9 @@ async def wait_until_task_reach_status(
         await asyncio.sleep(0.5)
 
 
-def get_websocket_response(action: WebSocketResponseActions, payload: dict) -> dict:
+def get_websocket_response(
+    action: WebSocketResponseActions, payload: dict
+) -> dict:
     return {"action": action.value, "payload": payload}
 
 
@@ -122,6 +126,12 @@ def task_exists(task_id: str):
     task_instance = celery_app.AsyncResult(task_id)
     task_status = task_instance.status
     return task_status != "PENDING"
+
+
+def task_exists_and_already_succeeded(task_id: str):
+    task_instance = celery_app.AsyncResult(task_id)
+    task_status = task_instance.status
+    return task_status == "SUCCESS"
 
 
 def task_started_and_running(task_id: str):
@@ -147,7 +157,9 @@ def convert_task_id_if_not_running(task_id: str):
 def convert_task_id_if_in_revoked(task_id: str):
     task_instance = celery_app.AsyncResult(task_id)
     task_status = task_instance.status
-    logger.info("Command to revoke task - %s with status %s", task_id, task_status)
+    logger.info(
+        "Command to revoke task - %s with status %s", task_id, task_status
+    )
     if task_status == "REVOKED":
         logger.info("Task is already revoked. task_id -> _task_id")
         return f"_{task_id}"
@@ -206,7 +218,9 @@ async def change_task_priority(ws, payload, priority):
         id_of_task_to_change_priority
     )
     new_task_result = task_schedule_xpath_generation.apply_async(
-        kwargs=task_kwargs, task_id=id_of_task_to_change_priority, zpriority=priority
+        kwargs=task_kwargs,
+        task_id=id_of_task_to_change_priority,
+        zpriority=priority,
     )
     ws.created_tasks.append(new_task_result)
 
@@ -246,28 +260,39 @@ async def process_incoming_ws_request(
         config = payload.config.dict()
 
         for element_id in element_ids:
-            new_task_id = convert_task_id_if_exists(element_id)
-            task_kwargs = {
-                "session_id": logging_info.session_id,  # for custom metrics logging purposes
-                "website_url": logging_info.website_url,  # for custom metrics logging purposes
-                "element_id": get_xpath_from_id(element_id),
-                "document_uuid": random_document_key,
-                "config": config,
-            }
-            tasks_vault[element_id] = task_kwargs
-
-            task_result_obj = task_schedule_xpath_generation.apply_async(
-                kwargs=task_kwargs, task_id=new_task_id, zpriority=2
-            )
-            ws.created_tasks.append(task_result_obj)
-
-            asyncio.create_task(
-                wait_until_task_reach_status(
-                    ws=ws,
-                    task_result_obj=task_result_obj,
-                    expected_status=CeleryStatuses.SUCCESS,
+            if task_exists_and_already_succeeded(element_id):
+                logger.info("Using cached result for task_id %s", element_id)
+                task_result_obj = AsyncResult(element_id)
+                asyncio.create_task(
+                    wait_until_task_reach_status(
+                        ws=ws,
+                        task_result_obj=task_result_obj,
+                        expected_status=CeleryStatuses.SUCCESS,
+                    )
                 )
-            )
+            else:
+                new_task_id = convert_task_id_if_exists(element_id)
+                task_kwargs = {
+                    "session_id": logging_info.session_id,  # for custom metrics logging purposes
+                    "website_url": logging_info.website_url,  # for custom metrics logging purposes
+                    "element_id": get_xpath_from_id(element_id),
+                    "document_uuid": random_document_key,
+                    "config": config,
+                }
+                tasks_vault[element_id] = task_kwargs
+
+                task_result_obj = task_schedule_xpath_generation.apply_async(
+                    kwargs=task_kwargs, task_id=new_task_id, zpriority=2
+                )
+                ws.created_tasks.append(task_result_obj)
+
+                asyncio.create_task(
+                    wait_until_task_reach_status(
+                        ws=ws,
+                        task_result_obj=task_result_obj,
+                        expected_status=CeleryStatuses.SUCCESS,
+                    )
+                )
     elif action == "prioritize_existing_task":
         await change_task_priority(ws, payload, priority=1)
 

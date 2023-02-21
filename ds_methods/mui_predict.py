@@ -6,6 +6,7 @@ import os
 
 import pandas as pd
 import torch
+from async_lru import alru_cache
 from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
@@ -15,6 +16,7 @@ from utils.dataset import MUI_JDNDataset
 logger = logging.getLogger("jdi-qasp-ml")
 
 
+@alru_cache(maxsize=32)
 async def mui_predict_elements(body):
     # create softmax layser function to get probabilities from logits
     softmax = torch.nn.Softmax(dim=1)
@@ -28,8 +30,12 @@ async def mui_predict_elements(body):
     logger.info(f"saving {filename}")
     df = pd.DataFrame(json.loads(body))
     # fix bad data which can come in 'onmouseover', 'onmouseenter'
-    df.onmouseover = df.onmouseover.apply(lambda x: "true" if x is not None else None)
-    df.onmouseenter = df.onmouseenter.apply(lambda x: "true" if x is not None else None)
+    df.onmouseover = df.onmouseover.apply(
+        lambda x: "true" if x is not None else None
+    )
+    df.onmouseenter = df.onmouseenter.apply(
+        lambda x: "true" if x is not None else None
+    )
     df.to_pickle(f"{mui_df_path}/{filename}")
     logger.info("Creating JDNDataset")
     dataset = MUI_JDNDataset(
@@ -38,7 +44,9 @@ async def mui_predict_elements(body):
     dataloader = DataLoader(dataset, shuffle=False, batch_size=1)
     device = "cpu"
     logger.info(f"Load model with hardcoded device: {device}")
-    model = torch.load(f"{mui_model}/model.pth", map_location="cpu").to(device=device)
+    model = torch.load(f"{mui_model}/model.pth", map_location="cpu").to(
+        device=device
+    )
     model.eval()
     logger.info("Predicting...")
     results = []
@@ -48,7 +56,9 @@ async def mui_predict_elements(body):
 
                 x.to(device)
                 y.to(device)
-                y_prob = softmax(model(x.to(device)).to("cpu")).detach().numpy()
+                y_prob = (
+                    softmax(model(x.to(device)).to("cpu")).detach().numpy()
+                )
 
                 y_pred = y_prob[0].argmax()
 
@@ -82,9 +92,9 @@ async def mui_predict_elements(body):
         "predicted_label",
         "predicted_probability",
     ]
-    results_df = dataset.df[
-        (dataset.df["predicted_label"] != "n/a")
-    ][columns_to_publish].copy()
+    results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")][
+        columns_to_publish
+    ].copy()
     # # sort in descending order: big controls first
     results_df["sort_key"] = results_df.height * results_df.width
     results_df = results_df.sort_values(by="sort_key", ascending=False)

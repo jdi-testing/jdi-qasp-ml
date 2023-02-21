@@ -6,6 +6,7 @@ import os
 import pickle
 
 import pandas as pd
+from async_lru import alru_cache
 
 from app import UPLOAD_DIRECTORY, html5_classes_path, html5_df_path, html5_model
 from utils.dataset import HTML5_JDNDataset
@@ -13,6 +14,7 @@ from utils.dataset import HTML5_JDNDataset
 logger = logging.getLogger("jdi-qasp-ml")
 
 
+@alru_cache(maxsize=32)
 async def html5_predict_elements(body):
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
@@ -26,8 +28,12 @@ async def html5_predict_elements(body):
     df = pd.DataFrame(json.loads(body))
 
     # fix bad data which can come in 'onmouseover', 'onmouseenter'
-    df.onmouseover = df.onmouseover.apply(lambda x: "true" if x is not None else None)
-    df.onmouseenter = df.onmouseenter.apply(lambda x: "true" if x is not None else None)
+    df.onmouseover = df.onmouseover.apply(
+        lambda x: "true" if x is not None else None
+    )
+    df.onmouseenter = df.onmouseenter.apply(
+        lambda x: "true" if x is not None else None
+    )
 
     df.to_pickle(f"{html5_df_path}/{filename}")
 
@@ -56,7 +62,9 @@ async def html5_predict_elements(body):
         .values
     )
 
-    dataset.df["predicted_probability"] = model.predict_proba(dataset.X).max(axis=1)
+    dataset.df["predicted_probability"] = model.predict_proba(dataset.X).max(
+        axis=1
+    )
     # dataset.df["predicted_label"] = dataset.df.apply(
     #     lambda x: "UIElement" if x.tag_name != "INPUT" and x.predicted_probability < 1 else x.predicted_label, axis=1)
     # dataset.df["predicted_label"] = dataset.df.apply(

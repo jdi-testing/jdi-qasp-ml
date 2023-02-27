@@ -315,3 +315,14 @@ async def process_incoming_ws_request(
         result = get_celery_tasks_results(payload["id"])
 
     return result
+
+
+def sort_predict_body(request_body):
+    body_as_python_obj = json.loads(request_body.decode("utf-8"))
+    body_as_python_obj_sorted = list(
+        sorted(body_as_python_obj, key=lambda x: int(x["element_id"]))
+    )
+    body_sorted = json.dumps(
+        body_as_python_obj_sorted, ensure_ascii=False
+    ).encode("utf-8")
+    return body_sorted

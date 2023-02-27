@@ -37,6 +37,8 @@ from ds_methods.angular_predict import angular_predict_elements
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from utils.config import SMTP_HOST
+from utils.api_utils import sort_predict_body
+
 
 os.makedirs(mui_df_path, exist_ok=True)
 os.makedirs(old_df_path, exist_ok=True)
@@ -93,7 +95,9 @@ async def get_file(path: str) -> FileResponse:
 async def mui_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
     """HTML elements prediction based on received JSON. MUI model."""
     body = await request.body()
-    return JSONResponse(await mui_predict_elements(body))
+    body_sorted = sort_predict_body(request_body=body)
+
+    return JSONResponse(await mui_predict_elements(body_sorted))
 
 
 @api.post("/angular-predict", response_model=PredictionResponseModel)
@@ -102,14 +106,18 @@ async def angular_predict(
 ) -> JSONResponse:
     """HTML elements prediction based on received JSON. Angular model."""
     body = await request.body()
-    return JSONResponse(await angular_predict_elements(body))
+    body_sorted = sort_predict_body(request_body=body)
+
+    return JSONResponse(await angular_predict_elements(body_sorted))
 
 
 @api.post("/html5-predict", response_model=PredictionResponseModel)
 async def html5_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
     """HTML elements prediction based on received JSON. HTML5 model."""
     body = await request.body()
-    return JSONResponse(await html5_predict_elements(body))
+    body_sorted = sort_predict_body(request_body=body)
+
+    return JSONResponse(await html5_predict_elements(body_sorted))
 
 
 @api.get("/cpu-count")

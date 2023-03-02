@@ -79,6 +79,7 @@ async def html5_predict_elements(body):
         "predicted_label",
         "predicted_probability",
         "childs",
+        "displayed"
     ]
 
     results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")][

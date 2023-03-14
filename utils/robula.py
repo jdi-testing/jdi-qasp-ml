@@ -3,6 +3,8 @@ import re
 from copy import copy
 from itertools import chain, combinations
 
+from cachetools import LRUCache, cached
+from cachetools.keys import hashkey
 from lxml import etree, html
 from lxml.etree import XPathEvalError
 
@@ -115,7 +117,13 @@ class XPath:
 
 class RobulaPlus:
     def __init__(self, element, document, config):
-        self.attribute_priorization_list = ["name", "class", "title", "alt", "value"]
+        self.attribute_priorization_list = [
+            "name",
+            "class",
+            "title",
+            "alt",
+            "value",
+        ]
         self.attribute_black_list = [
             "href",
             "src",
@@ -135,9 +143,15 @@ class RobulaPlus:
         ]
         self.forbidden_tags = ["svg", "rect"]
 
-        self.maximum_generation_time_in_seconds = config["maximum_generation_time"]
-        self.allow_indexes_at_the_beginning = config["allow_indexes_at_the_beginning"]
-        self.allow_indexes_in_the_middle = config["allow_indexes_in_the_middle"]
+        self.maximum_generation_time_in_seconds = config[
+            "maximum_generation_time"
+        ]
+        self.allow_indexes_at_the_beginning = config[
+            "allow_indexes_at_the_beginning"
+        ]
+        self.allow_indexes_in_the_middle = config[
+            "allow_indexes_in_the_middle"
+        ]
         self.allow_indexes_at_the_end = config["allow_indexes_at_the_end"]
         self.maximum_length_of_text = 1000
 
@@ -149,7 +163,9 @@ class RobulaPlus:
         x_path_list = [XPath("//*")]
         while len(x_path_list) > 0:
             current_xpath = x_path_list.pop(0)
-            temp = self.generate_xpaths_for_current_level(current_xpath, start_time)
+            temp = self.generate_xpaths_for_current_level(
+                current_xpath, start_time
+            )
 
             for el in temp:
                 evaluation_time_in_seconds = (
@@ -164,9 +180,9 @@ class RobulaPlus:
 
                 try:
                     el = self.clean_xpath(el)
-                    if self.xpath_is_valid(el, current_xpath) and self.uniquely_locate(
-                        el.get_value()
-                    ):
+                    if self.xpath_is_valid(
+                        el, current_xpath
+                    ) and self.uniquely_locate(el.get_value()):
                         return el.get_value()
                     x_path_list.append(el)
                 except XPathEvalError:
@@ -214,7 +230,9 @@ class RobulaPlus:
         s = [(key, value) for key, value in attributes.items()]
         powerset = [
             list(el)
-            for el in chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
+            for el in chain.from_iterable(
+                combinations(s, r) for r in range(len(s) + 1)
+            )
         ]
         return powerset
 
@@ -229,8 +247,13 @@ class RobulaPlus:
         except AttributeError:
             return output
 
-        if xpath.starts_with("//*") and ancestor.tag.lower() not in self.forbidden_tags:
-            output.append(XPath("//" + ancestor.tag.lower() + xpath.substring(3)))
+        if (
+            xpath.starts_with("//*")
+            and ancestor.tag.lower() not in self.forbidden_tags
+        ):
+            output.append(
+                XPath("//" + ancestor.tag.lower() + xpath.substring(3))
+            )
         return output
 
     def transf_add_id(self, xpath):
@@ -290,7 +313,9 @@ class RobulaPlus:
                 for attribute in ancestor.attrib.items():
                     if attribute[0] == priority_attribute:
                         new_xpath = XPath(xpath.get_value())
-                        attribute_value = self.remove_invalid_characters(attribute[1])
+                        attribute_value = self.remove_invalid_characters(
+                            attribute[1]
+                        )
                         new_xpath.add_predicate_to_head(
                             f"[@{attribute[0]}='{attribute_value}']"
                         )
@@ -320,7 +345,9 @@ class RobulaPlus:
             return output
 
         if not xpath.head_has_any_predicates():
-            self.attribute_priorization_list = ["id"] + self.attribute_priorization_list
+            self.attribute_priorization_list = [
+                "id"
+            ] + self.attribute_priorization_list
 
             attributes = copy(ancestor.attrib)
             # remove black list attributes
@@ -332,7 +359,9 @@ class RobulaPlus:
             attribute_power_set = self.generate_power_set(attributes)
             # remove sets with cardinality < 2
             attribute_power_set = [
-                attribute for attribute in attribute_power_set if len(attribute) >= 2
+                attribute
+                for attribute in attribute_power_set
+                if len(attribute) >= 2
             ]
             # sort elements inside each powerset
             for attribute_set in attribute_power_set:
@@ -377,7 +406,10 @@ class RobulaPlus:
         except AttributeError:
             return output
 
-        if not xpath.head_has_position_predicate() and ancestor.getparent() is not None:
+        if (
+            not xpath.head_has_position_predicate()
+            and ancestor.getparent() is not None
+        ):
             position = 1
             if xpath.starts_with("//*"):
                 position = ancestor.getparent().index(ancestor) + 1
@@ -411,7 +443,9 @@ class RobulaPlus:
             b"\xe2\x80\x89".decode("utf-8"),
         ]  # THSP
 
-        valid_string = valid_string.translate({ord(ch): "" for ch in chars_to_remove})
+        valid_string = valid_string.translate(
+            {ord(ch): "" for ch in chars_to_remove}
+        )
         return valid_string
 
     @staticmethod
@@ -425,7 +459,10 @@ class RobulaPlus:
         if self.xpath_contains_only_tag(xpath, parent_xpath):
             return False
 
-        if not self.allow_indexes_at_the_beginning and xpath.starts_with_index():
+        if (
+            not self.allow_indexes_at_the_beginning
+            and xpath.starts_with_index()
+        ):
             return False
 
         if not self.allow_indexes_at_the_end and xpath.ends_with_index():
@@ -467,7 +504,13 @@ def split_full_path_to_current_and_parents_parts(full_path):
     return parent_path, current_level_locator
 
 
-def generate_xpath(xpath, page, config):
+@cached(
+    cache=LRUCache(maxsize=10 * 1024 * 1024),
+    key=lambda xpath, page, document_uuid, config: hashkey(
+        xpath, document_uuid
+    ),
+)
+def generate_xpath(xpath, page, document_uuid, config):
     document = html.fromstring(page)
     element = document.xpath(xpath)
     if element is None or len(element) == 0:
@@ -489,8 +532,12 @@ def generate_xpath(xpath, page, config):
         (
             parent_path,
             current_level_locator,
-        ) = split_full_path_to_current_and_parents_parts(current_level_full_path)
-        parent_robust_locator = generate_xpath(parent_path, page, config)
+        ) = split_full_path_to_current_and_parents_parts(
+            current_level_full_path
+        )
+        parent_robust_locator = generate_xpath(
+            parent_path, page, document_uuid, config
+        )
         return f"{parent_robust_locator}//{current_level_locator}"
 
     except XPathCantFindPath:

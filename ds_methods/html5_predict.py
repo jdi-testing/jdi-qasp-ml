@@ -65,19 +65,10 @@ async def html5_predict_elements(body):
     dataset.df["predicted_probability"] = model.predict_proba(dataset.X).max(
         axis=1
     )
-    # dataset.df["predicted_label"] = dataset.df.apply(
-    #     lambda x: "UIElement" if x.tag_name != "INPUT" and x.predicted_probability < 1 else x.predicted_label, axis=1)
-    # dataset.df["predicted_label"] = dataset.df.apply(
-    #     lambda x: "TextField" if x.tag_name == "INPUT" and x.predicted_probability < 1 else x.predicted_label, axis=1)
 
     columns_to_publish = [
         "element_id",
-        "x",
-        "y",
-        "width",
-        "height",
         "predicted_label",
-        "predicted_probability",
         "childs",
         "displayed"
     ]

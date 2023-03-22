@@ -85,12 +85,7 @@ async def mui_predict_elements(body):
     dataset.df["predicted_probability"] = results_df.y_probability.values
     columns_to_publish = [
         "element_id",
-        "x",
-        "y",
-        "width",
-        "height",
         "predicted_label",
-        "predicted_probability",
     ]
     results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")][
         columns_to_publish

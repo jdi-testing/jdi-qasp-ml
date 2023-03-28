@@ -87,9 +87,7 @@ async def mui_predict_elements(body):
         "element_id",
         "predicted_label",
     ]
-    results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")][
-        columns_to_publish
-    ].copy()
+    results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")].copy()
     # # sort in descending order: big controls first
     results_df["sort_key"] = results_df.height * results_df.width
     results_df = results_df.sort_values(by="sort_key", ascending=False)
@@ -99,4 +97,4 @@ async def mui_predict_elements(body):
     else:
         del model
         gc.collect()
-        return results_df.to_dict(orient="records")
+        return results_df[columns_to_publish].to_dict(orient="records")

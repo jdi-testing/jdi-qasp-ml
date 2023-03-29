@@ -178,7 +178,9 @@ def test_revoke_task_and_rerun(mock_simple_page):
         websocket.send_json(new_message)
 
         time.sleep(2)
-        task_instance1 = celery_app.AsyncResult("_0103848358842394684976681594")
+        task_instance1 = celery_app.AsyncResult(
+            "_0103848358842394684976681594"
+        )
         task_status = task_instance1.status
         assert task_status == "SUCCESS"
 
@@ -226,6 +228,7 @@ def test_deep_calculation(mock_simple_page):
                     "allow_indexes_at_the_beginning": False,
                     "allow_indexes_in_the_middle": False,
                     "allow_indexes_at_the_end": False,
+                    "advanced_calculation": True,
                 },
             },
             "logging_info": {

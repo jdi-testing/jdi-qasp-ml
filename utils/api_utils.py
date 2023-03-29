@@ -260,7 +260,9 @@ async def process_incoming_ws_request(
         config = payload.config.dict()
 
         for element_id in element_ids:
-            if task_exists_and_already_succeeded(element_id):
+            if task_exists_and_already_succeeded(
+                element_id
+            ) and not config.get("advanced_calculation"):
                 logger.info("Using cached result for task_id %s", element_id)
                 task_result_obj = AsyncResult(element_id)
                 asyncio.create_task(

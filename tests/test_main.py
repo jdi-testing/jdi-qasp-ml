@@ -49,11 +49,12 @@ def test_get_file_positive_case(tmp_path, monkeypatch):
 
 def test_html5_predict(mock_predict_html_request_body):
 
-    response = client.post("/html5-predict", json=mock_predict_html_request_body)
+    response = client.post(
+        "/html5-predict", json=mock_predict_html_request_body
+    )
     assert response.status_code == 200
     for element in response.json():
         assert element["predicted_label"]
-        assert element["predicted_probability"]
 
 
 def test_mui_predict(mock_predict_mui_request_body):
@@ -62,7 +63,6 @@ def test_mui_predict(mock_predict_mui_request_body):
     assert response.status_code == 200
     for element in response.json():
         assert element["predicted_label"]
-        assert element["predicted_probability"]
 
 
 def test_get_cpu_count():

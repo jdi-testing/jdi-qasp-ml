@@ -170,11 +170,11 @@ To validate models quality we use test web-pages, placed in directory **notebook
 ### RC-2 version
 #### macOS/Linux
 ```shell
-curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-2/docker-compose-rc.yaml && docker compose up
+curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
 ```
 #### Windows
 ```shell
-curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc-2/docker-compose-rc.yaml && docker compose up
+curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
 ```
 
 ### Development version

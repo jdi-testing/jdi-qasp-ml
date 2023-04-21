@@ -158,6 +158,17 @@ class RobulaPlus:
         self.element = element
         self.document = document
 
+    def check_for_time_limit(self, start_time):
+        evaluation_time_in_seconds = (
+            datetime.datetime.now() - start_time
+        ).total_seconds()
+        if (
+            self.maximum_generation_time_in_seconds is not None
+            and evaluation_time_in_seconds
+            > self.maximum_generation_time_in_seconds
+        ):
+            raise XPathEvaluationTimeExceeded
+
     def get_robust_xpath(self):
         start_time = datetime.datetime.now()
         x_path_list = [XPath("//*")]
@@ -225,15 +236,19 @@ class RobulaPlus:
             count += 1
         return count
 
-    @staticmethod
-    def generate_power_set(attributes):
+    def generate_power_set(self, attributes, start_time):
+
         s = [(key, value) for key, value in attributes.items()]
-        powerset = [
-            list(el)
-            for el in chain.from_iterable(
-                combinations(s, r) for r in range(len(s) + 1)
-            )
-        ]
+        combinations_iterable = (combinations(s, r) for r in range(len(s) + 1))
+        chain_from_iterable = chain.from_iterable(combinations_iterable)
+
+        powerset = []
+        for iteration, el in enumerate(chain_from_iterable):
+            powerset.append(list(el))
+            if iteration > 1024:
+                logger.error("Check for time is involved")
+                self.check_for_time_limit(start_time)
+
         return powerset
 
     def uniquely_locate(self, xpath):
@@ -356,7 +371,9 @@ class RobulaPlus:
                     del attributes[attribute]
 
             # generate power set
-            attribute_power_set = self.generate_power_set(attributes)
+            attribute_power_set = self.generate_power_set(
+                attributes, start_time
+            )
             # remove sets with cardinality < 2
             attribute_power_set = [
                 attribute
@@ -374,10 +391,8 @@ class RobulaPlus:
             attribute_power_set.sort(key=len)
             # remove id
             self.attribute_priorization_list.pop(0)
-
             # convert to predicate
             for attr_set in attribute_power_set:
-
                 predicate = f"[@{attr_set[0][0]}='{self.remove_invalid_characters(attr_set[0][1])}'"
                 for i in range(1, len(attr_set)):
                     predicate += f" and @{attr_set[i][0]}='{self.remove_invalid_characters(attr_set[i][1])}'"
@@ -385,16 +400,7 @@ class RobulaPlus:
                 new_xpath = XPath(xpath.get_value())
                 new_xpath.add_predicate_to_head(predicate)
                 output.append(new_xpath)
-
-                evaluation_time_in_seconds = (
-                    datetime.datetime.now() - start_time
-                ).total_seconds()
-                if (
-                    self.maximum_generation_time_in_seconds is not None
-                    and evaluation_time_in_seconds
-                    > self.maximum_generation_time_in_seconds
-                ):
-                    raise XPathEvaluationTimeExceeded
+                self.check_for_time_limit(start_time)
 
         return output
 

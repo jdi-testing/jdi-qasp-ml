@@ -245,8 +245,7 @@ class RobulaPlus:
         powerset = []
         for iteration, el in enumerate(chain_from_iterable):
             powerset.append(list(el))
-            if iteration > 1024:
-                logger.error("Check for time is involved")
+            if iteration > 512:
                 self.check_for_time_limit(start_time)
 
         return powerset

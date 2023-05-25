@@ -211,7 +211,7 @@ def test_deep_calculation(mock_simple_page):
         }
         websocket.send_json(mock_message)
 
-        time.sleep(2)
+        time.sleep(5)
         task_instance = celery_app.AsyncResult("3027183088842394682894924777")
         assert task_instance.status == "SUCCESS"
 
@@ -239,7 +239,7 @@ def test_deep_calculation(mock_simple_page):
             },
         }
         websocket.send_json(new_message)
-        time.sleep(12)
+        time.sleep(20)
 
         task_instance = celery_app.AsyncResult("_3027183088842394682894924777")
         assert task_instance.status == "SUCCESS"

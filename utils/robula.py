@@ -543,7 +543,7 @@ def generate_xpath(xpath, page, document_uuid, config):
         parent_robust_locator = generate_xpath(
             parent_path, page, document_uuid, config
         )
-        return f"{parent_robust_locator}//{current_level_locator}"
+        return f"{parent_robust_locator}/{current_level_locator}"
 
     except XPathCantFindPath:
         return tree.getpath(element)

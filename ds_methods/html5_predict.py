@@ -79,29 +79,9 @@ async def html5_predict_elements(body):
     ]
 
     results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")].copy()
-    # # sort in descending order: big controls first
-    results_df["sort_key"] = results_df.height * results_df.width
-    results_df = results_df.sort_values(by="sort_key", ascending=False)
 
-    #########################
-    # current model returns partially non-existing elements' children
-    # here we're cleaning it, but it should be corrected on model's side
-    def clean_childs():
-        elements_ids = list(results_df["element_id"])
-
-        result = []
-        for element_childs in list(results_df["childs"]):
-            if element_childs:
-                cleaned_childs = [
-                    item for item in element_childs if item in elements_ids
-                ]
-                result.append(cleaned_childs)
-            else:
-                result.append([])
-        results_df["childs"] = result
-
-    clean_childs()
-    #########################
+    # sort in ascending order by coordinates
+    results_df = results_df.sort_values(by=["y", "x"], ascending=[True, True])
 
     if results_df.shape[0] == 0:
         gc.collect()

@@ -37,7 +37,6 @@ from ds_methods.angular_predict import angular_predict_elements
 from ds_methods.html5_predict import html5_predict_elements
 from ds_methods.mui_predict import mui_predict_elements
 from utils.config import SMTP_HOST
-from utils.api_utils import sort_predict_body
 
 
 os.makedirs(mui_df_path, exist_ok=True)

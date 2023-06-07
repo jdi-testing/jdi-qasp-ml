@@ -86,9 +86,10 @@ async def angular_predict_elements(body):
         "predicted_label",
     ]
     results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")].copy()
-    # # sort in descending order: big controls first
-    results_df["sort_key"] = results_df.height * results_df.width
-    results_df = results_df.sort_values(by="sort_key", ascending=False)
+
+    # sort in ascending order by coordinates
+    results_df = results_df.sort_values(by=["y", "x"], ascending=[True, True])
+
     if results_df.shape[0] == 0:
         gc.collect()
         return []

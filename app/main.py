@@ -95,9 +95,7 @@ async def get_file(path: str) -> FileResponse:
 async def mui_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
     """HTML elements prediction based on received JSON. MUI model."""
     body = await request.body()
-    body_sorted = sort_predict_body(request_body=body)
-
-    return JSONResponse(await mui_predict_elements(body_sorted))
+    return JSONResponse(await mui_predict_elements(body))
 
 
 @api.post("/angular-predict", response_model=PredictionResponseModel)
@@ -106,18 +104,14 @@ async def angular_predict(
 ) -> JSONResponse:
     """HTML elements prediction based on received JSON. Angular model."""
     body = await request.body()
-    body_sorted = sort_predict_body(request_body=body)
-
-    return JSONResponse(await angular_predict_elements(body_sorted))
+    return JSONResponse(await angular_predict_elements(body))
 
 
 @api.post("/html5-predict", response_model=PredictionResponseModel)
 async def html5_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
     """HTML elements prediction based on received JSON. HTML5 model."""
     body = await request.body()
-    body_sorted = sort_predict_body(request_body=body)
-
-    return JSONResponse(await html5_predict_elements(body_sorted))
+    return JSONResponse(await html5_predict_elements(body))
 
 
 @api.get("/cpu-count")

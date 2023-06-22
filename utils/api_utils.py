@@ -56,16 +56,20 @@ async def wait_until_task_reach_status(
         task_id = task_result_obj.id
         task = get_task_status(task_id)
         if (
-            (task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE))
-            or task.status == CeleryStatuses.SUCCESS
+            task.status in (CeleryStatuses.REVOKED, CeleryStatuses.FAILURE)
+        ) or (
+            task.status == CeleryStatuses.SUCCESS
             and expected_status != CeleryStatuses.SUCCESS
         ):
             if task_id not in tasks_with_changed_priority:
                 task_dict = task.dict()
                 # deleting underscores in task_id if any to send to frontend
                 task_dict["id"] = task_dict["id"].strip("_")
+                error_message = str(task_result_obj.result)
                 response = get_websocket_response(
-                    WebSocketResponseActions.STATUS_CHANGED, task_dict
+                    action=WebSocketResponseActions.STATUS_CHANGED,
+                    payload=task_dict,
+                    error_message=error_message,
                 )
                 try:
                     await ws.send_json(response)
@@ -111,9 +115,12 @@ async def wait_until_task_reach_status(
 
 
 def get_websocket_response(
-    action: WebSocketResponseActions, payload: dict
+    action: WebSocketResponseActions, payload: dict, error_message=None
 ) -> dict:
-    return {"action": action.value, "payload": payload}
+    message_to_return = {"action": action.value, "payload": payload}
+    if error_message is not None:
+        message_to_return["error_message"] = error_message
+    return message_to_return
 
 
 def task_is_revoked(task_id: str):

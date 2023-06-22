@@ -520,7 +520,7 @@ def generate_xpath(xpath, page, document_uuid, config):
     element = document.xpath(xpath)
     if element is None or len(element) == 0:
         raise XPathDocumentDoesntContainElement(
-            "Document does not contain given element {xpath}!"
+            "Document does not contain given element!"
         )
     element = element[0]
     tree = etree.ElementTree(document)

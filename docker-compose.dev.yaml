@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   api:
@@ -18,7 +18,7 @@ services:
 
   celery:
     container_name: jdi-qasp-ml-celery
-    command: celery -A app.celery_app:celery_app worker -l info
+    command: bash -c "chmod +x start_celery.sh && ./start_celery.sh"
     build:
       context: .
       dockerfile: Dockerfile

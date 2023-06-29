@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 
 services:
   api:
@@ -15,9 +15,7 @@ services:
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"
     container_name: jdi-qasp-ml-celery
-    command: bash -c "chmod +x start_celery.sh && ./start_celery.sh"
-    volumes:
-      - .:/jdi-qasp-ml
+    command: celery -A app.celery_app:celery_app worker -l info
     logging:
       driver: "json-file"
       options:

@@ -24,8 +24,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - .:/jdi-qasp-ml
     env_file:
       - .env.rc
     logging:

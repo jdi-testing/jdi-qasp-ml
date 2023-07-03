@@ -9,7 +9,7 @@ jobs:
        - name: update docker-compose
          run: pip install --upgrade docker-compose
        - name: run docker-compose up
-         run: docker-compose up -f docker-compose.dev.yaml -d --build
+         run: docker-compose -f docker-compose.dev.yaml up -d --build
        - name: run tests
          run: docker exec jdi-qasp-ml-api bash -c "pytest tests"
        - name: check with flake8

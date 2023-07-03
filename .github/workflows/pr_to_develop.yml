@@ -1,6 +1,6 @@
 name: jobs linters and tests
 
-on: [push, pull_request]
+on: pull_request
 jobs:
    jdi-qasp-ml:
      runs-on: ubuntu-latest

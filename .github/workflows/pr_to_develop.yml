@@ -1,0 +1,16 @@
+name: jobs linters and tests
+
+on: [push, pull_request]
+jobs:
+   jdi-qasp-ml:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v2
+       - name: update docker-compose
+         run: pip install --upgrade docker-compose
+       - name: run docker-compose up
+         run: docker-compose up -f docker-compose.dev.yaml -d --build
+       - name: run tests
+         run: docker exec jdi-qasp-ml-api bash -c "pytest"
+       - name: check with flake8
+         run: docker exec jdi-qasp-ml-api bash -c "flake8 --exclude=tests --extend-ignore=E203"

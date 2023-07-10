@@ -1,12 +1,27 @@
 version: '3.9'
 
 services:
+  setup_cores:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
+    container_name: jdi-qasp-ml-setup-cores
+    volumes:
+      - ./setup_cores.sh:/setup_cores.sh
+    environment:
+      - CORES_API=${CORES_API}
+      - CORES_CELERY=${CORES_CELERY}
+      - CORES_REDIS=${CORES_REDIS}
+      - CORES_MONGODB=${CORES_MONGODB}
+    command: bash -c "chmod +x /setup_cores.sh && /setup_cores.sh"
+    privileged: true
+    restart: 'no'
+
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     container_name: jdi-qasp-ml-api
     command: uvicorn app.main:api --host 0.0.0.0 --port 5000
     ports:
       - "5050:5000"
+    cpuset: ${CORES_API}
     logging:
       driver: "json-file"
       options:
@@ -15,7 +30,8 @@ services:
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     container_name: jdi-qasp-ml-celery
-    command: bash -c "chmod +x start_celery.sh && ./start_celery.sh"
+    command: celery -A app.celery_app:celery_app worker -l info
+    cpuset: ${CORES_CELERY}
     logging:
       driver: "json-file"
       options:
@@ -27,6 +43,7 @@ services:
     command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
     ports:
       - "6379"
+    cpuset: ${CORES_REDIS}
     logging:
       driver: "json-file"
       options:
@@ -38,6 +55,7 @@ services:
       - 27017:27017
     volumes:
       - ~/apps/mongo:/data/db
+    cpuset: ${CORES_MONGODB}
     logging:
       driver: "json-file"
       options:

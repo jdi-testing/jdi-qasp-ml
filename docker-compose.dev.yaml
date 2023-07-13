@@ -27,6 +27,17 @@ services:
       options:
         max-size: "256m"
 
+  selenium:
+    container_name: jdi-qasp-ml-selenium
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python selenium_app.py
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
+
   redis:
     container_name: jdi-qasp-ml-redis
     image: "redis:alpine"

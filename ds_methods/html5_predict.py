@@ -16,6 +16,8 @@ from app import (
 )
 from utils.dataset import HTML5_JDNDataset
 
+from app.selenium_app import get_element_id_to_is_displayed_mapping
+
 logger = logging.getLogger("jdi-qasp-ml")
 
 
@@ -89,4 +91,8 @@ async def html5_predict_elements(body):
     else:
         del model
         gc.collect()
-        return results_df[columns_to_publish].to_dict(orient="records")
+        result = results_df[columns_to_publish].to_dict(orient="records")
+        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(body["document"].decode("utf-8"))
+        for element in result:
+            element["is_shown"] = element_id_to_is_displayed_map["element_id"]
+        return result

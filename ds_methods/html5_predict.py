@@ -23,7 +23,11 @@ logger = logging.getLogger("jdi-qasp-ml")
 
 @alru_cache(maxsize=32)
 async def html5_predict_elements(body):
-    # generate temporary filename
+    body_str = body.decode("utf-8")
+    body_json = json.loads(body_str)
+    elements_json = body_json.get("elements", [])
+    document_json = body_json.get("document", "")
+
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
     with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
         logger.info(f"saving {filename}")
@@ -32,9 +36,8 @@ async def html5_predict_elements(body):
 
     filename = filename.replace(".json", ".pkl")
     logger.info(f"saving {filename}")
-    df = pd.DataFrame(json.loads(body))
+    df = pd.DataFrame(elements_json)
 
-    # fix bad data which can come in 'onmouseover', 'onmouseenter'
     df.onmouseover = df.onmouseover.apply(
         lambda x: "true" if x is not None else None
     )
@@ -50,13 +53,12 @@ async def html5_predict_elements(body):
         dataset_type="html5",
         rebalance_and_shuffle=False,
     )
-    # load model
+
     logger.info("Loading the model")
     pkl_filename = "DT_model.pkl"
     with open(f"{html5_model}/{pkl_filename}", "rb") as file:
         model = pickle.load(file)
 
-    # classes dictionaries
     with open(html5_classes_path, "r") as f:
         lines = f.readlines()
         encoder_dict = {line.strip(): i for i, line in enumerate(lines)}
@@ -82,7 +84,6 @@ async def html5_predict_elements(body):
 
     results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")].copy()
 
-    # sort in ascending order by coordinates
     results_df = results_df.sort_values(by=["y", "x"], ascending=[True, True])
 
     if results_df.shape[0] == 0:
@@ -92,7 +93,7 @@ async def html5_predict_elements(body):
         del model
         gc.collect()
         result = results_df[columns_to_publish].to_dict(orient="records")
-        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(body["document"].decode("utf-8"))
+        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document_json)
         for element in result:
-            element["is_shown"] = element_id_to_is_displayed_map["element_id"]
+            element["is_shown"] = element_id_to_is_displayed_map.get(element["element_id"], None)
         return result

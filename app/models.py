@@ -54,7 +54,6 @@ class PredictionRequestElement(BaseModel):
 
 
 class PredictionInputModel(BaseModel):
-    # __root__: List[PredictionRequestElement]
     document: str
     elements: str
 

@@ -1,5 +1,4 @@
 import os
-import re
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -28,8 +27,8 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
         result = {}
 
         for element in all_elements:
-            element_id = str(element.get_attribute('jdn-hash'))
-            element_id = re.sub("[^0-9]", "", element_id)
+            element_id = element.get_attribute('jdn-hash')  # got this format \"0000000000000000000000000000\"
+            element_id = str(element_id).replace('\\"', '')  # need to remove \"
             is_shown = element.is_displayed()
             result[element_id] = is_shown
 

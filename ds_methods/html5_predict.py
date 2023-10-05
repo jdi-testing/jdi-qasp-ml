@@ -28,6 +28,7 @@ async def html5_predict_elements(body):
     elements_json = body_json.get("elements", [])
     document_json = body_json.get("document", "")
 
+    # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
     with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
         logger.info(f"saving {filename}")
@@ -38,6 +39,7 @@ async def html5_predict_elements(body):
     logger.info(f"saving {filename}")
     df = pd.DataFrame(json.loads(elements_json))
 
+    # fix bad data which can come in 'onmouseover', 'onmouseenter'
     df.onmouseover = df.onmouseover.apply(
         lambda x: "true" if x is not None else None
     )
@@ -54,11 +56,13 @@ async def html5_predict_elements(body):
         rebalance_and_shuffle=False,
     )
 
+    # load model
     logger.info("Loading the model")
     pkl_filename = "DT_model.pkl"
     with open(f"{html5_model}/{pkl_filename}", "rb") as file:
         model = pickle.load(file)
 
+    # classes dictionaries
     with open(html5_classes_path, "r") as f:
         lines = f.readlines()
         encoder_dict = {line.strip(): i for i, line in enumerate(lines)}
@@ -84,6 +88,7 @@ async def html5_predict_elements(body):
 
     results_df = dataset.df[(dataset.df["predicted_label"] != "n/a")].copy()
 
+    # sort in ascending order by coordinates
     results_df = results_df.sort_values(by=["y", "x"], ascending=[True, True])
 
     if results_df.shape[0] == 0:

@@ -36,7 +36,7 @@ async def html5_predict_elements(body):
 
     filename = filename.replace(".json", ".pkl")
     logger.info(f"saving {filename}")
-    df = pd.DataFrame(elements_json)
+    df = pd.DataFrame(json.loads(elements_json))
 
     df.onmouseover = df.onmouseover.apply(
         lambda x: "true" if x is not None else None

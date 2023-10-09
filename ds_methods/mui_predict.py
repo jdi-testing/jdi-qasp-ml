@@ -18,6 +18,10 @@ logger = logging.getLogger("jdi-qasp-ml")
 
 @alru_cache(maxsize=32)
 async def mui_predict_elements(body):
+    body_str = body.decode("utf-8")
+    body_json = json.loads(body_str)
+    elements_json = body_json.get("elements", [])
+
     # create softmax layser function to get probabilities from logits
     softmax = torch.nn.Softmax(dim=1)
     # generate temporary filename
@@ -28,7 +32,7 @@ async def mui_predict_elements(body):
         fp.flush()
     filename = filename.replace(".json", ".pkl")
     logger.info(f"saving {filename}")
-    df = pd.DataFrame(json.loads(body))
+    df = pd.DataFrame(json.loads(elements_json))
     # fix bad data which can come in 'onmouseover', 'onmouseenter'
     df.onmouseover = df.onmouseover.apply(
         lambda x: "true" if x is not None else None

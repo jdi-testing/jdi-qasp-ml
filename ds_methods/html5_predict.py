@@ -8,15 +8,10 @@ import pickle
 import pandas as pd
 from async_lru import alru_cache
 
-from app import (
-    UPLOAD_DIRECTORY,
-    html5_classes_path,
-    html5_df_path,
-    html5_model,
-)
-from utils.dataset import HTML5_JDNDataset
-
+from app import (UPLOAD_DIRECTORY, html5_classes_path, html5_df_path,
+                 html5_model)
 from app.selenium_app import get_element_id_to_is_displayed_mapping
+from utils.dataset import HTML5_JDNDataset
 
 logger = logging.getLogger("jdi-qasp-ml")
 

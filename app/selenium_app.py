@@ -37,5 +37,3 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
 
     else:
         raise FileNotFoundError(f"chromedriver  {os.getcwd()}")
-
-

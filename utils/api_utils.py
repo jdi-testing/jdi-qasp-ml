@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import typing
 import uuid
 
@@ -14,6 +15,8 @@ from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel
 from app.redis_app import redis_app
 from app.tasks import task_schedule_xpath_generation
+
+ENV = os.getenv("ENV")
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -87,21 +90,22 @@ async def wait_until_task_reach_status(
                 # deleting underscores in task_id if any to send to frontend
                 result["id"] = result["id"].strip("_")
 
-                session_id = task_result_obj.kwargs.get("session_id")
-                website_url = task_result_obj.kwargs.get("website_url")
-                start_time = task_result_obj.kwargs.get("start_time")
-                task_duration = task_result_obj.kwargs.get("task_duration")
-                full_xpath = task_result_obj.kwargs.get("full_xpath")
-                nesting_num = task_result_obj.kwargs.get("nesting_num")
-                await mongodb.enrich_logs_with_generated_locators(
-                    session_id,
-                    website_url,
-                    full_xpath,
-                    nesting_num,
-                    result,
-                    start_time,
-                    task_duration,
-                )
+                if ENV != "LOCAL":
+                    session_id = task_result_obj.kwargs.get("session_id")
+                    website_url = task_result_obj.kwargs.get("website_url")
+                    start_time = task_result_obj.kwargs.get("start_time")
+                    task_duration = task_result_obj.kwargs.get("task_duration")
+                    full_xpath = task_result_obj.kwargs.get("full_xpath")
+                    nesting_num = task_result_obj.kwargs.get("nesting_num")
+                    await mongodb.enrich_logs_with_generated_locators(
+                        session_id,
+                        website_url,
+                        full_xpath,
+                        nesting_num,
+                        result,
+                        start_time,
+                        task_duration,
+                    )
                 try:
                     await ws.send_json(
                         get_websocket_response(
@@ -251,9 +255,10 @@ async def process_incoming_ws_request(
 
     elif action == "schedule_multiple_xpath_generations":
         logging_info = LoggingInfoModel(**logging_info)
-        mongodb.create_initial_log_entry(
-            logging_info
-        )  # for custom metrics logging purposes
+        if ENV != "LOCAL":
+            mongodb.create_initial_log_entry(
+                logging_info
+            )  # for custom metrics logging purposes
 
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id

@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 import typing
 import uuid
 
@@ -14,9 +13,7 @@ from app.constants import CeleryStatuses, WebSocketResponseActions
 from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel
 from app.redis_app import redis_app
-from app.tasks import task_schedule_xpath_generation
-
-ENV = os.getenv("ENV")
+from app.tasks import ENV, task_schedule_xpath_generation
 
 
 def get_task_status(task_id) -> TaskStatusModel:

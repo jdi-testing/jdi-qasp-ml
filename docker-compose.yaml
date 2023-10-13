@@ -3,8 +3,6 @@ version: '3.9'
 services:
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
-    environment:
-      ENV: LOCAL
     container_name: jdi-qasp-ml-api
     command: uvicorn app.main:api --host 0.0.0.0 --port 5000
     ports:
@@ -13,6 +11,8 @@ services:
       driver: "json-file"
       options:
         max-size: "256m"
+    environment:
+      ENV: LOCAL
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"

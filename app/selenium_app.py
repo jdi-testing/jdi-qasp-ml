@@ -6,6 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from app.logger import logger
+
 
 def get_element_id_to_is_displayed_mapping(page_content_str):
     chrome_options = Options()
@@ -22,15 +24,16 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
         wait = WebDriverWait(driver, 10)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
-        all_elements = driver.find_elements(by=By.XPATH, value='//*')
+        all_elements = driver.find_elements(by=By.XPATH, value="//*")
 
         result = {}
 
         for element in all_elements:
-            element_id = element.get_attribute('jdn-hash')  # got this format \"0000000000000000000000000000\"
+            element_id = element.get_attribute("jdn-hash")  # got this format \"0000000000000000000000000000\"
             element_id = str(element_id).replace('\\"', '')  # need to remove \"
             is_shown = element.is_displayed()
             result[element_id] = is_shown
+            logger.info(f"Element with jdn-hash {element_id} {'Visible' if is_shown else 'Invisible'}")
 
         driver.quit()
         return result

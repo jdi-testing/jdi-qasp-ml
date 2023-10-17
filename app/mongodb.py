@@ -6,6 +6,7 @@ from bson.json_util import dumps
 
 from app import MONGO_DB_HOST, MONGO_DB_PORT
 from app.models import LoggingInfoModel
+from app.tasks import ENV
 
 client = pymongo.MongoClient(MONGO_DB_HOST, MONGO_DB_PORT)
 mongo_db = client.jdn
@@ -15,6 +16,10 @@ async_mongo_db = async_client.jdn
 
 
 def get_session_id() -> int:
+    # doesn't use base if it works locally
+    if ENV == "LOCAL":
+        return 0
+
     session_id_entry = mongo_db.sesion_id_collection.find_one()
     if session_id_entry:
         new_result = session_id_entry["session_id"] + 1
@@ -28,8 +33,10 @@ def get_session_id() -> int:
 
 
 def create_logs_json_file() -> None:
-    logs_collection = mongo_db.logs
-    all_logs = logs_collection.find()
+    all_logs = {}
+    if ENV != "LOCAL":
+        logs_collection = mongo_db.logs
+        all_logs = logs_collection.find()
 
     with open("logs.json", "w") as output_file:
         json.dump(json.loads(dumps(all_logs)), output_file)

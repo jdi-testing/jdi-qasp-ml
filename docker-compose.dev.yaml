@@ -15,8 +15,6 @@ services:
       driver: "json-file"
       options:
         max-size: "256m"
-    environment:
-      ENV: LOCAL
 
   celery:
     container_name: jdi-qasp-ml-celery
@@ -40,15 +38,13 @@ services:
       options:
         max-size: "256m"
 
-# if ENV == LOCAL
-
-#  mongodb:
-#    image: mongo:5.0
-#    ports:
-#      - 27017:27017
-#    volumes:
-#      - ~/apps/mongo:/data/db
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-size: "256m"
+  mongodb:
+    image: mongo:5.0
+    ports:
+      - 27017:27017
+    volumes:
+      - ~/apps/mongo:/data/db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"

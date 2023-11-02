@@ -1,6 +1,28 @@
 version: '3'
 
 services:
+  selenoid:
+    image: "aerokube/selenoid:latest"
+    ports:
+      - "4445:4444"
+    network_mode: bridge
+    volumes:
+      - ".:/etc/selenoid"
+      - "./target:/output"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./target:/opt/selenoid/video"
+    environment:
+      - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
+    command: [ "-conf", "/etc/selenoid/browsers.json", "-video-output-dir", "/opt/selenoid/video" ]
+  selenoid-ui:
+    image: "aerokube/selenoid-ui:latest"
+    links:
+      - selenoid
+    ports:
+      - "8083:8080"
+    network_mode: bridge
+    command: [ "--selenoid-uri", "http://selenoid:4444" ]
+
   api:
     container_name: jdi-qasp-ml-api
     command: uvicorn app.main:api --host 0.0.0.0 --port 5050

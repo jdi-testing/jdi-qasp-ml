@@ -14,29 +14,32 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--headless")
 
-    chrome_driver_path = os.path.join(os.getcwd(), "chromedriver")
-    if os.path.exists(chrome_driver_path):
-        driver = webdriver.Chrome(
-            executable_path=chrome_driver_path, options=chrome_options
-        )
+    capabilities = {
+        "browserName": "chrome",
+        "browserVersion": "118.0",
+        "selenoid:options": {
+            "enableVideo": False
+        }
+    }
 
-        driver.execute_script("document.write(arguments[0]);", page_content_str)
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+    driver = webdriver.Remote(
+        command_executor="http://172.17.0.1:4444/wd/hub",
+        desired_capabilities=capabilities, options=chrome_options)
 
-        all_elements = driver.find_elements(by=By.XPATH, value="//*")
+    driver.execute_script("document.write(arguments[0]);", page_content_str)
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
-        result = {}
+    all_elements = driver.find_elements(by=By.XPATH, value="//*")
 
-        for element in all_elements:
-            element_id = element.get_attribute("jdn-hash")  # got this format \"0000000000000000000000000000\"
-            element_id = str(element_id).replace('\\"', '')  # need to remove \"
-            is_shown = element.is_displayed()
-            result[element_id] = is_shown
-            logger.info(f"Element with jdn-hash {element_id} {'Visible' if is_shown else 'Invisible'}")
+    result = {}
 
-        driver.quit()
-        return result
+    for element in all_elements:
+        element_id = element.get_attribute("jdn-hash")  # got this format \"0000000000000000000000000000\"
+        element_id = str(element_id).replace('\\"', '')  # need to remove \"
+        is_shown = element.is_displayed()
+        result[element_id] = is_shown
+        logger.info(f"Element with jdn-hash {element_id} {'Visible' if is_shown else 'Invisible'}")
 
-    else:
-        raise FileNotFoundError(f"chromedriver  {os.getcwd()}")
+    driver.quit()
+    return result

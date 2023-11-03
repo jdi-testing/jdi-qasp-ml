@@ -23,7 +23,7 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
     }
 
     driver = webdriver.Remote(
-        command_executor="http://172.17.0.1:4444/wd/hub",
+        command_executor="http://jdi-qasp-ml-selenoid-1:4444/wd/hub",
         desired_capabilities=capabilities, options=chrome_options)
 
     driver.execute_script("document.write(arguments[0]);", page_content_str)

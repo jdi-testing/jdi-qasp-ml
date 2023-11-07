@@ -39,7 +39,14 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
         element_id = str(element_id).replace('\\"', '')  # need to remove \"
         is_shown = element.is_displayed()
         result[element_id] = is_shown
-        logger.info(f"Element with jdn-hash {element_id} {'Visible' if is_shown else 'Invisible'}")
+        print(f"{element}: {is_shown} {element.get_attribute('name')}")
+
+    # for element in all_elements:
+    #     element_id = element.get_attribute("jdn-hash")  # got this format \"0000000000000000000000000000\"
+    #     element_id = str(element_id).replace('\\"', '')  # need to remove \"
+    #     is_shown = element.is_displayed()
+    #     result[element_id] = is_shown
+    #     logger.info(f"Element with jdn-hash {element_id} {'Visible' if is_shown else 'Invisible'}")
 
     driver.quit()
     return result

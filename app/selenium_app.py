@@ -1,5 +1,3 @@
-import os
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -10,6 +8,8 @@ from app.logger import logger
 
 
 def get_element_id_to_is_displayed_mapping(page_content_str):
+    dom = str(page_content_str).encode('utf-8').decode('unicode_escape')
+
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--headless")
@@ -26,7 +26,7 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
         command_executor="http://jdi-qasp-ml-selenoid-1:4444/wd/hub",
         desired_capabilities=capabilities, options=chrome_options)
 
-    driver.execute_script("document.write(arguments[0]);", page_content_str)
+    driver.execute_script("document.body.insertAdjacentHTML('beforeend', arguments[0]);", dom)
     wait = WebDriverWait(driver, 10)
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
@@ -35,18 +35,10 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
     result = {}
 
     for element in all_elements:
-        element_id = element.get_attribute("jdn-hash")  # got this format \"0000000000000000000000000000\"
-        element_id = str(element_id).replace('\\"', '')  # need to remove \"
+        element_id = element.get_attribute("jdn-hash")
         is_shown = element.is_displayed()
         result[element_id] = is_shown
-        print(f"{element}: {is_shown} {element.get_attribute('name')}")
-
-    # for element in all_elements:
-    #     element_id = element.get_attribute("jdn-hash")  # got this format \"0000000000000000000000000000\"
-    #     element_id = str(element_id).replace('\\"', '')  # need to remove \"
-    #     is_shown = element.is_displayed()
-    #     result[element_id] = is_shown
-    #     logger.info(f"Element with jdn-hash {element_id} {'Visible' if is_shown else 'Invisible'}")
+        logger.info(f"Element with jdn-hash {element_id} {'Visible' if is_shown else 'Invisible'}")
 
     driver.quit()
     return result

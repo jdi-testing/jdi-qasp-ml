@@ -14,6 +14,24 @@ services:
     environment:
       ENV: LOCAL
 
+  chrome:
+    image: selenoid/vnc_chrome:118.0
+    logging:
+      driver: none
+
+  selenoid:
+    image: "aerokube/selenoid:latest"
+    ports:
+      - "4445:4444"
+    volumes:
+      - ".:/etc/selenoid"
+      - "./target:/output"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./target:/opt/selenoid/video"
+    environment:
+      - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
+    command: [ "-conf", "/etc/selenoid/browsers.json", "-video-output-dir", "/opt/selenoid/video", "-container-network", "jdi-qasp-ml_default" ]
+
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"
     container_name: jdi-qasp-ml-celery

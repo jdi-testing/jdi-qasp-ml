@@ -8,9 +8,6 @@ RUN apt-get update -y && \
 
 RUN apt install -y curl wget mc gcc make
 
-RUN apt-get update -y && \
-    apt install -y chromium=90.0.4430.212-1~deb10u1
-
 ENV APP_HOME=/jdi-qasp-ml
 WORKDIR ${APP_HOME}
 

@@ -20,6 +20,7 @@ services:
       driver: none
 
   selenoid:
+    container_name: "jdi-qasp-ml-selenoid"
     image: "aerokube/selenoid:latest"
     ports:
       - "4445:4444"

@@ -13,18 +13,9 @@ def get_element_id_to_is_displayed_mapping(page_content_str):
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--headless")
-
-    capabilities = {
-        "browserName": "chrome",
-        "browserVersion": "118.0",
-        "selenoid:options": {
-            "enableVideo": False
-        }
-    }
-
-    driver = webdriver.Remote(
-        command_executor="http://jdi-qasp-ml-selenoid:4444/wd/hub",
-        desired_capabilities=capabilities, options=chrome_options)
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(
+        executable_path="/usr/local/bin/chromedriver-linux64/chromedriver", options=chrome_options)
 
     driver.execute_script("document.body.insertAdjacentHTML('beforeend', arguments[0]);", dom)
     wait = WebDriverWait(driver, 10)

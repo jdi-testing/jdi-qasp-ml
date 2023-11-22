@@ -8,7 +8,7 @@ clean:
 .PHONY: lint
 lint:
 	@echo "Linting ..."
-	@flake8 --exclude kombu-redis-priority, usr .
+	@flake8 --exclude kombu-redis-priority, usr/ .
 
 .PHONY: unittest
 unittest: clean lint

@@ -8,7 +8,7 @@ clean:
 .PHONY: lint
 lint:
 	@echo "Linting ..."
-	@flake8 Angular_model app BS_model ds_methods generators HTML5_model MUI_model tests utils vars
+	@flake8 --exclude kombu-redis-priority .
 
 .PHONY: unittest
 unittest: clean lint

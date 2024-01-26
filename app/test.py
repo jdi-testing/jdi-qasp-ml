@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import concurrent.futures
-from app.selenium_app_threads import split_into_chunks, profiled
+from app.selenium_app_threads import split_into_chunks, profiled, get_chunks_boundaries
 import logging
 import re
 
@@ -67,27 +67,17 @@ def get_page_elements(driver, dom):
 # leftover_ids_lock = threading.Lock()
 
 
-def get_element_id_to_is_displayed_mapping(dom, ids):
+def get_element_id_to_is_displayed_mapping(dom, starting_idx, ending_idx):
     logger = logging.getLogger(f"{random.randint(100000, 999999)}")
     driver = get_webdriver()
+
+    logger.info(f"Getting {starting_idx} to {ending_idx}")
 
     all_elements = get_page_elements(driver, dom)
 
     result = {}
-    p = re.compile(r".*_(\d+)$")
 
-    id_to_element_map = {
-        p.match(element.id).group(1): element
-        for element in all_elements
-    }
-
-    for element_id in ids.copy():
-        element = id_to_element_map.get(element_id)
-
-        if element is None:
-            continue
-
-        ids.pop(ids.index(element_id))
+    for element in all_elements[starting_idx:ending_idx]:
         element_jdn_hash = element.get_attribute("jdn-hash")
         is_shown = element.is_displayed()
         result[element_jdn_hash] = is_shown
@@ -183,13 +173,9 @@ def calculate_visibility_mt(url: str, threads: int = 4, chunks: int = 8, use_pro
 
     driver = get_webdriver()
     all_elements = get_page_elements(driver, dom)
-    # jdn_hashes = [e.get_attribute("jdn-hash") for e in all_elements]
-    p = re.compile(r".*_(\d+)$")
-    ids = [p.match(e.id).group(1) for e in all_elements]
-    logger.info(sorted(ids))
     driver.quit()
 
-    jobs_chunks = split_into_chunks(ids, chunks)
+    jobs_chunks = get_chunks_boundaries(all_elements, chunks)
 
     if not use_processes:
         executor_ = concurrent.futures.ThreadPoolExecutor
@@ -200,8 +186,8 @@ def calculate_visibility_mt(url: str, threads: int = 4, chunks: int = 8, use_pro
 
     with executor_(max_workers=threads) as executor:
         futures = [
-            executor.submit(get_element_id_to_is_displayed_mapping, dom, ids_chunk)
-            for ids_chunk in jobs_chunks
+            executor.submit(get_element_id_to_is_displayed_mapping, dom, s, e)
+            for s, e in jobs_chunks
         ]
         for future in concurrent.futures.as_completed(futures):
             result.update(future.result())

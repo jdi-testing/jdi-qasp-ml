@@ -71,6 +71,17 @@ def split_into_chunks(data, desired_chunks_amount):
             yield data[i * chunk_size:(i + 1) * chunk_size]
 
 
+def get_chunks_boundaries(data, desired_chunks_amount):
+    data_size = len(data)
+    chunk_size = data_size // desired_chunks_amount
+
+    for i in range(desired_chunks_amount):
+        if i == (desired_chunks_amount - 1):
+            yield i * chunk_size, data_size
+        else:
+            yield i * chunk_size, (i + 1) * chunk_size
+
+
 threadLocal = threading.local()
 
 

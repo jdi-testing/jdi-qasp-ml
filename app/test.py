@@ -1,4 +1,5 @@
 import random
+import threading
 from typing import Optional
 import time
 
@@ -12,6 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import concurrent.futures
 from app.selenium_app_threads import split_into_chunks, profiled
 import logging
+import re
 
 app = FastAPI()
 
@@ -61,41 +63,73 @@ def get_page_elements(driver, dom):
     return driver.find_elements(by=By.XPATH, value="//*")
 
 
-@profiled
-def get_element_id_to_is_displayed_mapping(dom, elements_hashes):
+# leftover_ids = []
+# leftover_ids_lock = threading.Lock()
+
+
+def get_element_id_to_is_displayed_mapping(dom, ids):
     logger = logging.getLogger(f"{random.randint(100000, 999999)}")
-    # driver_ = getattr(threadLocal, 'driver_', None)
-    # if driver_ is None:
     driver = get_webdriver()
-    # setattr(threadLocal, 'driver_', driver_)
 
     all_elements = get_page_elements(driver, dom)
 
     result = {}
+    p = re.compile(r".*_(\d+)$")
 
-    for element in all_elements:
-        element_id = element.get_attribute("jdn-hash")
-        if element_id in elements_hashes:
-            is_shown = element.is_displayed()
-            result[element_id] = is_shown
-            logger.info(f"Element {element_id} visibility: {is_shown}")
+    id_to_element_map = {
+        p.match(element.id).group(1): element
+        for element in all_elements
+    }
+
+    for element_id in ids.copy():
+        element = id_to_element_map.get(element_id)
+
+        if element is None:
+            continue
+
+        ids.pop(ids.index(element_id))
+        element_jdn_hash = element.get_attribute("jdn-hash")
+        is_shown = element.is_displayed()
+        result[element_jdn_hash] = is_shown
+
+    # with leftover_ids_lock:
+    #     global leftover_ids
+    #     leftover_ids += ids
+    #     logger.info(leftover_ids)
+    #
+    # leftovers_barrier.wait()
+    #
+    # logger.info(leftover_ids)
+
+    # with leftover_ids_lock:
+    #     for element_id in leftover_ids.copy():
+    #         element = id_to_element_map.get(element_id)
+    #
+    #         if element is None:
+    #             continue
+    #
+    #         leftover_ids.pop(leftover_ids.index(element_id))
+    #         element_jdn_hash = element.get_attribute("jdn-hash")
+    #         if element_jdn_hash in result:
+    #             logger.info(f'Element {element_id} is already in the result')
+    #             continue
+    #         is_shown = element.is_displayed()
+    #         result[element_jdn_hash] = is_shown
+    #         logger.info(f"{element_id}, {element_jdn_hash}: {is_shown}")
+    #
+    # logger.info(leftover_ids)
 
     driver.quit()
+
+    logger.info(f"Thread returns {len(result)} elements")
+
     return result
 
 
-@app.get("/visibility/{url}")
-def calculate_visibility(url: str):
-    print(f"Processing request for url {url}")
-    dom = get_html_page(url)
-
-    if dom is None:
-        raise HTTPException(status_code=404, detail="Page not found")
-
+# @profiled
+def single_thread_visibility(dom):
+    logger = logging.getLogger(f"{random.randint(100000, 999999)}")
     result = {}
-
-    t1 = time.perf_counter(), time.process_time()
-
     driver = get_webdriver()
     all_elements = get_page_elements(driver, dom)
 
@@ -103,8 +137,25 @@ def calculate_visibility(url: str):
         element_id = element.get_attribute("jdn-hash")
         is_shown = element.is_displayed()
         result[element_id] = is_shown
+        logger.info(f"Element {element_id} visibility: {is_shown}")
 
     driver.quit()
+
+    return result
+
+
+@app.get("/visibility/{url}")
+def calculate_visibility(url: str):
+    logger = logging.getLogger(f"single-thread")
+    logger.info(f"Processing request for url {url}")
+    dom = get_html_page(url)
+
+    if dom is None:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    t1 = time.perf_counter(), time.process_time()
+
+    result = single_thread_visibility(dom)
 
     t2 = time.perf_counter(), time.process_time()
 
@@ -119,7 +170,8 @@ def calculate_visibility(url: str):
 
 @app.get("/visibility-mt/{url}")
 def calculate_visibility_mt(url: str, threads: int = 4, chunks: int = 8, use_processes: bool = False):
-    print(f"Processing multi threaded request for url {url}")
+    logger = logging.getLogger(f"multi-thread")
+    logger.info(f"Processing multi threaded request for url {url}")
     dom = get_html_page(url)
 
     if dom is None:
@@ -131,20 +183,25 @@ def calculate_visibility_mt(url: str, threads: int = 4, chunks: int = 8, use_pro
 
     driver = get_webdriver()
     all_elements = get_page_elements(driver, dom)
-    jdn_hashes = [e.get_attribute("jdn-hash") for e in all_elements]
+    # jdn_hashes = [e.get_attribute("jdn-hash") for e in all_elements]
+    p = re.compile(r".*_(\d+)$")
+    ids = [p.match(e.id).group(1) for e in all_elements]
+    logger.info(sorted(ids))
     driver.quit()
 
-    jobs_chunks = split_into_chunks(jdn_hashes, chunks)
+    jobs_chunks = split_into_chunks(ids, chunks)
 
     if not use_processes:
         executor_ = concurrent.futures.ThreadPoolExecutor
     else:
         executor_ = concurrent.futures.ProcessPoolExecutor
 
+    # leftovers_barrier = threading.Barrier(threads)
+
     with executor_(max_workers=threads) as executor:
         futures = [
-            executor.submit(get_element_id_to_is_displayed_mapping, dom, jdn_hashes_chunk)
-            for jdn_hashes_chunk in jobs_chunks
+            executor.submit(get_element_id_to_is_displayed_mapping, dom, ids_chunk)
+            for ids_chunk in jobs_chunks
         ]
         for future in concurrent.futures.as_completed(futures):
             result.update(future.result())

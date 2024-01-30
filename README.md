@@ -206,7 +206,7 @@ git checkout branch_name
 ```
 cp .env.dist .env
 ```
-5. Adjust variables in `.env` file to your liking (refer to [settings](#settings) section).
+5. Adjust variables in `.env` file to your needs (refer to the [Settings](#settings) section).
 6. Build and start containers:
 ```
 docker-compose -f docker-compose.dev.yaml up --build

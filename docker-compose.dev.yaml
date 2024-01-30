@@ -7,7 +7,6 @@ services:
   selenoid:
     container_name: "jdi-qasp-ml-selenoid"
     image: "aerokube/selenoid:latest"
-    cpu_count: 4
     ports:
       - "4445:4444"
     volumes:
@@ -17,7 +16,15 @@ services:
       - "./target:/opt/selenoid/video"
     environment:
       - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
-    command: [ "-conf", "/etc/selenoid/browsers.json", "-video-output-dir", "/opt/selenoid/video", "-container-network", "jdi-qasp-ml_default" ]
+    command:
+      - "-conf"
+      - "/etc/selenoid/browsers.json"
+      - "-video-output-dir"
+      - "/opt/selenoid/video"
+      - "-container-network"
+      - "jdi-qasp-ml_default"
+      - "-limit"
+      - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
 
   api:
     container_name: jdi-qasp-ml-api
@@ -29,20 +36,12 @@ services:
       - "5050:5050"
     volumes:
       - .:/jdi-qasp-ml
+    environment:
+      - SELENOID_PARALLEL_SESSIONS_COUNT=$SELENOID_PARALLEL_SESSIONS_COUNT
     logging:
       driver: "json-file"
       options:
         max-size: "256m"
-
-  api-mt:
-    command: sleep infinity
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 5051:8000
-    volumes:
-      - .:/jdi-qasp-ml
 
   celery:
     container_name: jdi-qasp-ml-celery
@@ -71,7 +70,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ~/apps/mongo:/data/db
+      - .docker-data/mongo:/data
     logging:
       driver: "json-file"
       options:

@@ -18,7 +18,15 @@ services:
       - "./target:/opt/selenoid/video"
     environment:
       - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
-    command: [ "-conf", "/etc/selenoid/browsers.json", "-video-output-dir", "/opt/selenoid/video", "-container-network", "jdi-qasp-ml_default" ]
+    command: 
+      - "-conf"
+      - "/etc/selenoid/browsers.json"
+      - "-video-output-dir"
+      - "/opt/selenoid/video"
+      - "-container-network"
+      - "jdi-qasp-ml_default"
+      - "-limit"
+      - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
 
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
@@ -32,6 +40,7 @@ services:
         max-size: "256m"
     environment:
       ENV: LOCAL
+      SELENOID_PARALLEL_SESSIONS_COUNT: $SELENOID_PARALLEL_SESSIONS_COUNT
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"

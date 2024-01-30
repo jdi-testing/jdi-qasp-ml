@@ -13,6 +13,7 @@ from utils import config
 
 
 def get_webdriver() -> webdriver.Remote:
+    """Returns a remote Chrome webdriver instance"""
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--headless")
@@ -33,6 +34,7 @@ def get_webdriver() -> webdriver.Remote:
 
 
 def get_page_elements(driver: webdriver.Remote, page_content: str) -> List[WebElement]:
+    """Returns a list of all elements contained in page_content"""
     driver.execute_script(
         "document.body.insertAdjacentHTML('beforeend', arguments[0]);",
         page_content,
@@ -44,6 +46,12 @@ def get_page_elements(driver: webdriver.Remote, page_content: str) -> List[WebEl
 
 
 def get_elements_visibility(page_content: str, starting_element_idx: int, ending_element_idx: int) -> Dict[str, bool]:
+    """Returns a visibility of portion of elements contained in page_content
+
+    starting_element_idx and ending_element_idx are referring to the starting
+    and ending indexes for slice of page_content elements returned by
+    get_page_elements() function.
+    """
     driver = get_webdriver()
     all_elements = get_page_elements(driver, page_content)
 
@@ -61,6 +69,7 @@ def get_elements_visibility(page_content: str, starting_element_idx: int, ending
 
 
 def get_chunks_boundaries(data: Sized, desired_chunks_amount: int) -> Iterable[Tuple[int, int]]:
+    """Returns split indexes for a list, enabling easy partitioning into desired chunks"""
     data_size = len(data)
     chunk_size = data_size // desired_chunks_amount
 
@@ -72,6 +81,10 @@ def get_chunks_boundaries(data: Sized, desired_chunks_amount: int) -> Iterable[T
 
 
 def get_element_id_to_is_displayed_mapping(page_content: str) -> Dict[str, bool]:
+    """Returns visibility status of all elements in the page
+
+    Returned dictionary uses elements' jdn-hash property value as keys
+    """
     escaped_page_content = str(page_content).encode('utf-8').decode('unicode_escape')
 
     driver = get_webdriver()

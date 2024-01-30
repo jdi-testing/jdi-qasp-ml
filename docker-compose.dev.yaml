@@ -70,7 +70,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - .docker-data/mongo:/data
+      - ~/apps/mongo:/data/db
     logging:
       driver: "json-file"
       options:

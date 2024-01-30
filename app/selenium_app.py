@@ -74,10 +74,10 @@ def get_chunks_boundaries(data: Sized, desired_chunks_amount: int) -> Iterable[T
     chunk_size = data_size // desired_chunks_amount
 
     for i in range(desired_chunks_amount):
-        if i == (desired_chunks_amount - 1):
-            yield i * chunk_size, data_size
-        else:
+        if i < (desired_chunks_amount - 1):
             yield i * chunk_size, (i + 1) * chunk_size
+        else:
+            yield i * chunk_size, data_size
 
 
 def get_element_id_to_is_displayed_mapping(page_content: str) -> Dict[str, bool]:

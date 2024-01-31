@@ -40,6 +40,8 @@ jobs:
         with:
           commit_message: increment version
           branch: develop
+      - name: Use default environment settings
+        run: cp .env.dist .env
       - name: Build
         run: docker compose -f docker-compose.dev.yaml up -d
       - name: Lint and Test

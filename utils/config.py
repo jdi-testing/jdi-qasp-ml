@@ -37,4 +37,8 @@ EMAIL_SENDER_PASSWORD = os.getenv("EMAIL_SENDER_PASSWORD")
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.yandex.ru")
 RECIPIENT_EMAILS = os.getenv("RECIPIENT_EMAILS", "SupportJDI@epam.com")
 
+SELENOID_PARALLEL_SESSIONS_COUNT = int(
+    os.getenv("SELENOID_PARALLEL_SESSIONS_COUNT", len(os.sched_getaffinity(0)))
+)
+
 logger.info("Module utils.config was loaded")

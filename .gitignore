@@ -42,7 +42,6 @@ dataset/cache-labels/*
 dataset/df/20*
 .idea/*
 HTMLgenerator/output/*
-venv/
 .pytest_cache/*
 .coverage
 .coverage.*
@@ -51,5 +50,6 @@ coverage.xml
 .DS_Store
 
 **/.DS_Store
+.env
 .env.rc
 .env.dev

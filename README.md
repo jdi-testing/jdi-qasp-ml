@@ -178,7 +178,7 @@ export SELENOID_PARALLEL_SESSIONS_COUNT=$(nproc) && docker rm --force jdi-qasp-m
 ```
 #### Windows
 ```shell
-set SELENOID_PARALLEL_SESSIONS_COUNT=%NUMBER_OF_PROCESSORS%&& docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml&& curl.exe --output browsers.json --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/browsers.json&& docker compose up
+set SELENOID_PARALLEL_SESSIONS_COUNT=%NUMBER_OF_PROCESSORS%&& docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && curl.exe --output browsers.json --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/browsers.json && docker compose up
 ```
 
 ### Development version

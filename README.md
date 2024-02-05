@@ -168,23 +168,31 @@ To validate models quality we use test web-pages, placed in directory **notebook
 # Docker
 ## Take docker image from github:
 ### RC version
-#### macOS/Linux
+#### macOS
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
+export SELENOID_PARALLEL_SESSIONS_COUNT=$(sysctl -n hw.ncpu) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/browsers.json && docker-compose up
+```
+#### Linux
+```shell
+export SELENOID_PARALLEL_SESSIONS_COUNT=$(nproc) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl --output docker-compose.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/browsers.json && docker compose up
 ```
 #### Windows
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
+set SELENOID_PARALLEL_SESSIONS_COUNT=%NUMBER_OF_PROCESSORS%&& docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && curl.exe --output browsers.json --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/browsers.json && docker compose up
 ```
 
 ### Development version
-#### macOS/Linux
+#### macOS
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+export SELENOID_PARALLEL_SESSIONS_COUNT=$(sysctl -n hw.ncpu) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl --output docker-compose.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/browsers.json && docker-compose up
+```
+#### Linux
+```shell
+export SELENOID_PARALLEL_SESSIONS_COUNT=$(nproc) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl --output docker-compose.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/browsers.json && docker compose up
 ```
 #### Windows
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+set SELENOID_PARALLEL_SESSIONS_COUNT=%NUMBER_OF_PROCESSORS%&& docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && curl.exe --output browsers.json --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/browsers.json && docker compose up
 ```
 ## Installing version from any other repository branch:
 Example with branch "branch_name":

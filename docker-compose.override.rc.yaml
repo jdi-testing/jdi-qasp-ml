@@ -1,0 +1,13 @@
+name: jdi-qasp-ml-rc
+
+services:
+  api:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"
+    environment:
+      ENV: LOCAL
+
+  celery:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"
+    command: bash -c "chmod +x start_celery.sh && ./start_celery.sh"
+
+  mongodb: !reset []

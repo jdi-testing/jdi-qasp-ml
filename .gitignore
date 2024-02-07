@@ -53,3 +53,6 @@ coverage.xml
 .env
 .env.rc
 .env.dev
+
+.docker-data/
+docker-compose.override.yaml

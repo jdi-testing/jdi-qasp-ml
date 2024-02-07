@@ -1,0 +1,18 @@
+services:
+  selenoid:
+    ports:
+      - "${SELENOID_PORT:-4445}:4444"
+
+  api:
+    image: !reset null
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/jdi-qasp-ml
+
+  celery:
+    image: !reset null
+    build:
+      context: .
+      dockerfile: Dockerfile

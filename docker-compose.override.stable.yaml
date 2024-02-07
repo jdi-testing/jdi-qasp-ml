@@ -1,0 +1,8 @@
+name: jdi-qasp-ml-stable
+
+services:
+  api:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:stable"
+
+  celery:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:stable"

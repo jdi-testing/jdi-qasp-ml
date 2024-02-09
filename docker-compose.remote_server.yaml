@@ -1,6 +1,33 @@
 version: '3'
 
+name: jdi-qasp-ml
 services:
+  chrome:
+    image: selenoid/vnc_chrome:118.0
+    attach: false
+
+  selenoid:
+    container_name: "jdi-qasp-ml-selenoid"
+    image: "aerokube/selenoid:latest"
+    ports:
+      - "4445:4444"
+    volumes:
+      - ".:/etc/selenoid"
+      - "./target:/output"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./target:/opt/selenoid/video"
+    environment:
+      - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
+    command:
+      - "-conf"
+      - "/etc/selenoid/browsers.json"
+      - "-video-output-dir"
+      - "/opt/selenoid/video"
+      - "-container-network"
+      - "jdi-qasp-ml_default"
+      - "-limit"
+      - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
+
   api:
     container_name: jdi-qasp-ml-api
     command: uvicorn app.main:api --host 0.0.0.0 --port 80
@@ -13,6 +40,8 @@ services:
       - .:/jdi-qasp-ml
     env_file:
       - .env.rc
+    environment:
+      - SELENOID_PARALLEL_SESSIONS_COUNT=$SELENOID_PARALLEL_SESSIONS_COUNT
     logging:
       driver: "json-file"
       options:
@@ -24,8 +53,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - .:/jdi-qasp-ml
     env_file:
       - .env.rc
     logging:

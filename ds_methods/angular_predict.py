@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
 from app import angular_df_path_full, angular_model_full
+from app.selenium_app import get_element_id_to_is_displayed_mapping
 from utils.dataset import MUI_JDNDataset
 
 logger = logging.getLogger("jdi-qasp-ml")
@@ -18,17 +19,25 @@ logger = logging.getLogger("jdi-qasp-ml")
 
 @alru_cache(maxsize=32)
 async def angular_predict_elements(body):
+    body_str = body.decode("utf-8")
+    body_json = json.loads(body_str)
+    elements_json = body_json.get("elements", [])
+    document_json = body_json.get("document", "")
+
     # create softmax layser function to get probabilities from logits
     softmax = torch.nn.Softmax(dim=1)
+
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
     with open(os.path.join(angular_df_path_full, filename), "wb") as fp:
         logger.info(f"saving {filename}")
         fp.write(body)
         fp.flush()
+
     filename = filename.replace(".json", ".pkl")
     logger.info(f"saving {filename}")
-    df = pd.DataFrame(json.loads(body))
+    df = pd.DataFrame(json.loads(elements_json))
+
     # fix bad data which can come in 'onmouseover', 'onmouseenter'
     df.onmouseover = df.onmouseover.apply(
         lambda x: "true" if x is not None else None
@@ -36,13 +45,16 @@ async def angular_predict_elements(body):
     df.onmouseenter = df.onmouseenter.apply(
         lambda x: "true" if x is not None else None
     )
+
     df.to_pickle(f"{angular_df_path_full}/{filename}")
+
     logger.info("Creating JDNDataset")
     dataset = MUI_JDNDataset(
         datasets_list=[filename.split(".")[0]],
         rebalance_and_shuffle=False,
         dataset_type="angular",
     )
+
     dataloader = DataLoader(dataset, shuffle=False, batch_size=1)
     device = "cpu"
     logger.info(f"Load model with hardcoded device: {device}")
@@ -50,6 +62,7 @@ async def angular_predict_elements(body):
         f"{angular_model_full}/model.pth", map_location="cpu"
     ).to(device=device)
     model.eval()
+
     logger.info("Predicting...")
     results = []
     with trange(len(dataloader)) as bar:
@@ -78,6 +91,7 @@ async def angular_predict_elements(body):
                 )
                 bar.update(1)
     results_df = pd.DataFrame(results)
+
     # # update the dataset with predictions
     dataset.df["predicted_label"] = results_df.y_pred_label.values
     dataset.df["predicted_probability"] = results_df.y_probability.values
@@ -96,4 +110,8 @@ async def angular_predict_elements(body):
     else:
         del model
         gc.collect()
-        return results_df[columns_to_publish].to_dict(orient="records")
+        result = results_df[columns_to_publish].to_dict(orient="records")
+        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document_json)
+        for element in result:
+            element["is_shown"] = element_id_to_is_displayed_map.get(element["element_id"], None)
+        return result

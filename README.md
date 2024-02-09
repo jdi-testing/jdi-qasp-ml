@@ -202,7 +202,12 @@ cd jdi-qasp-ml
 ```
 git checkout branch_name
 ```
-4. build and start containers:
+4. Copy `.env.dist` file to `.env`:
+```
+cp .env.dist .env
+```
+5. Adjust variables in `.env` file to your needs (refer to the [Settings](#settings) section).
+6. Build and start containers:
 ```
 docker-compose -f docker-compose.dev.yaml up --build
 ```
@@ -219,6 +224,13 @@ git pull
 ```
 docker-compose -f docker-compose.dev.yaml up
 ```
+
+## Settings
+
+| Variable name                    | Description                                                                                                                                                                                                                                                                  | Default value |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| SELENOID_PARALLEL_SESSIONS_COUNT | Total number of parallel Selenoid sessions.<br>Is also used to determine number of processes used to calculate visibility of page elements.<br>Set it to the number of parallel running threads supported by your processor. -2 optionally if you'd like to reduce CPU load. | 4             |
+
 # Docker - get debugging info:
 - http://localhost:5050/build  - get the docker image build's datetime
 - http://localhost:5050/files  - get data sent by browser to model

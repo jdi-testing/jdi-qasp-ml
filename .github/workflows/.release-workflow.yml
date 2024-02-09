@@ -40,6 +40,10 @@ jobs:
         with:
           commit_message: increment version
           branch: develop
+      - name: Load default environment variables values
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: '.env.dist'
       - name: Build
         run: docker compose -f docker-compose.dev.yaml up -d
       - name: Lint and Test

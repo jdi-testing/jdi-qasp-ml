@@ -1,21 +1,25 @@
-version: '3'
+name: jdi-qasp-ml-prod
 
-name: jdi-qasp-ml
+x-logging: &logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "256m"
+
+x-env-file: &env-file
+  env_file:
+    - .env
+
 services:
-  chrome:
-    image: selenoid/vnc_chrome:118.0
-    attach: false
-
   selenoid:
-    container_name: "jdi-qasp-ml-selenoid"
+    container_name: "jdi-qasp-ml-prod-selenoid"
     image: "aerokube/selenoid:latest"
-    ports:
-      - "4445:4444"
+    restart: unless-stopped
     volumes:
       - ".:/etc/selenoid"
-      - "./target:/output"
+      - "./docker-data/selenoid-output:/output"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./target:/opt/selenoid/video"
+      - "./docker-data/selenoid-output:/opt/selenoid/video"
     environment:
       - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
     command:
@@ -24,45 +28,42 @@ services:
       - "-video-output-dir"
       - "/opt/selenoid/video"
       - "-container-network"
-      - "jdi-qasp-ml_default"
+      - "${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-prod-default}"
       - "-limit"
       - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
+    networks:
+      default:
+        aliases:
+          - jdi-qasp-ml-selenoid
 
   api:
-    container_name: jdi-qasp-ml-api
+    container_name: jdi-qasp-ml-prod-api
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"
     command: uvicorn app.main:api --host 0.0.0.0 --port 80
-    build:
-      context: .
-      dockerfile: Dockerfile
+    depends_on:
+      - selenoid
+      - celery
+      - mongodb
+    restart: unless-stopped
     ports:
       - "80:80"
-    volumes:
-      - .:/jdi-qasp-ml
-    env_file:
-      - .env.rc
-    environment:
-      - SELENOID_PARALLEL_SESSIONS_COUNT=$SELENOID_PARALLEL_SESSIONS_COUNT
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "256m"
+    <<: *env-file
+    <<: *logging
 
   celery:
-    container_name: jdi-qasp-ml-celery
+    container_name: jdi-qasp-ml-prod-celery
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"
     command: celery -A app.celery_app:celery_app worker -l info
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env.rc
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "256m"
+    restart: unless-stopped
+    depends_on:
+      - redis
+    <<: *env-file
+    <<: *logging
 
   redis:
-    container_name: jdi-qasp-ml-redis
+    container_name: jdi-qasp-ml-prod-redis
     image: "redis:alpine"
+    restart: unless-stopped
     command:
       - /bin/sh
       - -c
@@ -71,22 +72,18 @@ services:
       # - The ${variable:?message} syntax causes shell to exit with a non-zero
       #   code and print a message, when the variable is not set or empty
       - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}" --maxmemory 2048mb --maxmemory-policy allkeys-lru
-    ports:
-      - "6379"
-    env_file:
-      - .env.rc
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "256m"
+    <<: *env-file
+    <<: *logging
 
   mongodb:
+    container_name: jdi-qasp-ml-prod-mongodb
     image: mongo:5.0
+    restart: unless-stopped
     volumes:
-      - ~/apps/mongo:/data/db
-    env_file:
-      - .env.rc
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "256m"
+      - ./docker-data/mongodb:/data/db
+    <<: *env-file
+    <<: *logging
+
+networks:
+  default:
+    name: ${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-prod-default}

@@ -10,6 +10,7 @@ services:
   selenoid:
     container_name: "jdi-qasp-ml-dev-selenoid"
     image: "aerokube/selenoid:latest"
+    restart: unless-stopped
     volumes:
       - ".:/etc/selenoid"
       - "./docker-data/selenoid-output:/output"
@@ -35,6 +36,11 @@ services:
     container_name: jdi-qasp-ml-dev-api
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: uvicorn app.main:api --host 0.0.0.0 --port 80
+    depends_on:
+      - selenoid
+      - celery
+      - mongodb
+    restart: unless-stopped
     ports:
       - "5000:80"
     env_file:
@@ -47,6 +53,9 @@ services:
     container_name: jdi-qasp-ml-dev-celery
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: celery -A app.celery_app:celery_app worker -l info
+    restart: unless-stopped
+    depends_on:
+      - redis
     env_file:
       - .env
     <<: *logging
@@ -54,6 +63,7 @@ services:
   redis:
     container_name: jdi-qasp-ml-dev-redis
     image: "redis:alpine"
+    restart: unless-stopped
     command:
       - /bin/sh
       - -c
@@ -69,6 +79,7 @@ services:
   mongodb:
     container_name: jdi-qasp-ml-dev-mongodb
     image: mongo:5.0
+    restart: unless-stopped
     volumes:
       - ./docker-data/mongodb:/data/db
     env_file:

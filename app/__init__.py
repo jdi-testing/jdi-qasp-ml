@@ -1,24 +1,42 @@
 import os
 import sys
 
+from dotenv import load_dotenv
+
 from vars.path_vars import (
-    UPLOAD_DIRECTORY,
-    TEMPLATES_PATH,
-    MODEL_VERSION_DIRECTORY,
     JS_DIRECTORY,
+    MODEL_VERSION_DIRECTORY,
+    TEMPLATES_PATH,
+    UPLOAD_DIRECTORY,
+    angular_df_path,
+    angular_model,
+    html5_classes_path,
+    html5_df_path,
+    html5_model,
     mui_df_path,
     mui_model,
     old_df_path,
     old_model,
-    redis_address,
 )
+
+load_dotenv()
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 sys.path.append(os.path.join(prefix, "jdi-qasp-ml"))
 
-REDIS_URL = os.getenv("REDIS_ADDRESS", redis_address)
-BASE_DIR = os.path.join(prefix, "jdi-qasp-ml")
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
+if REDIS_PASSWORD:
+    REDIS_BROKER = f"redispriorityasync://:{REDIS_PASSWORD}@{REDIS_HOST}:6379"
+    REDIS_BACKEND = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379"
+else:
+    REDIS_BROKER = f"redispriorityasync://{REDIS_HOST}:6379"
+    REDIS_BACKEND = f"redis://{REDIS_HOST}:6379"
 
+MONGO_DB_HOST = os.getenv("MONGO_DB_HOST", "mongodb")
+MONGO_DB_PORT = int(os.getenv("MONGO_DB_PORT", 27017))
+
+BASE_DIR = os.path.join(prefix, "jdi-qasp-ml")
 UPLOAD_DIRECTORY = os.getenv(
     "UPLOAD_DIRECTORY", os.path.join(BASE_DIR, UPLOAD_DIRECTORY)
 )
@@ -31,3 +49,14 @@ mui_df_path = os.getenv("mui_df_path", os.path.join(BASE_DIR, mui_df_path))
 mui_model = os.getenv("mui_model", os.path.join(BASE_DIR, mui_model))
 old_df_path = os.getenv("old_df_path", os.path.join(BASE_DIR, old_df_path))
 old_model = os.getenv("old_model", os.path.join(BASE_DIR, old_model))
+
+html5_df_path = os.getenv("html5_df_path", os.path.join(BASE_DIR, html5_df_path))
+html5_model = os.getenv("html5_model", os.path.join(BASE_DIR, html5_model))
+html5_classes_path = os.getenv(
+    "html5_classes_path", os.path.join(BASE_DIR, html5_classes_path)
+)
+
+angular_df_path_full = os.getenv(
+    "angular_df_path", os.path.join(BASE_DIR, angular_df_path)
+)
+angular_model_full = os.getenv("angular_model", os.path.join(BASE_DIR, angular_model))

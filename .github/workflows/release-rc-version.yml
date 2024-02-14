@@ -1,0 +1,11 @@
+name: JDI QASP RC version
+
+on:
+  push:
+    branches: [ "rc" ]
+
+jobs:
+  release:
+    uses: jdi-testing/jdi-qasp-ml/.github/workflows/.release-workflow-rc.yml@rc
+    with:
+      image_tag: rc

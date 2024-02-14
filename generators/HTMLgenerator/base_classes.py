@@ -7,7 +7,7 @@ from pathlib import Path
 
 import faker
 
-from HTMLgenerator.service import generate_uuid
+from service import generate_uuid
 
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
 project_path = os.path.join(prefix, "jdi-qasp-ml")
@@ -44,8 +44,8 @@ class BaseHTMLBuilder(ABC):
         )
         output_file_path = path.join(self._output_path, self.framework_name)
         Path(output_file_path).mkdir(parents=True, exist_ok=True)
-        if path.exists(f"HTMLgenerator/templates/{self.framework_name}.html"):
-            template_file_path = f"HTMLgenerator/templates/{self.framework_name}.html"
+        if path.exists(f"generators/HTMLgenerator/templates/{self.framework_name}.html"):
+            template_file_path = f"generators/HTMLgenerator/templates/{self.framework_name}.html"
         else:
             template_file_path = f"templates/{self.framework_name}.html"
 
@@ -84,11 +84,11 @@ class BaseElement(ABC):
 
     self_closing_tag = False
     label_needed = False
+    tag = ""
 
     def __init__(self, **kwargs):
         self.style_attributes = {}
         self.html_attributes = {}
-        self.tag = ""
         self._label = None
         self.nested_elements = []
 
@@ -165,7 +165,7 @@ class BaseElement(ABC):
             style += f"{k}:{v}; "
         return style.strip()
 
-    def markup(self, label_margin=None):
+    def markup(self, label_margin=None) -> str:
         """Defines full element markup with all specified attributes and nested elements"""
         if self.nested_elements:
             nested_markup_list = []

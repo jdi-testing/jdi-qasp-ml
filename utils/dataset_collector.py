@@ -5,25 +5,16 @@ from scipy.sparse.csr import csr_matrix
 from scipy.sparse import hstack
 
 
-from utils.features_builder import (
-    build_attributes_feature,
-    build_class_feature,
-    build_role_feature,
-    build_tag_name_feature,
-    build_type_feature,
-    build_children_tags,
-    build_followers_tags,
-)
+from utils.features_builder import SpecialFeaturesBuilder, HTML5SpecialFeaturesBuilder
 
 
-COLS = ["element_id", "tag_name", "attributes", "displayed", "is_hidden"]
+COLS = ["element_id", "tag_name", "attributes", "displayed"]
 
 TARGET_PARENT_COLUMNS = [
     "parent_id",
     "tag_name_parent",
     "attributes_parent",
     "displayed_parent",
-    "is_hidden_parent",
 ]
 
 TARGET_UP_SIBLING_COLUMNS = [
@@ -31,7 +22,6 @@ TARGET_UP_SIBLING_COLUMNS = [
     "tag_name_upsib",
     "attributes_upsib",
     "displayed_upsib",
-    "is_hidden_upsib",
 ]
 
 TARGET_DN_SIBLING_COLUMNS = [
@@ -39,133 +29,151 @@ TARGET_DN_SIBLING_COLUMNS = [
     "tag_name_dnsib",
     "attributes_dnsib",
     "displayed_dnsib",
-    "is_hidden_dnsib",
 ]
 
 
-def collect_dataset(df: pd.DataFrame) -> csr_matrix:
-    df_parent = df[COLS].copy()
-    df_parent.columns = TARGET_PARENT_COLUMNS
+class DatasetCollector(object):
+    """
+        Base class for dataset collector
+        With some base preparations non-depended on type of model
+    """
 
-    upsib_df = df[COLS].copy()
-    upsib_df.columns = TARGET_UP_SIBLING_COLUMNS
+    def __init__(self, df: pd.DataFrame, dataset_type="mui"):
+        self.df = df
+        self.dataset_type = dataset_type
+        self.prepare_df()
 
-    dnsib_df = df[COLS].copy()
-    dnsib_df.columns = TARGET_DN_SIBLING_COLUMNS
+    def prepare_df(self):
+        """
+        Method that creates dataset with element, siblings and parent data
+        """
+        df_parent = self.df[COLS].copy()
+        df_parent.columns = TARGET_PARENT_COLUMNS
 
-    dataset_df = df.merge(df_parent, on="parent_id", how="left")
-    dataset_df = dataset_df.merge(upsib_df, on="upper_sibling", how="left")
-    dataset_df = dataset_df.merge(dnsib_df, on="lower_sibling", how="left")
+        upsib_df = self.df[COLS].copy()
+        upsib_df.columns = TARGET_UP_SIBLING_COLUMNS
 
-    y = df.label.values
+        dnsib_df = self.df[COLS].copy()
+        dnsib_df.columns = TARGET_DN_SIBLING_COLUMNS
 
-    # tag_name
-    tag_name_sm = build_tag_name_feature(dataset_df, colname="tag_name")
-    parent_tag_name_sm = build_tag_name_feature(dataset_df, colname="tag_name_parent")
-    # upsib_tag_name_sm = build_tag_name_feature(dataset_df, colname="tag_name_upsib")
-    # dnsib_tag_name_sm = build_tag_name_feature(dataset_df, colname="tag_name_dnsib")
-    logger.info(f"tag_name: {tag_name_sm.shape}")
+        self.dataset_df = self.df.merge(df_parent, on="parent_id", how="left")
+        self.dataset_df = self.dataset_df.merge(
+            upsib_df, on="upper_sibling", how="left"
+        )
+        self.dataset_df = self.dataset_df.merge(
+            dnsib_df, on="lower_sibling", how="left"
+        )
 
-    # attributes
-    attributes_sm = csr_matrix(
-        build_attributes_feature(df=dataset_df, colname="attributes").values
-    )
-    parent_attributes_sm = csr_matrix(
-        build_attributes_feature(df=dataset_df, colname="attributes_parent").values
-    )
-    # upsib_attributes_sm = csr_matrix(
-    #     build_attributes_feature(df=dataset_df, colname="attributes_upsib").values
-    # )
-    # dnsib_attributes_sm = csr_matrix(
-    #     build_attributes_feature(df=dataset_df, colname="attributes_dnsib").values
-    # )
-    logger.info(f"attributes_sm: {attributes_sm.shape}")
+        self.y = self.df.label.values
 
-    # class
-    class_sm = build_class_feature(dataset_df, colname="attributes")
-    parent_class_sm = build_class_feature(dataset_df, colname="attributes_parent")
-    # upsib_class_sm = build_class_feature(dataset_df, colname="attributes_upsib")
-    # dnsib_class_sm = build_class_feature(dataset_df, colname="attributes_dnsib")
-    logger.info(f"class_sm: {class_sm.shape}")
 
-    # type
-    type_sm = build_type_feature(dataset_df, colname="attributes")
-    parent_type_sm = build_type_feature(dataset_df, colname="attributes_parent")
-    # upsib_type_sm = build_type_feature(dataset_df, colname="attributes_upsib")
-    # dnsib_type_sm = build_type_feature(dataset_df, colname="attributes_dnsib")
-    logger.info(f"type_sm: {type_sm.shape}")
+class MUI_DatasetCollector(DatasetCollector):
+    """
+    Class for creating dataset in case of MUI model
+    """
 
-    # role
-    role_sm = build_role_feature(dataset_df, colname="attributes")
-    parent_role_sm = build_role_feature(dataset_df, colname="attributes_parent")
-    # upsib_role_sm = build_role_feature(dataset_df, colname="attributes_upsib")
-    # dnsib_role_sm = build_role_feature(dataset_df, colname="attributes_dnsib")
-    logger.info(f"role_sm: {role_sm.shape}")
+    def __init__(self, df: pd.DataFrame, dataset_type="mui"):
+        super().__init__(df, dataset_type=dataset_type)
 
-    # children & followers tags
-    child_tags_sm = build_children_tags(dataset_df, colname="children_tags")
-    foll_tags_sm = build_followers_tags(dataset_df, colname="followers_tags")
+    def collect_dataset(self) -> csr_matrix:
+        (
+            attributes_sm,
+            parent_attributes_sm,
+            # upsib_attributes_sm,
+            # dnsib_attributes_sm,
+            class_sm,
+            parent_class_sm,
+            # upsib_class_sm,
+            # dnsib_class_sm,
+            tag_name_sm,
+            parent_tag_name_sm,
+            # upsib_tag_name_sm,
+            # dnsib_tag_name_sm,
+            type_sm,
+            parent_type_sm,
+            # upsib_type_sm,
+            # dnsib_type_sm,
+            role_sm,
+            parent_role_sm,
+            # upsib_role_sm,
+            # dnsib_role_sm,
+            child_tags_sm,
+            foll_tags_sm,
+        ) = SpecialFeaturesBuilder(self.dataset_df, self.dataset_type).build_features()
 
-    X = np.array(
-        hstack(
-            [
-                attributes_sm,
-                parent_attributes_sm,
-                # upsib_attributes_sm,
-                # dnsib_attributes_sm,
-                class_sm,
-                parent_class_sm,
-                # upsib_class_sm,
-                # dnsib_class_sm,
-                tag_name_sm,
-                parent_tag_name_sm,
-                # upsib_tag_name_sm,
-                # dnsib_tag_name_sm,
-                type_sm,
-                parent_type_sm,
-                # upsib_type_sm,
-                # dnsib_type_sm,
-                role_sm,
-                parent_role_sm,
-                # upsib_role_sm,
-                # dnsib_role_sm,
-                child_tags_sm,
-                foll_tags_sm,
-                dataset_df.num_followers.fillna(False)
-                .astype(int)
-                .values.reshape(-1, 1),
-                dataset_df.is_leaf.fillna(False).astype(int).values.reshape(-1, 1),
-                dataset_df.num_leafs.fillna(False).astype(int).values.reshape(-1, 1),
-                dataset_df.num_children.fillna(False).astype(int).values.reshape(-1, 1),
-                dataset_df.sum_children_widths.fillna(False)
-                .astype(int)
-                .values.reshape(-1, 1),
-                dataset_df.sum_children_hights.fillna(False)
-                .astype(int)
-                .values.reshape(-1, 1),
-                dataset_df.max_depth.astype(int).values.reshape(-1, 1),
-                dataset_df.displayed.astype(int).values.reshape(-1, 1),
-                dataset_df.displayed_parent.fillna(False)
-                .astype(int)
-                .values.reshape(-1, 1),
-                # dataset_df.displayed_upsib.fillna(False)
-                # .astype(int)
-                # .values.reshape(-1, 1),
-                # dataset_df.displayed_dnsib.fillna(False)
-                # .astype(int)
-                # .values.reshape(-1, 1),
-                dataset_df.is_hidden.fillna(1.0).values.reshape(-1, 1),
-                dataset_df.is_hidden_parent.fillna(1.0).values.reshape(-1, 1),
-                # dataset_df.is_hidden_upsib.fillna(1.0).values.reshape(-1, 1),
-                # dataset_df.is_hidden_dnsib.fillna(1.0).values.reshape(-1, 1),
-            ]
-        ).todense()
-    )  # I hope we have enougth RAM
-    # pd.DataFrame(X, columns=[f"{i}" for i in range(X.shape[1])]).to_parquet(
-    #     "/Users/Mikhail_Bulgakov/GitRepo/jdi-qasp-ml/MUI_model/tmp/dataframe_X.parquet"
-    # )
-    # pd.DataFrame(y, columns=["y"]).to_parquet(
-    #     "/Users/Mikhail_Bulgakov/GitRepo/jdi-qasp-ml/MUI_model/tmp/dataframe_y.parquet"
-    # )
-    logger.info(f"X: {X.shape}")
-    return X.astype(np.float32), y
+        X = np.array(
+            hstack(
+                [
+                    attributes_sm,
+                    parent_attributes_sm,
+                    # upsib_attributes_sm,
+                    # dnsib_attributes_sm,
+                    class_sm,
+                    parent_class_sm,
+                    # upsib_class_sm,
+                    # dnsib_class_sm,
+                    tag_name_sm,
+                    parent_tag_name_sm,
+                    # upsib_tag_name_sm,
+                    # dnsib_tag_name_sm,
+                    type_sm,
+                    parent_type_sm,
+                    # upsib_type_sm,
+                    # dnsib_type_sm,
+                    role_sm,
+                    parent_role_sm,
+                    # upsib_role_sm,
+                    # dnsib_role_sm,
+                    child_tags_sm,
+                    foll_tags_sm,
+                    self.dataset_df.num_followers.fillna(False)
+                    .astype(int)
+                    .values.reshape(-1, 1),
+                    self.dataset_df.is_leaf.fillna(False)
+                    .astype(int)
+                    .values.reshape(-1, 1),
+                    self.dataset_df.num_leafs.fillna(False)
+                    .astype(int)
+                    .values.reshape(-1, 1),
+                    self.dataset_df.num_children.fillna(False)
+                    .astype(int)
+                    .values.reshape(-1, 1),
+                    self.dataset_df.sum_children_widths.fillna(False)
+                    .astype(int)
+                    .values.reshape(-1, 1),
+                    self.dataset_df.sum_children_hights.fillna(False)
+                    .astype(int)
+                    .values.reshape(-1, 1),
+                    self.dataset_df.max_depth.astype(int).values.reshape(-1, 1),
+                    self.dataset_df.displayed.astype(int).values.reshape(-1, 1),
+                    self.dataset_df.displayed_parent.fillna(False)
+                    .astype(int)
+                    .values.reshape(-1, 1),
+                ]
+            ).todense()
+        )  # I hope we have enougth RAM
+        # pd.DataFrame(X, columns=[f"{i}" for i in range(X.shape[1])]).to_parquet(
+        #     "/Users/Mikhail_Bulgakov/GitRepo/jdi-qasp-ml/MUI_model/tmp/dataframe_X.parquet"
+        # )
+        # pd.DataFrame(y, columns=["y"]).to_parquet(
+        #     "/Users/Mikhail_Bulgakov/GitRepo/jdi-qasp-ml/MUI_model/tmp/dataframe_y.parquet"
+        # )
+        logger.info(f"X: {X.shape}")
+        return X.astype(np.float32), self.y
+
+
+class HTML5_DatasetCollector(DatasetCollector):
+    """
+    Class for creating dataset in case of html5 model
+    """
+
+    def __init__(self, df: pd.DataFrame, dataset_type="html5"):
+        super().__init__(df, dataset_type=dataset_type)
+
+    def collect_dataset(self) -> csr_matrix:
+        self.dataset_df = HTML5SpecialFeaturesBuilder(
+            self.dataset_df, self.dataset_type
+        ).build_features()
+
+        logger.info(f"X: {self.dataset_df.shape}")
+        return self.dataset_df, self.y

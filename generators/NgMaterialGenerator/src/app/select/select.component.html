@@ -1,0 +1,40 @@
+
+<mat-form-field data-label="form-field" *ngIf="type === 0" appearance="fill">
+  <mat-label>Favorite food</mat-label>
+  <mat-select data-label="select-material-selector">
+    <mat-option *ngFor="let food of foods" [value]="food.value">
+      {{food.viewValue}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<form [formGroup]="form">
+  <mat-form-field data-label="form-field" *ngIf="type === 1" appearance="fill">
+    <mat-label>Favorite Food</mat-label>
+    <mat-select data-label="select-material-selector" [formControl]="foodControl" name="food">
+      <mat-option>None</mat-option>
+      <mat-option *ngFor="let food of foods" [value]="food.value">
+        {{food.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field data-label="form-field" *ngIf="type === 2" appearance="fill">
+    <mat-label>Favorite Car</mat-label>
+    <select data-label="select-native-selector" matNativeControl [formControl]="carControl" name="car">
+      <option value="">None</option>
+      <option *ngFor="let car of cars" [value]="car.value">
+        {{car.viewValue}}
+      </option>
+    </select>
+  </mat-form-field>
+</form>
+
+<mat-form-field data-label="form-field" *ngIf="type === 3" appearance="fill">
+  <mat-label>Cars</mat-label>
+  <select data-label="select-native-selector" matNativeControl required>
+    <option value="volvo">Volvo</option>
+    <option value="saab">Saab</option>
+    <option value="mercedes">Mercedes</option>
+    <option value="audi">Audi</option>
+  </select>
+</mat-form-field>

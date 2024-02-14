@@ -1,5 +1,6 @@
 # JDI-QASP-ml v.2.0
 # Model
+## MUI
 Our model is neural network based on pytorch framework organized as follows:
 ```
 -> Input linear layer
@@ -21,7 +22,13 @@ As input for NN we use following calculated groups of features:
 - **Numerical general features**  (General features about object like numger of followers, children, max max_depth etc.)
 - **Binary general features** (General features with binary values like is the object or his parent hidden or displayed or leaf etc.)
 
+## Angular 
+Same model as for MUI.
 
+## HTML5 
+Out model is desicion tree, because of simplicity of classic html5 element structure 
+
+Picture of tree can be found in **HTML5_model/model/tree.jpeg**
 # Install environment to train / test model
 
 1. Clone the repository.<br>
@@ -54,33 +61,84 @@ Next go the directory **MUI_model** and run:
 After that in directory **/data/mui_dataset** you will find following structure:
 - /annotations (not used, maybe need to be removed later)
 - /cache-labels (not used, maybe need to be removed later)
-- /df - directory with peakles of site-datasets
+- /df - directory with pickles of site-datasets
 - /html - directory with html files of sites (only for info)
 - /images - directiry with images of sites (only for info)
 - classes.txt - file with all possible labels to detect. Do not change it!!!
 - EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
+
+## Angular
+Generator for Angular element library sites placed in **generators/NgMaterialGenerator/**<br>
+To generate sites go in the directory of NgMaterialGenerator and run:
+````
+    sh generate_data.sh
+````
+After thet in catalog **/data/angular_dataset/build** you will find directories named like **"site-N"**
+
+Next go the directory **Angular_model** and run:
+```
+    python build_datasets_for_angular_sites.py
+```
+After that in directory **/data/angular_dataset** you will find following structure:
+- /annotations (not used, maybe need to be removed later)
+- /cache-labels (not used, maybe need to be removed later)
+- /df - directory with pickles of site-datasets
+- /html - directory with html files of sites (only for info)
+- /images - directiry with images of sites (only for info)
+- classes.txt - file with all possible labels to detect. Do not change it!!!
+- EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
+
 ## HTML5
-to be done
+Generator for HTML5 element library sites placed in **generators/HTMLgenerator/**<br>
+To generate sites go in the directory of HTMLgenerator and run:
+````
+    python generate-html.py
+````
+After thet in catalog **/data/html5_dataset/build/** you will find directory named as **"html5"**
+
+Next go the directory **HTML5_model** and run:
+```
+    python build_datasets_for_html5_sites.py
+```
+After that in directory **/data/html5_dataset** you will find following structure:
+- /annotations (empty, maybe need to delete)
+- /cache-labels (empty, maybe need to delete)
+- /df - directory with pickles of site-datasets
+- /html - directory with html files of sites (only for info)
+- /images - directiry with images of sites (only for info)
+- classes.txt - file with all possible labels to detect. Do not change it!!!
+- EXTRACT_ATTRIBUTES_LIST.json - file with all attributes to take into account in the model (need in feature building). Do not change it!!!
 
 # Train model
 ## MUI
-
-<span style="color:orange"> If you need to train model from scratch (for example, number of classes is changed), delete all files from "MUI_model/model"
-directory.</span>
 
 To train the model you need to go to the directory **/MUI_model** and run:
 ```
     python train.py
 ```
-If you need to set up training parameters, change following variables for train.py (placed in **vars/train_vars.py**):
-- BATCH_SIZE (1024 by default)
-- train_names and test_names. You need to set up them like (where N and T placed in train_vars defines number of train-test ratio and depend on generated number of sites):
-``` 
-    train_names = DATASET_NAMES[:N]
-    test_names = DATASET_NAMES[N:N+T]
-``` 
-- NUM_EPOCHS (100 by default)
-- EARLY_STOPPING_THRESHOLD (10 by default) 
+If you need to set up training parameters, change following variables for train.py (placed in **vars/mui_train_vars.py**):
+- BATCH_SIZE (2048 by default)
+- TRAIN_LEN and TEST_LEN 
+- NUM_EPOCHS (2 by default)
+- EARLY_STOPPING_THRESHOLD (2 by default) 
+
+At the end of the process the table with training results saves in **MUI_model/tmp/train_metrics.csv**
+
+## Angular
+To train the model you need to go to the directory **/Angular_model** and run:
+```
+    python train.py
+```
+
+## HTML5
+
+To train the model you need to go to the directory **/HTML5_model** and run:
+```
+    python train.py
+```
+If you need to set up training parameters, change following variables for train.py (placed in **vars/html5_train_vars.py**):
+- TRAIN_LEN and TEST_LEN 
+- parameters of DT
 
 At the end of the process the table with training results saves in **MUI_model/tmp/train_metrics.csv**
 
@@ -89,54 +147,89 @@ At the end of the process the table with training results saves in **MUI_model/t
 To get predictions we need to run API main.py (better to do it wia docker - will be disscussed below)
 when API is running we can send input json data to following url:
 - http://localhost:5050/mui-predict for mui model
+- http://localhost:5050/angular-predict for angular model
+- http://localhost:5050/html5-predict for html5 model
 - http://localhost:5050/predict  for old version of model
 
-<span style="color:orange">ATTENTION! 
-In main.py flask application works on 5000 port but when we use docker we forward 5000 port in docker to 5050 port in local PC (because on my local PC port 5000 was always busy). So if you need to use another port on your local PC you need to change run_docker.sh file in the root of project.<span>
-
 # Validate model
-
+## MUI
 To validate models quality we use test web-pages, placed in directory **notebooks/MUI/Test-backend**
 
 <span style="color:orange">You can change only notebooks with the "new"-end in the name like "Test-backend_mui-Buttons_new.ipynb"(others are legacy for comparing)<span>
 
 In that notebooks we load specific web-page, creating dataset and predict labels for this dataset. It may be needed to correct some paths in notebooks (especially ports in them)
 
-<span style="color:orange">To use this notebooks main.py need to be run.<span>
+<span style="color:orange">To use this notebooks main.py need to be run or docker needs to be up.<span>
+
+## HTML5
+To validate models quality we use test web-pages, placed in directory **notebooks/HTML5/Test-backend**
 
 
 # Docker
-- build image: 
-```
- sh build_docker.sh (for mac)
-```
-- run docker-compose:
-```
-sh run_docker.sh (for mac)
-```
-<span style="color:orange">Attention! The first time you will build the docker image can take significant time<span>
-
-Download the latest Docker Compose file from the `develop` branch and run `docker compose`:
 ## Take docker image from github:
-### Stable version
+### RC version
 #### macOS/Linux
 ```shell
-curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose-stable.yaml && docker compose up
+docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
 ```
 #### Windows
 ```shell
-curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose-stable.yaml && docker compose up
+docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
 ```
 
 ### Development version
 #### macOS/Linux
 ```shell
-curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
 #### Windows
 ```shell
-curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
 ```
+## Installing version from any other repository branch:
+Example with branch "branch_name":
+
+Installing for the first time:
+1. Clone repository to your machine:
+```
+git clone https://github.com/jdi-testing/jdi-qasp-ml.git
+```
+2. After process finished go to the project folder:
+```
+cd jdi-qasp-ml
+```
+3. Checkout to a branch needed:
+```
+git checkout branch_name
+```
+4. Copy `.env.dist` file to `.env`:
+```
+cp .env.dist .env
+```
+5. Adjust variables in `.env` file to your needs (refer to the [Settings](#settings) section).
+6. Build and start containers:
+```
+docker-compose -f docker-compose.dev.yaml up --build
+```
+Next time if you want to run/rerun containers, use following commands:
+1. Stop running containers:
+```
+docker-compose -f docker-compose.dev.yaml down -v
+```
+2. Update repository with new commits:
+```
+git pull
+```
+3. Restart containers:
+```
+docker-compose -f docker-compose.dev.yaml up
+```
+
+## Settings
+
+| Variable name                    | Description                                                                                                                                                                                                                                                                  | Default value |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| SELENOID_PARALLEL_SESSIONS_COUNT | Total number of parallel Selenoid sessions.<br>Is also used to determine number of processes used to calculate visibility of page elements.<br>Set it to the number of parallel running threads supported by your processor. -2 optionally if you'd like to reduce CPU load. | 4             |
 
 # Docker - get debugging info:
 - http://localhost:5050/build  - get the docker image build's datetime
@@ -160,161 +253,104 @@ docker compose -f docker-compose.dev.yaml run --rm api pipenv install <package>=
 ```
 
 ## API
+Available API methods you can see in Swagger at http://localhost:5050/docs
 
-### /schedule_xpath_generation
-Creates task for xpath generation and returns id of task which can be used for task revoking and 
-getting task status or result.  
 
-Accessible via **POST** request.  
-Incoming JSON example:
-```json
+## Websocket commands
+Those commands could be sent to websocket and be processed by back-end:
+
+### 1. Schedule Xpath Generation for an element in some document:
+Request sent:
+```
 {
-    "document": "...",  
-    "id": "8520359515737429141026100694",  
-    "config": {
+    "action": "schedule_xpath_generation",
+    "payload": {
+        "document": '"<head jdn-hash=\\"0352637447734573274412895785\\">....',
+        "id": "1122334455667788990011223344",
+        "config": {
             "maximum_generation_time": 10,
-            "allow_indexes_at_the_beginning": true,  
-            "allow_indexes_in_the_middle": true,  
-            "allow_indexes_at_the_end": true 
-        }  
-}
-```
-Returns JSON: 
-```json
-{
-    "task_id": "<task_id>"
-}
-```
-
-### /get_task_status
-Returns status of generation for task with specified id.
-
-Accessible via **POST** request.  
-Incoming JSON example:
-```json
-{
-    "id": "<task_id>"
-}
-```
-Returns JSON: 
-```json
-{
-    "id": "<task_id>", 
-    "status": "PENDING"
-}
-```
-
-### /get_tasks_statuses
-Same as get_task_status, but for the list of ids
-
-Accessible via **POST** request.  
-Incoming JSON example:
-```json
-{
-    "id": ["<task_id1>", "<task_id2>"]
-}
-```
-Returns JSON: 
-```json
-[
-    {
-        "id": "<task_id1>", 
-        "status": "PENDING"
+            "allow_indexes_at_the_beginning": false,
+            "allow_indexes_in_the_middle": false,
+            "allow_indexes_at_the_end": false,
+        },
     },
-    {
-        "id": "<task_id2>", 
-        "status": "SUCCESS"
-    }
-]
-```
-
-Possible statuses:   
-**FAILURE** - Task failed  
-**PENDING** - Task state is unknown (assumed pending since you know the id).  
-**RECEIVED** - Task was received by a worker (only used in events).  
-**RETRY** - Task is waiting for retry.  
-**REVOKED** - Task was revoked.  
-**STARTED** - Task was started by a worker.  
-**SUCCESS** - Task succeeded  
-
-### /revoke_task
-Revokes task with specified id.  
-
-Accessible via **POST** request.  
-Incoming JSON example:
-```json
-{
-    "id": "task_id"
 }
 ```
-Returns JSON: 
-```json
+Response from websocket:
+```
 {
-    "result": "Task successfully revoked."
+    "action": "tasks_scheduled",
+    "payload": {"1122334455667788990011223344": "1122334455667788990011223344"},
 }
 ```
-
-### /get_task_result
-Returns result of generation for task with specified id.
-
-Accessible via **POST** request.  
-Incoming JSON example:
-```json
+### 2. Get task status:
+Request sent:
+```
 {
-    "id": "task_id"
+    "action": "get_task_status",
+    "payload": {"id": "1122334455667788990011223344"},
 }
 ```
-Returns JSON: 
-```json
-{
-    "id": "task_id", 
-    "result": "<generated_xpath>"
-}
+### 3. Get task statuses:
+Request sent:
 ```
-
-### /get_tasks_results
-Same as get_task_result, but for the list of ids.
-Accessible via **POST** request.  
-Incoming JSON example:
-```json
 {
-    "id": ["task_id1", "task_id2"]
-}
-```
-Returns JSON: 
-```json
-[
-    {
-        "id": "task_id1", 
-        "result": "<generated_xpath>"
+    "action": "get_task_status",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
     },
-    {
-        "id": "task_id2", 
-        "result": "<generated_xpath>"
-    }
-]
-```
-
-### Exceptions
-In case of exception in any of listed above methods JSON with 'exc' field will be returned.  
-JSON example:
-```json
-{
-    "exc": "Generation still in progress."
 }
 ```
-or list of ids with exceptions if endpoint supports list processing:
-```json
-[
-    {
-        "id": "<task_id1>",
-        "exc": "Generation still in progress."
-    },
-    {
-        "id": "task_id2",
-        "exc": "Generation still in progress."
-    }
-]
+### 4. Revoke tasks:
+Request sent:
 ```
-
-
+{
+    "action": "revoke_tasks",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
+    },
+}
+```
+Response from websocket:
+```
+{
+    "action": "tasks_revoked",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
+    },
+}
+```
+### 5. Get task result:
+Request sent:
+```
+{
+    "action": "get_task_result",
+    "payload": {"id": "1122334455667788990011223344"},
+}
+```
+### 6. Get task results:
+Request sent:
+```
+{
+    "action": "get_task_results",
+    "payload": {
+        "id": [
+            "1122334455667788990011223344",
+            "1122334455667788990011223345",
+            "1122334455667788990011223346",
+        ]
+    },
+}
+```

@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 from IPython.display import HTML
 from IPython.display import display as ipython_displpay
+from selenium.webdriver.common.by import By
+from sklearn.metrics import confusion_matrix
+from collections import Counter
 
 import numba
 
@@ -18,7 +21,7 @@ def maximize_window(driver=None, extend_pix=0):
         return driver.execute_script("return document.body.parentNode.scroll" + X)
 
     driver.set_window_size(width=S("Width"), height=S("Height") + extend_pix)
-    driver.find_element_by_tag_name("body")
+    driver.find_element(By.TAG_NAME, "body")
     logger.info("Window maximized")
 
 
@@ -79,7 +82,6 @@ def build_tree_dict(df: pd.DataFrame) -> dict:
 def accuracy(
     df: pd.DataFrame,
     y_true: str = "y_true_label",
-    is_hidden: str = "is_hidden",
     y_pred: str = "y_pred_label",
     verbose: bool = True,
     dummy: str = "n/a",
@@ -90,7 +92,7 @@ def accuracy(
     """
     total_cnt = df.shape[0]
     df = df[[y_true, y_pred]][
-        ((df[y_true] != dummy) | (df[y_pred] != dummy)) & (df[is_hidden] == 0)
+        ((df[y_true] != dummy) | (df[y_pred] != dummy))
     ]
     n = df.shape[0]
 
@@ -108,6 +110,35 @@ def accuracy(
         raise Exception("No predictions")
 
     return None
+
+
+def accuracy_each_class(
+    df: pd.DataFrame,
+    y_true: str = "y_true_label",
+    y_pred: str = "y_pred_label",
+    verbose: bool = True,
+    dummy: str = "n/a",
+):
+    """
+        Calculates accuracy for each class on all elements which are not "n/a"
+        Parameters: y_true, y_pred are column names
+    """
+    with open('data\\vuetify_dataset\\classes.txt') as f:
+        classes = f.readlines()
+    df = df[(df['y_true'] != dummy) | (df['y_pred'] != dummy)]
+    y_true = df['y_true'].to_numpy()
+    y_pred = df['y_pred'].to_numpy()
+    m = confusion_matrix(y_true, y_pred)
+    for a, i in enumerate(m):
+        for b, j in enumerate(i):
+            if j != 0 and j not in m.diagonal():
+                print(f'Class {classes[a]} recognized as {classes[b]} {m[a][b]} time(s)')
+    classes_acc = {}
+    for n, i in enumerate(m.diagonal()):
+        classes_acc[n] = i / Counter(list(y_true))[n]
+    if verbose:
+        logger.info(f"Accuracy for each class:  {classes_acc}")
+    return classes_acc
 
 
 def load_gray_image(file_path: str) -> np.ndarray:

@@ -12,6 +12,9 @@
 flask-temp-storage/*
 
 generators/HTMLgenerator/output
+generators/HTMLgenerator/dataset
+generators/VuetifyGenerator/node_modules
+generators/VuetifyGenerator/dist
 venv/
 
 data/mui_dataset/*
@@ -39,10 +42,14 @@ dataset/cache-labels/*
 dataset/df/20*
 .idea/*
 HTMLgenerator/output/*
-venv/
 .pytest_cache/*
 .coverage
 .coverage.*
 .cache
 coverage.xml
 .DS_Store
+
+**/.DS_Store
+.env
+.env.rc
+.env.dev

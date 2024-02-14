@@ -135,6 +135,7 @@ class DatasetBuilder:
         self.options = Options()
         # Last I checked this was necessary.
         self.options.add_argument("--disable-gpu")
+        self.options.add_argument("--no-sandbox")
         self.options.add_argument("--skip-js-errors")
 
         # to prevent "I'm not a robot" check, we have to add next option:

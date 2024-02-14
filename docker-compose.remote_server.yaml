@@ -1,0 +1,92 @@
+version: '3'
+
+name: jdi-qasp-ml
+services:
+  chrome:
+    image: selenoid/vnc_chrome:118.0
+    attach: false
+
+  selenoid:
+    container_name: "jdi-qasp-ml-selenoid"
+    image: "aerokube/selenoid:latest"
+    ports:
+      - "4445:4444"
+    volumes:
+      - ".:/etc/selenoid"
+      - "./target:/output"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./target:/opt/selenoid/video"
+    environment:
+      - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
+    command:
+      - "-conf"
+      - "/etc/selenoid/browsers.json"
+      - "-video-output-dir"
+      - "/opt/selenoid/video"
+      - "-container-network"
+      - "jdi-qasp-ml_default"
+      - "-limit"
+      - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
+
+  api:
+    container_name: jdi-qasp-ml-api
+    command: uvicorn app.main:api --host 0.0.0.0 --port 80
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - .:/jdi-qasp-ml
+    env_file:
+      - .env.rc
+    environment:
+      - SELENOID_PARALLEL_SESSIONS_COUNT=$SELENOID_PARALLEL_SESSIONS_COUNT
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
+
+  celery:
+    container_name: jdi-qasp-ml-celery
+    command: celery -A app.celery_app:celery_app worker -l info
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env.rc
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
+
+  redis:
+    container_name: jdi-qasp-ml-redis
+    image: "redis:alpine"
+    command:
+      - /bin/sh
+      - -c
+      # - Double dollars, so that the variable is not expanded by Docker Compose
+      # - Surround by quotes, so that the shell does not split the password
+      # - The ${variable:?message} syntax causes shell to exit with a non-zero
+      #   code and print a message, when the variable is not set or empty
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}" --maxmemory 2048mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379"
+    env_file:
+      - .env.rc
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"
+
+  mongodb:
+    image: mongo:5.0
+    volumes:
+      - ~/apps/mongo:/data/db
+    env_file:
+      - .env.rc
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "256m"

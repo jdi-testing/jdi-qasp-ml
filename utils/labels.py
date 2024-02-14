@@ -4,8 +4,12 @@ import pandas as pd
 import numpy as np
 from utils.config import logger
 
+from vars.path_vars import dataset_dict
+
 prefix = os.getcwd().split("jdi-qasp-ml")[0]
-classes_path = os.path.join(prefix, "jdi-qasp-ml", "data/mui_dataset/classes.txt")
+classes_path = os.path.join(
+    prefix, "jdi-qasp-ml", f"{dataset_dict.get('mui')}/classes.txt"
+)
 
 
 def assign_labels(

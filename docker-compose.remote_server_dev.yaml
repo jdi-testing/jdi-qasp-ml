@@ -7,10 +7,6 @@ x-logging: &logging
       max-size: "256m"
 
 services:
-  chrome:
-    image: selenoid/vnc_chrome:118.0
-    attach: false
-
   selenoid:
     container_name: "jdi-qasp-ml-dev-selenoid"
     image: "aerokube/selenoid:latest"

@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - *
+    branches:
+      - develop
   pull_request_target:
     branches:
       - master
@@ -38,6 +40,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up default environment
+        run: cp .env.dist .env
       - name: Build and push
         uses: docker/build-push-action@v5
         with:

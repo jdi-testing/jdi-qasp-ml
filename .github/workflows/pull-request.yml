@@ -1,7 +1,5 @@
-name: JDI QASP dev build workflow
-
 on:
-  push:
+  pull_request_target:
     branches:
       - develop
 
@@ -33,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COMPOSE_FILE: docker-compose.dev.yaml
+      SELENOID_PARALLEL_SESSIONS_COUNT: 2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,11 +43,5 @@ jobs:
     needs: [version-update, lint]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Set up default environment
-        run: cp .env.dist .env
       - name: Build Docker image
         uses: ./.github/workflows/docker-image-update.yml

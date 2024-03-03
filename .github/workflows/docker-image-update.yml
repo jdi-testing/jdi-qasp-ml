@@ -30,8 +30,8 @@ jobs:
             org.opencontainers.image.title=JDI QASP ML
             org.opencontainers.image.description=Backend for JDN Chrome plugin
           tags: |
-            type=ref,event=branch,enable=${{ branch != 'master' }}
-            type=ref,event=pr,prefix
+            type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master' }}
+            type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
       - name: Login to GitHub Container Registry

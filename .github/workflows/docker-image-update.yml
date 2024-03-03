@@ -1,0 +1,46 @@
+name: JDI QASP Docker image build workflow
+
+on:
+  workflow_call:
+  push:
+    tags:
+      - *
+  pull_request_target:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/jdi-testing/jdi-qasp-ml
+          labels: |
+            maintainer=github.com/jdi-testing
+            org.opencontainers.image.title=JDI QASP ML
+            org.opencontainers.image.description=Backend for JDN Chrome plugin
+          tags: |
+            type=ref,event=branch,enable=${{ {{branch}} != 'master' }}
+            type=ref,event=pr,prefix
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

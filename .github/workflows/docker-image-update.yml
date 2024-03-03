@@ -7,7 +7,7 @@ on:
       - '*'
     branches:
       - develop
-  pull_request_target:
+  pull_request:
     branches:
       - master
 

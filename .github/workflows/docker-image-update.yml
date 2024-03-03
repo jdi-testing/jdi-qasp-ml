@@ -30,7 +30,7 @@ jobs:
             org.opencontainers.image.title=JDI QASP ML
             org.opencontainers.image.description=Backend for JDN Chrome plugin
           tags: |
-            type=ref,event=branch,enable=${{ {{branch}} != 'master' }}
+            type=ref,event=branch,enable=${{ branch != 'master' }}
             type=ref,event=pr,prefix
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}

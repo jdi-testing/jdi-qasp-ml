@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
       - name: Increment version
         run: |
           cd model/version
@@ -22,6 +22,9 @@ jobs:
           THIRD_DIGIT=$(echo $OLD_VERSION | cut -d '.' -f 3)
           NEW_THIRD_DIGIT=$((THIRD_DIGIT+1))
           NEW_VERSION=$FIRST_DIGIT.$SECOND_DIGIT.$NEW_THIRD_DIGIT
+          echo \"$OLD_VERSION\"
+          echo \"$NEW_VERSION\"
+          echo `pwd`
           mv ./$OLD_VERSION ./$NEW_VERSION
           cd ../..
       - name: Commit incremented version

@@ -30,8 +30,7 @@ jobs:
       - name: Commit incremented version
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Increment version
-          branch: develop
+          commit_message: Increment version [ci skip]
   lint:
     runs-on: ubuntu-latest
     env:
@@ -48,5 +47,9 @@ jobs:
     needs: [version-update, lint]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Build Docker image
         uses: ./.github/workflows/docker-image-update.yml

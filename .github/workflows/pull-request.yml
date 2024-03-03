@@ -6,31 +6,6 @@ on:
       - develop
 
 jobs:
-  version-update:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: false
-      - name: Increment version
-        run: |
-          cd model/version
-          OLD_VERSION=$(ls)
-          FIRST_DIGIT=$(echo $OLD_VERSION | cut -d '.' -f 1)
-          SECOND_DIGIT=$(echo $OLD_VERSION | cut -d '.' -f 2)
-          THIRD_DIGIT=$(echo $OLD_VERSION | cut -d '.' -f 3)
-          NEW_THIRD_DIGIT=$((THIRD_DIGIT+1))
-          NEW_VERSION=$FIRST_DIGIT.$SECOND_DIGIT.$NEW_THIRD_DIGIT
-          echo \"$OLD_VERSION\"
-          echo \"$NEW_VERSION\"
-          echo `pwd`
-          mv ./$OLD_VERSION ./$NEW_VERSION
-          cd ../..
-      - name: Commit incremented version
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Increment version [ci skip]
   lint:
     runs-on: ubuntu-latest
     env:
@@ -44,5 +19,5 @@ jobs:
       - name: Lint
         run: docker compose run api make lint
   build:
-    needs: [version-update, lint]
+    needs: lint
     uses: ./.github/workflows/docker-image-update.yml

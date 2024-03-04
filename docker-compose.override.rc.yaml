@@ -1,5 +1,3 @@
-name: jdi-qasp-ml-rc
-
 services:
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:rc"

@@ -11,7 +11,7 @@ on:
 
 env:
   RUN_ON_MASTER: ${{ github.ref == 'refs/heads/master' }}
-  RUN_ON_RC: ${{ startsWith( github.ref, 'refs/heads/release/' ) && github.base_ref == 'refs/heads/master' }}
+  RUN_ON_RC: ${{ startsWith( github.ref, 'refs/heads/release/' ) }}
 
 jobs:
   build-and-push:

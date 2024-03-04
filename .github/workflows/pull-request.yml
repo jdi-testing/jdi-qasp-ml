@@ -9,7 +9,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     env:
-      COMPOSE_FILE: docker-compose.dev.yaml
+      COMPOSE_FILE: docker-compose.yaml:docker-compose.override.dev.yaml
       SELENOID_PARALLEL_SESSIONS_COUNT: 2
     steps:
       - name: Checkout repository

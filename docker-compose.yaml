@@ -24,7 +24,7 @@ services:
       - "-video-output-dir"
       - "/opt/selenoid/video"
       - "-container-network"
-      - "jdi-qasp-ml_default"
+      - "${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}"
       - "-limit"
       - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
 
@@ -52,3 +52,7 @@ services:
     volumes:
       - .docker-data/mongo:/data/db
     <<: *logging
+
+networks:
+  default:
+    name: ${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}

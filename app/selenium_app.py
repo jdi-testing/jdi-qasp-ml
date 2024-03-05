@@ -28,7 +28,7 @@ def get_webdriver() -> webdriver.Remote:
     }
 
     return webdriver.Remote(
-        command_executor="http://jdi-qasp-ml-selenoid:4444/wd/hub",
+        command_executor="http://selenoid:4444/wd/hub",
         desired_capabilities=capabilities,
         options=chrome_options,
     )

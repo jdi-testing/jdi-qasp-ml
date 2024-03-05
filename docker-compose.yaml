@@ -4,6 +4,9 @@ x-logging: &logging
     options:
       max-size: "256m"
 
+x-restart-policy: &restart
+  restart: unless-stopped
+
 services:
   chrome:
     image: selenoid/vnc_chrome:118.0
@@ -27,6 +30,7 @@ services:
       - "${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}"
       - "-limit"
       - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
+    <<: *restart
 
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
@@ -40,23 +44,23 @@ services:
       - "${APP_EXPOSE_PORT:-5050}:5050"
     environment:
       - SELENOID_PARALLEL_SESSIONS_COUNT=$SELENOID_PARALLEL_SESSIONS_COUNT
-    <<: *logging
+    <<: [*logging, *restart]
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: celery -A app.celery_app:celery_app worker -l info
-    <<: *logging
+    <<: [*logging, *restart]
 
   redis:
     image: "redis:alpine"
     command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
-    <<: *logging
+    <<: [*logging, *restart]
 
   mongodb:
     image: mongo:5.0
     volumes:
       - .docker-data/mongo:/data/db
-    <<: *logging
+    <<: [*logging, *restart]
 
 networks:
   default:

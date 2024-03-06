@@ -8,10 +8,6 @@ x-restart-policy: &restart
   restart: unless-stopped
 
 services:
-  chrome:
-    image: selenoid/vnc_chrome:118.0
-    attach: false
-
   selenoid:
     image: "aerokube/selenoid:latest"
     volumes:
@@ -48,7 +44,7 @@ services:
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
-    command: celery -A app.celery_app:celery_app worker -l info
+    command: ./start_celery.sh
     <<: [*logging, *restart]
 
   redis:

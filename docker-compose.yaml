@@ -58,7 +58,7 @@ services:
   mongodb:
     image: mongo:5.0
     volumes:
-      - .docker-data/mongo:/data/db
+      - mongo-data:/data/db
     <<: [*logging, *restart]
 
 networks:
@@ -70,3 +70,6 @@ networks:
   selenoid:
     name: selenoid
     external: true
+
+volumes:
+  mongo-data:

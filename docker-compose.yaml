@@ -26,6 +26,9 @@ services:
       - "${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}"
       - "-limit"
       - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
+    networks:
+      default: null
+      selenoid: null
     <<: *restart
 
   api:
@@ -61,3 +64,9 @@ services:
 networks:
   default:
     name: ${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}
+
+  # This network is needed for Selenoid to be able to create Chrome images.
+  # https://aerokube.com/selenoid/latest/#_option_2_running_selenoid_in_custom_docker_network
+  selenoid:
+    name: selenoid
+    external: true

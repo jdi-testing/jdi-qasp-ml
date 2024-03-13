@@ -36,3 +36,14 @@ data/uploaded_dataset
 data/other
 
 **/notebooks
+
+# Git data is not needed in Docker container
+.git/
+.gitignore
+.gitmodules
+
+# These scripts are unnecessary in Docker container
+build_docker.sh
+create-env.bat
+remove-env.bat
+run_docker.sh

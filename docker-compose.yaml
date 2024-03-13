@@ -1,16 +1,15 @@
-version: '3.9'
+x-logging: &logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "256m"
 
-name: jdi-qasp-ml
+x-restart-policy: &restart
+  restart: unless-stopped
+
 services:
-  chrome:
-    image: selenoid/vnc_chrome:118.0
-    attach: false
-
   selenoid:
-    container_name: "jdi-qasp-ml-selenoid"
     image: "aerokube/selenoid:latest"
-    ports:
-      - "4445:4444"
     volumes:
       - ".:/etc/selenoid"
       - "./target:/output"
@@ -18,46 +17,50 @@ services:
       - "./target:/opt/selenoid/video"
     environment:
       - "OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/target"
-    command: 
+    command:
       - "-conf"
       - "/etc/selenoid/browsers.json"
       - "-video-output-dir"
       - "/opt/selenoid/video"
       - "-container-network"
-      - "jdi-qasp-ml_default"
+      - "${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}"
       - "-limit"
       - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
+    <<: *restart
 
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
-    container_name: jdi-qasp-ml-api
-    command: uvicorn app.main:api --host 0.0.0.0 --port 5000
+    command: uvicorn app.main:api --host 0.0.0.0 --port 5050
+    depends_on:
+      - selenoid
+      - celery
+      - redis
+      - mongodb
     ports:
-      - "5050:5000"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "256m"
+      - "${APP_EXPOSE_PORT:-5050}:5050"
     environment:
-      ENV: LOCAL
-      SELENOID_PARALLEL_SESSIONS_COUNT: $SELENOID_PARALLEL_SESSIONS_COUNT
+      - SELENOID_PARALLEL_SESSIONS_COUNT=$SELENOID_PARALLEL_SESSIONS_COUNT
+    <<: [*logging, *restart]
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
-    container_name: jdi-qasp-ml-celery
-    command: bash -c "chmod +x start_celery.sh && ./start_celery.sh"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "256m"
+    command: ./start_celery.sh
+    <<: [*logging, *restart]
 
   redis:
     image: "redis:alpine"
-    container_name: jdi-qasp-ml-redis
     command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
-    ports:
-      - "6379"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "256m"
+    <<: [*logging, *restart]
+
+  mongodb:
+    image: mongo:5.0
+    volumes:
+      - mongo-data:/data/db
+    <<: [*logging, *restart]
+
+networks:
+  default:
+    name: ${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}
+
+volumes:
+  mongo-data:

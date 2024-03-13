@@ -1,0 +1,6 @@
+services:
+  api:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:develop"
+
+  celery:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:develop"

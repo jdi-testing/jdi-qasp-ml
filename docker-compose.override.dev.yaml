@@ -10,9 +10,17 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/jdi-qasp-ml
+    environment:
+      ENV: LOCAL
+    depends_on: !override
+      - selenoid
+      - celery
+      - redis
 
   celery:
     image: !reset null
     build:
       context: .
       dockerfile: Dockerfile
+
+  mongodb: !reset []

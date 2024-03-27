@@ -12,6 +12,8 @@ jobs:
       COMPOSE_FILE: docker-compose.yaml:docker-compose.override.ci.yaml
       SELENOID_PARALLEL_SESSIONS_COUNT: 2
     steps:
+      - name: Check version
+        run: docker compose version
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

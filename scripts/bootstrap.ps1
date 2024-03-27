@@ -36,9 +36,15 @@ $RepoUrl = "https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/$Branch"
 Download-File -Url ("$RepoUrl/docker-compose.yaml") -OutputPath "docker-compose.yaml"
 Download-File -Url ("$RepoUrl/browsers.json") -OutputPath "browsers.json"
 
+$randomNumber = Get-Random -Minimum 0 -Maximum 99999999
+$hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($randomNumber.ToString()))
+$randomString = [System.BitConverter]::ToString($hash) -replace '-', '' -substring 0, 8
+$NetworkName = ("jdi-qasp-ml-$randomString")
+
 @"
 JDI_VERSION_LABEL=$Label
 SELENOID_PARALLEL_SESSIONS_COUNT=$CoresToUse
+JDI_DEFAULT_NETWORK_NAME=$NetworkName
 "@ | Set-Content -Path ".env"
 
 if ($Label -ne 'latest') {

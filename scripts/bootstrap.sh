@@ -144,9 +144,14 @@ curl --output browsers.json "$repo_url/$BRANCH/browsers.json"
 
 docker pull selenoid/vnc_chrome:118.0
 
+random_bytes=$(head -c 4 /dev/urandom)
+hex_string=$(xxd -p <<< "$random_bytes")
+NETWORK_NAME="jdi-qasp-ml-${hex_string:0:8}"
+
 echo "\
 JDI_VERSION_LABEL=${LABEL}
 SELENOID_PARALLEL_SESSIONS_COUNT=${SELENOID_PARALLEL_SESSIONS_COUNT}
+JDI_DEFAULT_NETWORK_NAME=${NETWORK_NAME}
 " > .env
 
 case $LABEL in

@@ -50,6 +50,8 @@ services:
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: bash -c "bash start_celery.sh"
+    depends_on:
+      - redis
     <<: [*logging, *restart, *labels]
 
   redis:

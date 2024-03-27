@@ -38,7 +38,7 @@ Download-File -Url ("$RepoUrl/browsers.json") -OutputPath "browsers.json"
 
 $randomNumber = Get-Random -Minimum 0 -Maximum 99999999
 $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($randomNumber.ToString()))
-$randomString = [System.BitConverter]::ToString($hash) -replace '-', '' -substring 0, 8
+$randomString = ([System.BitConverter]::ToString($hash) -replace '-', '').Substring(0, 8)
 $NetworkName = ("jdi-qasp-ml-$randomString")
 
 @"

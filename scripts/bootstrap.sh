@@ -145,7 +145,7 @@ curl --output browsers.json "$repo_url/$BRANCH/browsers.json"
 docker pull selenoid/vnc_chrome:118.0
 
 random_bytes=$(head -c 4 /dev/urandom)
-hex_string=$(od -An -tx1 -w4 -v <<< "$random_bytes" | tr -d ' ')
+hex_string=$(od -An -tx1 -N4 -v <<< "$random_bytes" | tr -d ' \n')
 NETWORK_NAME="jdi-qasp-ml-${hex_string:0:8}"
 
 echo "\

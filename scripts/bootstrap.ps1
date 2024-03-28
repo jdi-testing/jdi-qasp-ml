@@ -25,9 +25,10 @@ function Download-File {
 # Remove old Docker resources if cleanup flag is not set
 if (-not $NoCleanup) {
     $labelSelector = "org.jdi-qasp-ml.version_label=$Label"
-    docker container rm -f $(docker ps -q --filter "label=$labelSelector") 2>$null
-    docker network rm -f $(docker network ls -q --filter "label=$labelSelector") 2>$null
-    docker volume rm -f $(docker volume ls -q --filter "label=$labelSelector") 2>$null
+    docker stop $(docker ps -qf "label=$labelSelector") 2>$null
+    docker container rm -f $(docker ps -qaf "label=$labelSelector") 2>$null
+    docker volume rm -f $(docker volume ls -qf "label=$labelSelector") 2>$null
+    docker network rm -f $(docker network ls -qf "label=$labelSelector") 2>$null
     Remove-Item -Path "docker-compose.yaml", "docker-compose.override.yaml", "browsers.json", ".env" -ErrorAction SilentlyContinue
 }
 

@@ -119,18 +119,18 @@ echo "BRANCH                           = ${BRANCH}"
 echo "PULL_POLICY                      = ${PULL_POLICY}"
 echo "SELENOID_PARALLEL_SESSIONS_COUNT = ${SELENOID_PARALLEL_SESSIONS_COUNT}"
 
+# shellcheck disable=SC2046
 if [[ "$DO_CLEANUP" == "true" ]]
 then
   set +e
 
   echo "Cleaning up old Docker things with the '$LABEL' label..."
+  label_selector="label=org.jdi-qasp-ml.version_label=$LABEL"
 
-  # shellcheck disable=SC2046
-  docker container rm -f $(docker ps -f "label=org.jdi-qasp-ml.version_label=$LABEL" -q) 2>/dev/null
-  # shellcheck disable=SC2046
-  docker volume rm $(docker volume ls -f "label=org.jdi-qasp-ml.version_label=$LABEL" -q) 2>/dev/null
-  # shellcheck disable=SC2046
-  docker network rm $(docker network ls -f "label=org.jdi-qasp-ml.version_label=$LABEL" -q) 2>/dev/null
+  docker stop $(docker ps -f "$label_selector" -q) 2>/dev/null
+  docker container rm -f $(docker ps -af "$label_selector" -q) 2>/dev/null
+  docker volume rm $(docker volume ls -f "$label_selector" -q) 2>/dev/null
+  docker network rm $(docker network ls -f "$label_selector" -q) 2>/dev/null
 
   rm docker-compose.yaml docker-compose.override.yaml browsers.json .env
 

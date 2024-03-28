@@ -168,31 +168,29 @@ To validate models quality we use test web-pages, placed in directory **notebook
 # Docker
 ## Take docker image from github:
 ### Release version
-#### macOS
+#### macOS / Linux
 ```shell
-export SELENOID_PARALLEL_SESSIONS_COUNT=$(sysctl -n hw.ncpu) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/browsers.json && docker-compose up
+curl --output jdi-bootstrap.sh https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/scripts/bootstrap.sh && \
+bash jdi-bootstrap.sh
 ```
-#### Linux
-```shell
-export SELENOID_PARALLEL_SESSIONS_COUNT=$(nproc) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl --output docker-compose.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/browsers.json && docker compose up
-```
+
 #### Windows
 ```shell
-set SELENOID_PARALLEL_SESSIONS_COUNT=%NUMBER_OF_PROCESSORS%&& docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/docker-compose.yaml && curl.exe --output browsers.json --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/browsers.json && docker compose up
+curl --output jdi-bootstrap.ps1 https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/scripts/bootstrap.ps1 && ^
+powershell -executionpolicy bypass .\jdi-bootstrap.ps1
 ```
 
 ### Development version
-#### macOS
+#### macOS / Linux
 ```shell
-export SELENOID_PARALLEL_SESSIONS_COUNT=$(sysctl -n hw.ncpu) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:develop --force && curl --output docker-compose.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && curl --output docker-compose.override.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.override.prebuilt-dev.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/browsers.json && docker-compose up
+curl --output jdi-bootstrap.sh https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/scripts/bootstrap.sh && \
+bash jdi-bootstrap.sh -b develop -l develop
 ```
-#### Linux
-```shell
-export SELENOID_PARALLEL_SESSIONS_COUNT=$(nproc) && docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:develop --force && curl --output docker-compose.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && curl --output docker-compose.override.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.override.prebuilt-dev.yaml && curl --output browsers.json https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/browsers.json && docker compose up
-```
+
 #### Windows
 ```shell
-set SELENOID_PARALLEL_SESSIONS_COUNT=%NUMBER_OF_PROCESSORS%&& docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:develop --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && curl.exe --output docker-compose.override.yaml https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.override.prebuilt-dev.yaml && curl.exe --output browsers.json --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/browsers.json && docker compose up
+curl --output jdi-bootstrap.ps1 https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/scripts/bootstrap.ps1 && ^
+powershell -executionpolicy bypass .\jdi-bootstrap.ps1 -Branch develop -Label develop
 ```
 
 ## Installing version from any other repository branch:

@@ -1,0 +1,14 @@
+services:
+  api:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:${JDI_VERSION_LABEL:?Define JDI QASP ML Docker image tag to use}"
+    environment:
+      ENV: LOCAL
+    depends_on: !override
+      - selenoid
+      - celery
+      - redis
+
+  celery:
+    image: "ghcr.io/jdi-testing/jdi-qasp-ml:${JDI_VERSION_LABEL:?Define JDI QASP ML Docker image tag to use}"
+
+  mongodb: !reset []

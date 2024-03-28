@@ -7,6 +7,11 @@ x-logging: &logging
 x-restart-policy: &restart
   restart: unless-stopped
 
+x-labels: &labels
+  labels:
+    org.jdi-qasp-ml.project: "jdi-qasp-ml"
+    org.jdi-qasp-ml.version_label: "${JDI_VERSION_LABEL:-latest}"
+
 services:
   selenoid:
     image: "aerokube/selenoid:latest"
@@ -26,7 +31,7 @@ services:
       - "${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}"
       - "-limit"
       - "${SELENOID_PARALLEL_SESSIONS_COUNT:?set it to the number of parallel running threads supported by your processor (-2 optionally)}"
-    <<: *restart
+    <<: [*restart, *labels]
 
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
@@ -40,27 +45,31 @@ services:
       - "${APP_EXPOSE_PORT:-5050}:5050"
     environment:
       - SELENOID_PARALLEL_SESSIONS_COUNT=$SELENOID_PARALLEL_SESSIONS_COUNT
-    <<: [*logging, *restart]
+    <<: [*logging, *restart, *labels]
 
   celery:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: bash -c "bash start_celery.sh"
-    <<: [*logging, *restart]
+    depends_on:
+      - redis
+    <<: [*logging, *restart, *labels]
 
   redis:
     image: "redis:alpine"
     command: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
-    <<: [*logging, *restart]
+    <<: [*logging, *restart, *labels]
 
   mongodb:
     image: mongo:5.0
     volumes:
       - mongo-data:/data/db
-    <<: [*logging, *restart]
+    <<: [*logging, *restart, *labels]
 
 networks:
   default:
     name: ${JDI_DEFAULT_NETWORK_NAME:-jdi-qasp-ml-default}
+    <<: *labels
 
 volumes:
   mongo-data:
+    <<: *labels

@@ -8,7 +8,7 @@ from app.celery_app import celery_app
 from app.models import ReportMail, RobulaSettingsModel
 from app.redis_app import redis_app
 from utils.robula import generate_xpath
-from .css_locators import task_schedule_css_locator_generation
+from .css_locators import task_schedule_css_locator_generation  # noqa: F401
 
 ENV = os.getenv("ENV")
 

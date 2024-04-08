@@ -24,6 +24,7 @@ from app import (
     mui_df_path,
     old_df_path,
     robula_api,
+    websocket_api,
 )
 from app.logger import logger
 from app.models import (
@@ -46,6 +47,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 api = FastAPI()
 api.include_router(robula_api.router)
+api.include_router(websocket_api.router)
 templates = Jinja2Templates(directory="templates")
 
 

@@ -55,3 +55,5 @@ coverage.xml
 .env.dev
 
 docker-compose.override.yaml
+
+app/analyzed_page/*.html

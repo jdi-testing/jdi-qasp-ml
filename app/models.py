@@ -30,6 +30,10 @@ class XPathGenerationModel(TaskIdModel):
     config: RobulaSettingsModel
 
 
+class CSSSelectorGenerationModel(TaskIdModel):
+    document: str
+
+
 class LoggingInfoModel(BaseModel):
     session_id: int
     element_library: str

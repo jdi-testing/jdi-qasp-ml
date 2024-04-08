@@ -11,9 +11,9 @@ import app.mongodb as mongodb
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
 from app.logger import logger
-from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel
+from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
-from app.tasks import ENV, task_schedule_xpath_generation
+from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_locator_generation
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -64,7 +64,7 @@ async def wait_until_task_reach_status(
             if task_id not in tasks_with_changed_priority:
                 task_dict = task.dict()
                 # deleting underscores in task_id if any to send to frontend
-                task_dict["id"] = task_dict["id"].strip("_")
+                task_dict["id"] = task_dict["id"].strip("_").strip("css-selector-generation-")
                 error_message = str(task_result_obj.result)
                 response = get_websocket_response(
                     action=WebSocketResponseActions.STATUS_CHANGED,
@@ -324,6 +324,44 @@ async def process_incoming_ws_request(
         result = get_task_result(payload["id"])
     elif action == "get_task_results":
         result = get_celery_tasks_results(payload["id"])
+    elif action == "schedule_css_locators_generation":
+        generation_data = CSSSelectorGenerationModel(**payload)
+        elements_ids = generation_data.id
+        document = json.loads(generation_data.document)
+        random_document_key = str(uuid.uuid4())
+        redis_app.set(name=random_document_key, value=document)
+
+        for element_id in elements_ids:
+            task_id = f"css-selector-generation-{element_id}"
+            if task_exists_and_already_succeeded(task_id):
+                logger.info("Using cached result for task_id %s", element_id)
+                task_result_obj = AsyncResult(element_id)
+                await asyncio.create_task(
+                    wait_until_task_reach_status(
+                        ws=ws,
+                        task_result_obj=task_result_obj,
+                        expected_status=CeleryStatuses.SUCCESS,
+                    )
+                )
+            else:
+                new_task_id = convert_task_id_if_exists(task_id)
+                task_kwargs = {
+                    "element_id": element_id,
+                    "document_uuid": random_document_key,
+                }
+
+                task_result_obj = task_schedule_css_locator_generation.apply_async(
+                    kwargs=task_kwargs, task_id=new_task_id, zpriority=2
+                )
+                ws.created_tasks.append(task_result_obj)
+
+                await asyncio.create_task(
+                    wait_until_task_reach_status(
+                        ws=ws,
+                        task_result_obj=task_result_obj,
+                        expected_status=CeleryStatuses.SUCCESS,
+                    )
+                )
 
     return result
 

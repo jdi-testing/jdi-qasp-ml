@@ -12,7 +12,7 @@ import psutil
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi import status as status
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import HttpUrl
 
@@ -65,8 +65,8 @@ def build_version() -> str:
 api.version = build_version()
 
 
-@api.get("/files")
-async def dir_listing(request: Request) -> templates.TemplateResponse:
+@api.get("/files", response_class=HTMLResponse)
+async def dir_listing(request: Request):
     # Joining the base and the requested path
 
     if not os.path.exists(UPLOAD_DIRECTORY):
@@ -135,11 +135,11 @@ async def download_template(
     repo_zip_url: HttpUrl = "https://github.com/jdi-templates/"
     "jdi-light-testng-empty-template/archive/refs/heads/main.zip",
 ) -> StreamingResponse:
-    """Takes link to zip archive of repo from Github. Returns downloaded repo as zip"""
+    """Takes link to zip archive of repo from GitHub. Returns downloaded repo as zip"""
     headers = {"Content-Disposition": 'attachment; filename="template.zip"'}
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.get(repo_zip_url) as resp:
+            async with session.get(str(repo_zip_url)) as resp:
                 if resp.status == 200:
                     content = await resp.read()
 

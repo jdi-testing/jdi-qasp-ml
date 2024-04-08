@@ -41,6 +41,7 @@ redis = "*"
 motor = "*"
 async-lru = "==1.0.3"
 cachetools = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

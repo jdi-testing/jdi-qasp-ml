@@ -366,7 +366,7 @@ async def process_incoming_ws_request(
                         expected_status=CeleryStatuses.SUCCESS,
                     )
                 )
-        html_file.unlink()
+        # html_file.unlink()
 
     return result
 

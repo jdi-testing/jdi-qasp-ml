@@ -143,10 +143,10 @@ echo "Downloading required files..."
 curl --output docker-compose.yaml "$repo_url/$BRANCH/docker-compose.yaml"
 curl --output browsers.json "$repo_url/$BRANCH/browsers.json.template"
 mkdir analyzed_page
-curl --output analyzed_page/finder.js "$repo_url/$BRANCH/finder.js"
-curl --output analyzed_page/index.js "$repo_url/$BRANCH/index.js"
-curl --output analyzed_page/index.js.map "$repo_url/$BRANCH/index.js.map"
-curl --output analyzed_page/generate_css_selector.js "$repo_url/$BRANCH/generate_css_selector.js"
+curl --output analyzed_page/finder.js "$repo_url/$BRANCH/analyzed_page/finder.js"
+curl --output analyzed_page/index.js "$repo_url/$BRANCH/analyzed_page/index.js"
+curl --output analyzed_page/index.js.map "$repo_url/$BRANCH/analyzed_page/index.js.map"
+curl --output analyzed_page/generate_css_selector.js "$repo_url/$BRANCH/analyzed_page/generate_css_selector.js"
 
 if [[ "$platform" = "Darwin" ]]
 then

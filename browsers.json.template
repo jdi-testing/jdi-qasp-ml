@@ -10,7 +10,8 @@
         "port": "4444"
       }, "118.0": {
         "image": "selenoid/vnc_chrome:118.0",
-        "port": "4444"
+        "port": "4444",
+        "volumes": ["CURRENT_DIR/app/analyzed_page:/html:ro"]
       }
     }
   }

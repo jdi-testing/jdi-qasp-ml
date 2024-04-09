@@ -35,7 +35,9 @@ if (-not $NoCleanup) {
 $RepoUrl = "https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/$Branch"
 
 Download-File -Url ("$RepoUrl/docker-compose.yaml") -OutputPath "docker-compose.yaml"
-Download-File -Url ("$RepoUrl/browsers.json") -OutputPath "browsers.json"
+Download-File -Url ("$RepoUrl/browsers.json.template") -OutputPath "browsers.json"
+
+(Get-Content browsers.json) -replace "CURRENT_DIR", (Get-Location).Path | Set-Content browsers.json
 
 $randomNumber = Get-Random -Minimum 0 -Maximum 99999999
 $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($randomNumber.ToString()))

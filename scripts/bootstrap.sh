@@ -140,7 +140,16 @@ fi
 echo "Downloading required files..."
 
 curl --output docker-compose.yaml "$repo_url/$BRANCH/docker-compose.yaml"
-curl --output browsers.json "$repo_url/$BRANCH/browsers.json"
+curl --output browsers.json "$repo_url/$BRANCH/browsers.json.template"
+
+if [[ "$platform" = "Darwin" ]]
+then
+  sed -i .template "s:CURRENT_DIR:$(pwd):g" browsers.json
+  rm -f browsers.json.template
+elif [[ "$platform" = "Linux" ]]
+then
+  sed -i "s:CURRENT_DIR:$(pwd):g" browsers.json
+fi
 
 docker pull selenoid/vnc_chrome:118.0
 

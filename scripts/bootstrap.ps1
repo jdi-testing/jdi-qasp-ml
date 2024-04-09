@@ -30,14 +30,20 @@ if (-not $NoCleanup) {
     docker volume rm -f $(docker volume ls -qf "label=$labelSelector") 2>$null
     docker network rm -f $(docker network ls -qf "label=$labelSelector") 2>$null
     Remove-Item -Path "docker-compose.yaml", "docker-compose.override.yaml", "browsers.json", ".env" -ErrorAction SilentlyContinue
+    Remove-Item -Recurse "analyzed_page" -ErrorAction SilentlyContinue
 }
 
 $RepoUrl = "https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/$Branch"
 
 Download-File -Url ("$RepoUrl/docker-compose.yaml") -OutputPath "docker-compose.yaml"
 Download-File -Url ("$RepoUrl/browsers.json.template") -OutputPath "browsers.json"
+New-Item -ItemType Directory -Name "analyzed_page"
+Download-File -Url ("$RepoUrl/analyzed_page/finder.js") -OutputPath "analyzed_page\finder.js"
+Download-File -Url ("$RepoUrl/analyzed_page/index.js") -OutputPath "analyzed_page\index.js"
+Download-File -Url ("$RepoUrl/analyzed_page/index.js.map") -OutputPath "analyzed_page\index.js.map"
+Download-File -Url ("$RepoUrl/analyzed_page/generate_css_selector.js") -OutputPath "analyzed_page\generate_css_selector.js"
 
-(Get-Content browsers.json) -replace "CURRENT_DIR", (Get-Location).Path | Set-Content browsers.json
+(Get-Content "browsers.json") -replace "CURRENT_DIR", (Get-Location).Path | Set-Content "browsers.json"
 
 $randomNumber = Get-Random -Minimum 0 -Maximum 99999999
 $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($randomNumber.ToString()))

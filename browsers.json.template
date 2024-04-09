@@ -11,7 +11,7 @@
       }, "118.0": {
         "image": "selenoid/vnc_chrome:118.0",
         "port": "4444",
-        "volumes": ["CURRENT_DIR/app/analyzed_page:/html:ro"]
+        "volumes": ["CURRENT_DIR/analyzed_page:/html:ro"]
       }
     }
   }

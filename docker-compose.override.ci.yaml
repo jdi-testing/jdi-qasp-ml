@@ -1,3 +1,9 @@
+# Disclaimer
+# We don't need this file basically and could have just used
+# docker-compose.override.dev.yaml. But the problem is that _at this moment_
+# Docker Compose in our GitHub Actions runner doesn't know how to deal with
+# !reset construct.
+
 services:
   selenoid:
     ports:
@@ -22,5 +28,3 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
-  mongodb: !reset []

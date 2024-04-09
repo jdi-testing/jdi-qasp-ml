@@ -2,6 +2,7 @@ import asyncio
 import json
 import typing
 import uuid
+from pathlib import Path
 
 from celery.result import AsyncResult
 from starlette.websockets import WebSocket, WebSocketState
@@ -10,6 +11,7 @@ from websockets.exceptions import ConnectionClosedOK
 import app.mongodb as mongodb
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
+from app.css_locators import inject_css_selector_generator_scripts
 from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
@@ -327,15 +329,17 @@ async def process_incoming_ws_request(
     elif action == "schedule_css_locators_generation":
         generation_data = CSSSelectorGenerationModel(**payload)
         elements_ids = generation_data.id
-        document = json.loads(generation_data.document)
+
+        document = generation_data.document
         random_document_key = str(uuid.uuid4())
-        redis_app.set(name=random_document_key, value=document)
+        html_file = Path(f"app/analyzed_page/{random_document_key}.html")
+        html_file.write_text(inject_css_selector_generator_scripts(document))
 
         for element_id in elements_ids:
             task_id = f"css-selector-generation-{element_id}"
             if task_exists_and_already_succeeded(task_id):
-                logger.info("Using cached result for task_id %s", element_id)
-                task_result_obj = AsyncResult(element_id)
+                logger.info("Using cached result for task_id %s", task_id)
+                task_result_obj = AsyncResult(task_id)
                 await asyncio.create_task(
                     wait_until_task_reach_status(
                         ws=ws,
@@ -362,6 +366,7 @@ async def process_incoming_ws_request(
                         expected_status=CeleryStatuses.SUCCESS,
                     )
                 )
+        html_file.unlink()
 
     return result
 

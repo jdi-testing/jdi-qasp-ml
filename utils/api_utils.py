@@ -332,7 +332,7 @@ async def process_incoming_ws_request(
 
         document = generation_data.document
         random_document_key = str(uuid.uuid4())
-        html_file = Path(f"app/analyzed_page/{random_document_key}.html")
+        html_file = Path(f"analyzed_page/{random_document_key}.html")
         html_file.write_text(inject_css_selector_generator_scripts(document))
 
         for element_id in elements_ids:

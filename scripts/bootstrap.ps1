@@ -43,7 +43,7 @@ Download-File -Url ("$RepoUrl/analyzed_page/index.js") -OutputPath "analyzed_pag
 Download-File -Url ("$RepoUrl/analyzed_page/index.js.map") -OutputPath "analyzed_page\index.js.map"
 Download-File -Url ("$RepoUrl/analyzed_page/generate_css_selector.js") -OutputPath "analyzed_page\generate_css_selector.js"
 
-(Get-Content "browsers.json") -replace "CURRENT_DIR", (Get-Location).Path | Set-Content "browsers.json"
+(Get-Content "browsers.json") -replace "CURRENT_DIR", ((Get-Location).Path -replace "\\", "/") | Set-Content "browsers.json"
 
 $randomNumber = Get-Random -Minimum 0 -Maximum 99999999
 $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($randomNumber.ToString()))

@@ -332,40 +332,37 @@ async def process_incoming_ws_request(
 
         document = generation_data.document
         random_document_key = str(uuid.uuid4())
-        html_file = Path(f"analyzed_page/{random_document_key}.html")
+        html_file = Path(f"analyzed_pages/{random_document_key}.html")
         html_file.write_text(inject_css_selector_generator_scripts(document))
+        selectors_generation_tasks = []
 
         for element_id in elements_ids:
-            task_id = f"css-selector-generation-{element_id}"
+            task_id = f"css-selector-{element_id}"
             if task_exists_and_already_succeeded(task_id):
                 logger.info("Using cached result for task_id %s", task_id)
-                task_result_obj = AsyncResult(task_id)
-                await asyncio.create_task(
-                    wait_until_task_reach_status(
-                        ws=ws,
-                        task_result_obj=task_result_obj,
-                        expected_status=CeleryStatuses.SUCCESS,
-                    )
-                )
+                selectors_generation_tasks.append(AsyncResult(task_id))
             else:
                 new_task_id = convert_task_id_if_exists(task_id)
                 task_kwargs = {
                     "element_id": element_id,
-                    "document_uuid": random_document_key,
+                    "document_path": str(html_file),
                 }
 
                 task_result_obj = task_schedule_css_locator_generation.apply_async(
                     kwargs=task_kwargs, task_id=new_task_id, zpriority=2
                 )
+                selectors_generation_tasks.append(task_result_obj)
+
                 ws.created_tasks.append(task_result_obj)
 
-                await asyncio.create_task(
-                    wait_until_task_reach_status(
-                        ws=ws,
-                        task_result_obj=task_result_obj,
-                        expected_status=CeleryStatuses.SUCCESS,
-                    )
+        for task in selectors_generation_tasks:
+            await asyncio.create_task(
+                wait_until_task_reach_status(
+                    ws=ws,
+                    task_result_obj=task,
+                    expected_status=CeleryStatuses.SUCCESS,
                 )
+            )
         html_file.unlink()
 
     return result

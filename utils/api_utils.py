@@ -64,7 +64,7 @@ async def wait_until_task_reach_status(
             and expected_status != CeleryStatuses.SUCCESS
         ):
             if task_id not in tasks_with_changed_priority:
-                task_dict = task.dict()
+                task_dict = task.model_dump()
                 # deleting underscores in task_id if any to send to frontend
                 task_dict["id"] = task_dict["id"].strip("_").strip("css-selector-generation-")
                 error_message = str(task_result_obj.result)
@@ -80,7 +80,7 @@ async def wait_until_task_reach_status(
                 break
 
         if task.status == expected_status.value:
-            task_dict = task.dict()
+            task_dict = task.model_dump()
             # deleting underscores in task_id if any to send to frontend
             task_dict["id"] = task_dict["id"].strip("_")
 
@@ -196,7 +196,7 @@ def get_celery_tasks_results(ids: typing.List) -> typing.List[dict]:
 def get_celery_task_statuses(ids: typing.List[str]):
     results = []
     for task_id in ids:
-        results.append(get_task_status(task_id).dict())
+        results.append(get_task_status(task_id).model_dump())
     return results
 
 
@@ -268,7 +268,7 @@ async def process_incoming_ws_request(
         # we cache it because we'll reuse it n times, where 'n' - number of elements
         redis_app.set(name=random_document_key, value=document)
 
-        config = payload.config.dict()
+        config = payload.config.model_dump()
 
         for element_id in element_ids:
             if task_exists_and_already_succeeded(
@@ -313,7 +313,7 @@ async def process_incoming_ws_request(
         await change_task_priority(ws, payload, priority=3)
 
     elif action == "get_task_status":
-        result = get_task_status(payload["id"]).dict()
+        result = get_task_status(payload["id"]).model_dump()
     elif action == "get_tasks_statuses":
         task_ids = payload["id"]
         result = get_celery_task_statuses(task_ids)

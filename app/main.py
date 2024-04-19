@@ -174,7 +174,7 @@ def ping_smtp() -> Union[str, int]:
 
 @api.post("/report_problem")
 async def report_problem(msg_content: ReportMail):
-    send_report_mail_task.apply_async(kwargs={"msg_content": msg_content.dict()})
+    send_report_mail_task.apply_async(kwargs={"msg_content": msg_content.model_dump()})
 
 
 @api.post("/file_bytes_to_str")

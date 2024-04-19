@@ -43,11 +43,11 @@ def schedule_xpath_generation(data: XPathGenerationModel):
     page = json.loads(data.document)
 
     task_result = task_schedule_xpath_generation.delay(
-        api_utils.get_xpath_from_id(data.id), page, data.config.dict()
+        api_utils.get_xpath_from_id(data.id), page, data.config.model_dump()
     )
 
     result = TaskIdModel(id=task_result.id)
-    return JSONResponse(result.dict(), status.HTTP_201_CREATED)
+    return JSONResponse(result.model_dump(), status.HTTP_201_CREATED)
 
 
 @router.get("/get_task_status", response_model=TaskStatusModel)

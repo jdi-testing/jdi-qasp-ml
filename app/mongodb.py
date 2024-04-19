@@ -44,7 +44,7 @@ def create_logs_json_file() -> None:
 
 def create_initial_log_entry(logging_info: LoggingInfoModel):
     logs_collection = mongo_db.logs
-    logs_collection.insert_one(logging_info.dict())
+    logs_collection.insert_one(logging_info.model_dump())
 
 
 async def enrich_logs_with_generated_locators(

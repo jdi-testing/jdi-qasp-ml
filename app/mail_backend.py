@@ -15,7 +15,7 @@ from utils.config import (
 )
 
 
-def send_support_jdi(msg_content: ReportMail.dict) -> None:
+def send_support_jdi(msg_content: ReportMail) -> None:
 
     subject = msg_content["subject"]
     header = f"{msg_content['subject']} from user {msg_content['email']}"

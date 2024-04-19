@@ -1,7 +1,9 @@
 /*jshint esversion: 6 */
 
-// import {getCssSelector} from "index.js";
-// import {finder} from "finder.js";
+/*
+This file is providing generateSelectorByElement function taken from the plugin code
+https://github.com/jdi-testing/jdn-ai/blob/37ed138cd8f18d6a66002d0cc991ba2a437af40e/src/pageServices/contentScripts/generationData.js#L72
+ */
 
 const generateSelectorByElement = (element) => {
   "use strict";

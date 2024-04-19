@@ -37,11 +37,7 @@ $RepoUrl = "https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/$Branch"
 
 Download-File -Url ("$RepoUrl/docker-compose.yaml") -OutputPath "docker-compose.yaml"
 Download-File -Url ("$RepoUrl/browsers.json.template") -OutputPath "browsers.json"
-New-Item -ItemType Directory -Name "analyzed_page"
-Download-File -Url ("$RepoUrl/analyzed_page/finder.js") -OutputPath "analyzed_page\finder.js"
-Download-File -Url ("$RepoUrl/analyzed_page/index.js") -OutputPath "analyzed_page\index.js"
-Download-File -Url ("$RepoUrl/analyzed_page/index.js.map") -OutputPath "analyzed_page\index.js.map"
-Download-File -Url ("$RepoUrl/analyzed_page/generate_css_selector.js") -OutputPath "analyzed_page\generate_css_selector.js"
+New-Item -ItemType Directory -Name "analyzed_pages"
 
 (Get-Content "browsers.json") -replace "CURRENT_DIR", ((Get-Location).Path -replace "\\", "/") | Set-Content "browsers.json"
 

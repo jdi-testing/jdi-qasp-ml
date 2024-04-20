@@ -66,7 +66,7 @@ async def wait_until_task_reach_status(
             if task_id not in tasks_with_changed_priority:
                 task_dict = task.model_dump()
                 # deleting underscores in task_id if any to send to frontend
-                task_dict["id"] = task_dict["id"].strip("_").strip("css-selector-generation-")
+                task_dict["id"] = task_dict["id"].strip("_")
                 error_message = str(task_result_obj.result)
                 response = get_websocket_response(
                     action=WebSocketResponseActions.STATUS_CHANGED,

@@ -54,7 +54,7 @@ const generateSelectorByElement = (element) => {
   } else if (!isSelectorByGeneratorString && isSelectorByFinderString) {
     selectorGenerationResult = selectorByFinder;
   } else {
-    selectorGenerationResult = 'CSS selector generation was failed';
+    selectorGenerationResult = "";
   }
   return selectorGenerationResult;
 };

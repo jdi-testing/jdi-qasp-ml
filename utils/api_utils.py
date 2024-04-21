@@ -334,13 +334,13 @@ async def process_incoming_ws_request(
         random_document_key = str(uuid.uuid4())
         html_file = Path(f"analyzed_pages/{random_document_key}.html")
         html_file.write_text(inject_css_selector_generator_scripts(document))
-        selectors_generation_tasks = []
+        selectors_generation_results = []
 
         for element_id in elements_ids:
             task_id = f"css-selector-{element_id}"
             if task_exists_and_already_succeeded(task_id):
                 logger.info("Using cached result for task_id %s", task_id)
-                selectors_generation_tasks.append(AsyncResult(task_id))
+                selectors_generation_results.append(AsyncResult(task_id))
             else:
                 new_task_id = convert_task_id_if_exists(task_id)
                 task_kwargs = {
@@ -351,18 +351,22 @@ async def process_incoming_ws_request(
                 task_result_obj = task_schedule_css_locator_generation.apply_async(
                     kwargs=task_kwargs, task_id=new_task_id, zpriority=2
                 )
-                selectors_generation_tasks.append(task_result_obj)
+                selectors_generation_results.append(task_result_obj)
 
                 ws.created_tasks.append(task_result_obj)
 
-        for task in selectors_generation_tasks:
-            await asyncio.create_task(
-                wait_until_task_reach_status(
-                    ws=ws,
-                    task_result_obj=task,
-                    expected_status=CeleryStatuses.SUCCESS,
+        celery_waiting_tasks = set()
+        for result_obj in selectors_generation_results:
+            celery_waiting_tasks.add(
+                asyncio.create_task(
+                    wait_until_task_reach_status(
+                        ws=ws,
+                        task_result_obj=result_obj,
+                        expected_status=CeleryStatuses.SUCCESS,
+                    )
                 )
             )
+        await asyncio.wait(celery_waiting_tasks)
         html_file.unlink()
 
     return result

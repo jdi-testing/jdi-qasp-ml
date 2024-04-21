@@ -13,14 +13,15 @@ logger = logging.getLogger(__name__)
 def task_schedule_css_selector_generation(
         self, document_path: str, elements_ids: List[str]
 ) -> List[Dict[str, str]]:
-    driver = get_webdriver()
-
-    driver.get(f"file:///html/{Path(document_path).name}")
-
-    result = []
-
     # noinspection PyBroadException
+    # We need this try/except block to avoid sending stacktraces to the frontend
+    # but still log them
     try:
+        driver = get_webdriver()
+
+        driver.get(f"file:///html/{Path(document_path).name}")
+
+        result = []
         for element_id in elements_ids:
             result.append({
                 "id": element_id,

@@ -133,7 +133,7 @@ then
   docker network rm $(docker network ls -f "$label_selector" -q) 2>/dev/null
 
   rm docker-compose.yaml docker-compose.override.yaml browsers.json .env
-  rm -r analyzed_page
+  rm -r analyzed_pages
 
   set -e
 fi

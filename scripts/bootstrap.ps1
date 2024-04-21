@@ -30,7 +30,7 @@ if (-not $NoCleanup) {
     docker volume rm -f $(docker volume ls -qf "label=$labelSelector") 2>$null
     docker network rm -f $(docker network ls -qf "label=$labelSelector") 2>$null
     Remove-Item -Path "docker-compose.yaml", "docker-compose.override.yaml", "browsers.json", ".env" -ErrorAction SilentlyContinue
-    Remove-Item -Recurse "analyzed_page" -ErrorAction SilentlyContinue
+    Remove-Item -Recurse "analyzed_pages" -ErrorAction SilentlyContinue
 }
 
 $RepoUrl = "https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/$Branch"

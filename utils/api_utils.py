@@ -76,7 +76,12 @@ async def wait_until_task_reach_status(
                 # this info will be lost. In schedule_multiple_xpath_generations task
                 # the id of an element is the task id, so it doesn't need this logic
                 if task_id.startswith(CSS_SELECTOR_GEN_TASK_PREFIX):
-                    task_dict["elements_ids"] = task_result_obj.kwargs.get("elements_ids")
+                    elements_ids = task_result_obj.kwargs.get("elements_ids")
+                    # Moreover, in case when task was passed with an empty list we can
+                    # skip reporting its failure, because no calculations were affected
+                    if len(elements_ids) == 0:
+                        break
+                    task_dict["elements_ids"] = elements_ids
 
                 error_message = str(task_result_obj.result)
                 response = get_websocket_response(

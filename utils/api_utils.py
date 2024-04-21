@@ -11,7 +11,7 @@ from websockets.exceptions import ConnectionClosedOK
 import app.mongodb as mongodb
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
-from app.css_locators import inject_css_selector_generator_scripts
+from app.css_locators import inject_css_selector_generator_scripts, CSS_SELECTOR_GEN_TASK_PREFIX
 from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
@@ -70,6 +70,14 @@ async def wait_until_task_reach_status(
                 task_dict = task.model_dump()
                 # deleting underscores in task_id if any to send to frontend
                 task_dict["id"] = task_dict["id"].strip("_")
+
+                # Informing frontend about failed elements from
+                # task_schedule_css_locator_generation task, because otherwise
+                # this info will be lost. In schedule_multiple_xpath_generations task
+                # the id of an element is the task id, so it doesn't need this logic
+                if task_id.startswith(CSS_SELECTOR_GEN_TASK_PREFIX):
+                    task_dict["elements_ids"] = task_result_obj.kwargs.get("elements_ids")
+
                 error_message = str(task_result_obj.result)
                 response = get_websocket_response(
                     action=WebSocketResponseActions.STATUS_CHANGED,
@@ -344,7 +352,7 @@ async def process_incoming_ws_request(
 
         for start_idx, end_idx in jobs_chunks:
             task_id = convert_task_id_if_exists(
-                f"css-selectors-gen-{uuid.uuid4()}"
+                f"{CSS_SELECTOR_GEN_TASK_PREFIX}{uuid.uuid4()}"
             )
             task_kwargs = {
                 "document_path": str(html_file),

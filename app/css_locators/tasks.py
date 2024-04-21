@@ -9,6 +9,9 @@ from app.selenium_app import get_webdriver
 logger = logging.getLogger(__name__)
 
 
+CSS_SELECTOR_GEN_TASK_PREFIX = "css-selectors-gen-"
+
+
 @celery_app.task(bind=True)
 def task_schedule_css_selector_generation(
         self, document_path: str, elements_ids: List[str]

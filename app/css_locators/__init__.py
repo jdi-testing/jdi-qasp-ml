@@ -1,7 +1,8 @@
 __all__ = [
-    "task_schedule_css_locator_generation",
+    "CSS_SELECTOR_GEN_TASK_PREFIX",
+    "task_schedule_css_selector_generation",
     "inject_css_selector_generator_scripts",
 ]
 
-from .tasks import task_schedule_css_selector_generation
+from .tasks import task_schedule_css_selector_generation, CSS_SELECTOR_GEN_TASK_PREFIX
 from .utils import inject_css_selector_generator_scripts

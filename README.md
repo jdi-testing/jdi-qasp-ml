@@ -306,8 +306,13 @@ Response with the generated locator:
 {
     "action": "result_ready",
     "payload": {
-        "id": "css-selector-1122334455667788990011223344",
-        "result": "p:nth-child(3)"
+        "id": "css-selectors-gen-47e475cd-3696-400e-b761-8db6ec38857d",
+        "result": [
+            {
+                "id": "1122334455667788990011223344",
+                "result": "p:nth-child(3)"
+            }
+        ]
     }
 }
 ```

@@ -15,7 +15,10 @@ from app.css_locators import inject_css_selector_generator_scripts
 from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
+from app.selenium_app import get_chunks_boundaries
 from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_locator_generation
+
+from utils import config as app_config
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -336,24 +339,23 @@ async def process_incoming_ws_request(
         html_file.write_text(inject_css_selector_generator_scripts(document))
         selectors_generation_results = []
 
-        for element_id in elements_ids:
-            task_id = f"css-selector-{element_id}"
-            if task_exists_and_already_succeeded(task_id):
-                logger.info("Using cached result for task_id %s", task_id)
-                selectors_generation_results.append(AsyncResult(task_id))
-            else:
-                new_task_id = convert_task_id_if_exists(task_id)
-                task_kwargs = {
-                    "element_id": element_id,
-                    "document_path": str(html_file),
-                }
+        num_of_tasks = app_config.SELENOID_PARALLEL_SESSIONS_COUNT
+        jobs_chunks = get_chunks_boundaries(elements_ids, num_of_tasks)
 
-                task_result_obj = task_schedule_css_locator_generation.apply_async(
-                    kwargs=task_kwargs, task_id=new_task_id, zpriority=2
-                )
-                selectors_generation_results.append(task_result_obj)
+        for start_idx, end_idx in jobs_chunks:
+            task_id = convert_task_id_if_exists(
+                f"css-selectors-gen-{uuid.uuid4()}"
+            )
+            task_kwargs = {
+                "document_path": str(html_file),
+                "elements_ids": elements_ids[start_idx:end_idx]
+            }
 
-                ws.created_tasks.append(task_result_obj)
+            task_result_obj = task_schedule_css_locator_generation.apply_async(
+                kwargs=task_kwargs, task_id=task_id, zpriority=2
+            )
+            selectors_generation_results.append(task_result_obj)
+            ws.created_tasks.append(task_result_obj)
 
         celery_waiting_tasks = set()
         for result_obj in selectors_generation_results:

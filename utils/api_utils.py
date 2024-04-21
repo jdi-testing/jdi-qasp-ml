@@ -76,12 +76,7 @@ async def wait_until_task_reach_status(
                 # this info will be lost. In schedule_multiple_xpath_generations task
                 # the id of an element is the task id, so it doesn't need this logic
                 if task_id.startswith(CSS_SELECTOR_GEN_TASK_PREFIX):
-                    elements_ids = task_result_obj.kwargs.get("elements_ids")
-                    # Moreover, in case when task was passed with an empty list we can
-                    # skip reporting its failure, because no calculations were affected
-                    if len(elements_ids) == 0:
-                        break
-                    task_dict["elements_ids"] = elements_ids
+                    task_dict["elements_ids"] = task_result_obj.kwargs.get("elements_ids")
 
                 error_message = str(task_result_obj.result)
                 response = get_websocket_response(
@@ -356,6 +351,13 @@ async def process_incoming_ws_request(
         jobs_chunks = get_chunks_boundaries(elements_ids, num_of_tasks)
 
         for start_idx, end_idx in jobs_chunks:
+            # Due to the implementation of get_chunks_boundaries we can get
+            # several empty chunks and one chunk with all elements in case when
+            # len(elements_ids) < num_of_tasks
+            # We can skip them to avoid sending of basically empty tasks to Celery
+            if start_idx == end_idx:
+                continue
+
             task_id = convert_task_id_if_exists(
                 f"{CSS_SELECTOR_GEN_TASK_PREFIX}{uuid.uuid4()}"
             )

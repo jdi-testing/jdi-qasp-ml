@@ -3,5 +3,5 @@ __all__ = [
     "inject_css_selector_generator_scripts",
 ]
 
-from .tasks import task_schedule_css_locator_generation
+from .tasks import task_schedule_css_selector_generation
 from .utils import inject_css_selector_generator_scripts

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @celery_app.task(bind=True)
-def task_schedule_css_locator_generation(
+def task_schedule_css_selector_generation(
         self, document_path: str, elements_ids: List[str]
 ) -> List[Dict[str, str]]:
     driver = get_webdriver()

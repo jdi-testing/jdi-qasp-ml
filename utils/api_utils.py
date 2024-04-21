@@ -16,7 +16,7 @@ from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
 from app.selenium_app import get_chunks_boundaries
-from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_locator_generation
+from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_selector_generation
 
 from utils import config as app_config
 
@@ -351,7 +351,7 @@ async def process_incoming_ws_request(
                 "elements_ids": elements_ids[start_idx:end_idx]
             }
 
-            task_result_obj = task_schedule_css_locator_generation.apply_async(
+            task_result_obj = task_schedule_css_selector_generation.apply_async(
                 kwargs=task_kwargs, task_id=task_id, zpriority=2
             )
             selectors_generation_results.append(task_result_obj)

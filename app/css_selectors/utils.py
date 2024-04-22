@@ -8,7 +8,7 @@ def get_script_text(script_path: str) -> str:
 
 def inject_css_selector_generator_scripts(document: str) -> str:
     doc_soup = BeautifulSoup(document, "html.parser")
-    script_files_base_dir = "app/css_locators/auxiliary"
+    script_files_base_dir = "app/css_selectors/auxiliary"
     script_files = (
         f"{script_files_base_dir}/{filename}"
         for filename in (

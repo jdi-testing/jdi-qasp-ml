@@ -11,12 +11,12 @@ from websockets.exceptions import ConnectionClosedOK
 import app.mongodb as mongodb
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
-from app.css_locators import inject_css_selector_generator_scripts, CSS_SELECTOR_GEN_TASK_PREFIX
+from app.css_selectors import inject_css_selector_generator_scripts, CSS_SELECTOR_GEN_TASK_PREFIX
 from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
 from app.selenium_app import get_chunks_boundaries
-from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_selector_generation
+from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_selectors_generation
 
 from utils import config as app_config
 
@@ -72,7 +72,7 @@ async def wait_until_task_reach_status(
                 task_dict["id"] = task_dict["id"].strip("_")
 
                 # Informing frontend about failed elements from
-                # task_schedule_css_locator_generation task, because otherwise
+                # task_schedule_css_selectors_generation task, because otherwise
                 # this info will be lost. In schedule_multiple_xpath_generations task
                 # the id of an element is the task id, so it doesn't need this logic
                 if task_id.startswith(CSS_SELECTOR_GEN_TASK_PREFIX):
@@ -337,7 +337,7 @@ async def process_incoming_ws_request(
         result = get_task_result(payload["id"])
     elif action == "get_task_results":
         result = get_celery_tasks_results(payload["id"])
-    elif action == "schedule_css_locators_generation":
+    elif action == "schedule_css_selectors_generation":
         generation_data = CSSSelectorGenerationModel(**payload)
         elements_ids = generation_data.id
 
@@ -366,7 +366,7 @@ async def process_incoming_ws_request(
                 "elements_ids": elements_ids[start_idx:end_idx]
             }
 
-            task_result_obj = task_schedule_css_selector_generation.apply_async(
+            task_result_obj = task_schedule_css_selectors_generation.apply_async(
                 kwargs=task_kwargs, task_id=task_id, zpriority=2
             )
             selectors_generation_results.append(task_result_obj)

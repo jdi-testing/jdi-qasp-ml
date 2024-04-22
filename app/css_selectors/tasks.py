@@ -56,9 +56,9 @@ def _cache_calculations_results(func):
 
 
 @celery_app.task(bind=True)
-@_replace_error_messages("Error generating CSS locator")
+@_replace_error_messages("Error generating CSS selectors")
 @_cache_calculations_results
-def task_schedule_css_selector_generation(
+def task_schedule_css_selectors_generation(
         self, document_path: str, elements_ids: List[str]
 ) -> List[Dict[str, str]]:
     driver = get_webdriver()

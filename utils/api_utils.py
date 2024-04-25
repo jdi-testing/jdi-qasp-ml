@@ -272,12 +272,11 @@ async def process_incoming_ws_request(
 
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
-        document = json.loads(payload.document)
 
         random_document_key = str(uuid.uuid4())
         # saving document (website content) to redis -
         # we cache it because we'll reuse it n times, where 'n' - number of elements
-        redis_app.set(name=random_document_key, value=document)
+        redis_app.set(name=random_document_key, value=payload.document)
 
         config = payload.config.model_dump()
 

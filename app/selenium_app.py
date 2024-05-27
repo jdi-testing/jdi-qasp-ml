@@ -34,6 +34,15 @@ def get_webdriver() -> webdriver.Remote:
     )
 
 
+def inject_html(driver: webdriver.Remote, html: str) -> None:
+    driver.execute_script(
+        "document.write(arguments[0]);",
+        html,
+    )
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+
 def get_page_elements(driver: webdriver.Remote, page_content: str) -> List[WebElement]:
     """Returns a list of all elements contained in page_content"""
     driver.execute_script(

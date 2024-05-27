@@ -1,9 +1,9 @@
 import logging
-from pathlib import Path
+# from pathlib import Path
 from typing import List, Dict
 
 from app.celery_app import celery_app
-from app.selenium_app import get_webdriver
+from app.selenium_app import get_webdriver, inject_html
 from app.redis_app import redis_app
 
 
@@ -59,10 +59,11 @@ def _cache_calculations_results(func):
 @_replace_error_messages("Error generating CSS selectors")
 @_cache_calculations_results
 def task_schedule_css_selectors_generation(
-        self, document_path: str, elements_ids: List[str]
+        self, document_path: str, document_key: str, elements_ids: List[str]
 ) -> List[Dict[str, str]]:
     driver = get_webdriver()
-    driver.get(f"file:///html/{Path(document_path).name}")
+    inject_html(driver, redis_app.get(document_key).decode("utf-8"))
+    # driver.get(f"file:///html/{Path(document_path).name}")
 
     result = []
     for element_id in elements_ids:

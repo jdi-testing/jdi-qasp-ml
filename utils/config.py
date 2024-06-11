@@ -41,4 +41,6 @@ SELENOID_PARALLEL_SESSIONS_COUNT = int(
     os.getenv("SELENOID_PARALLEL_SESSIONS_COUNT", len(os.sched_getaffinity(0)))
 )
 
+IS_DEV_SHM_USAGE_DISABLED = os.getenv("IS_DEV_SHM_USAGE_DISABLED", "false").lower() in ("true", "1")
+
 logger.info("Module utils.config was loaded")

@@ -133,7 +133,6 @@ then
   docker network rm $(docker network ls -f "$label_selector" -q) 2>/dev/null
 
   rm docker-compose.yaml docker-compose.override.yaml browsers.json .env
-  rm -r analyzed_pages
 
   set -e
 fi
@@ -141,17 +140,7 @@ fi
 echo "Downloading required files..."
 
 curl --output docker-compose.yaml "$repo_url/$BRANCH/docker-compose.yaml"
-curl --output browsers.json "$repo_url/$BRANCH/browsers.json.template"
-mkdir analyzed_pages
-
-if [[ "$platform" = "Darwin" ]]
-then
-  sed -i .template "s:CURRENT_DIR:$(pwd):g" browsers.json
-  rm -f browsers.json.template
-elif [[ "$platform" = "Linux" ]]
-then
-  sed -i "s:CURRENT_DIR:$(pwd):g" browsers.json
-fi
+curl --output browsers.json "$repo_url/$BRANCH/browsers.json"
 
 docker pull selenoid/vnc_chrome:118.0
 

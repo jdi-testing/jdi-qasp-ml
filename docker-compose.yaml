@@ -36,8 +36,6 @@ services:
   api:
     image: "ghcr.io/jdi-testing/jdi-qasp-ml:latest"
     command: uvicorn app.main:api --host 0.0.0.0 --port 5050
-    volumes:
-      - "./analyzed_pages:/jdi-qasp-ml/analyzed_pages"
     depends_on:
       - selenoid
       - celery

@@ -55,6 +55,3 @@ coverage.xml
 .env.dev
 
 docker-compose.override.yaml
-
-analyzed_pages/*.html
-browsers.json

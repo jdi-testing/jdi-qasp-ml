@@ -2,7 +2,6 @@ import asyncio
 import json
 import typing
 import uuid
-from pathlib import Path
 
 from celery.result import AsyncResult
 from starlette.websockets import WebSocket, WebSocketState

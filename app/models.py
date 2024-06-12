@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, RootModel
 
 from app.constants import CeleryStatuses
 
@@ -28,6 +28,10 @@ class RobulaSettingsModel(BaseModel):
 class XPathGenerationModel(TaskIdModel):
     document: str
     config: RobulaSettingsModel
+
+
+class CSSSelectorGenerationModel(TaskIdModel):
+    document: str
 
 
 class LoggingInfoModel(BaseModel):
@@ -69,8 +73,8 @@ class PredictedElement(BaseModel):
     sort_key: int
 
 
-class PredictionResponseModel(BaseModel):
-    __root__: List[PredictedElement]
+class PredictionResponseModel(RootModel):
+    root: List[PredictedElement]
 
 
 class Attachment(BaseModel):

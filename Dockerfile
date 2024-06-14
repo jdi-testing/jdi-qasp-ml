@@ -11,13 +11,15 @@ RUN apt install -y curl wget mc gcc make
 ENV APP_HOME=/jdi-qasp-ml
 WORKDIR ${APP_HOME}
 
-COPY Pipfile* ${APP_HOME}/
+COPY Pipfile* ./
 
 RUN pip install -U pip && \
     pip install pipenv
 
 RUN pipenv install --ignore-pipfile --system --deploy
 
-COPY . ${APP_HOME}
+COPY . ./
+
+RUN chmod +x start_celery.sh
 
 ENV PYTHONPATH=${PYTHONPATH}:/jdi-qasp-ml

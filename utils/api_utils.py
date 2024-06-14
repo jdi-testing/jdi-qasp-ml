@@ -10,10 +10,14 @@ from websockets.exceptions import ConnectionClosedOK
 import app.mongodb as mongodb
 from app.celery_app import celery_app
 from app.constants import CeleryStatuses, WebSocketResponseActions
+from app.css_selectors import inject_css_selector_generator_scripts, CSS_SELECTOR_GEN_TASK_PREFIX
 from app.logger import logger
-from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel
+from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
-from app.tasks import ENV, task_schedule_xpath_generation
+from app.selenium_app import get_chunks_boundaries
+from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_selectors_generation
+
+from utils import config as app_config
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -62,9 +66,17 @@ async def wait_until_task_reach_status(
             and expected_status != CeleryStatuses.SUCCESS
         ):
             if task_id not in tasks_with_changed_priority:
-                task_dict = task.dict()
+                task_dict = task.model_dump()
                 # deleting underscores in task_id if any to send to frontend
                 task_dict["id"] = task_dict["id"].strip("_")
+
+                # Informing frontend about failed elements from
+                # task_schedule_css_selectors_generation task, because otherwise
+                # this info will be lost. In schedule_multiple_xpath_generations task
+                # the id of an element is the task id, so it doesn't need this logic
+                if task_id.startswith(CSS_SELECTOR_GEN_TASK_PREFIX):
+                    task_dict["elements_ids"] = task_result_obj.kwargs.get("elements_ids")
+
                 error_message = str(task_result_obj.result)
                 response = get_websocket_response(
                     action=WebSocketResponseActions.STATUS_CHANGED,
@@ -78,7 +90,7 @@ async def wait_until_task_reach_status(
                 break
 
         if task.status == expected_status.value:
-            task_dict = task.dict()
+            task_dict = task.model_dump()
             # deleting underscores in task_id if any to send to frontend
             task_dict["id"] = task_dict["id"].strip("_")
 
@@ -194,7 +206,7 @@ def get_celery_tasks_results(ids: typing.List) -> typing.List[dict]:
 def get_celery_task_statuses(ids: typing.List[str]):
     results = []
     for task_id in ids:
-        results.append(get_task_status(task_id).dict())
+        results.append(get_task_status(task_id).model_dump())
     return results
 
 
@@ -259,14 +271,13 @@ async def process_incoming_ws_request(
 
         payload = XPathGenerationModel(**payload)
         element_ids = payload.id
-        document = json.loads(payload.document)
 
         random_document_key = str(uuid.uuid4())
         # saving document (website content) to redis -
         # we cache it because we'll reuse it n times, where 'n' - number of elements
-        redis_app.set(name=random_document_key, value=document)
+        redis_app.set(name=random_document_key, value=payload.document)
 
-        config = payload.config.dict()
+        config = payload.config.model_dump()
 
         for element_id in element_ids:
             if task_exists_and_already_succeeded(
@@ -311,7 +322,7 @@ async def process_incoming_ws_request(
         await change_task_priority(ws, payload, priority=3)
 
     elif action == "get_task_status":
-        result = get_task_status(payload["id"]).dict()
+        result = get_task_status(payload["id"]).model_dump()
     elif action == "get_tasks_statuses":
         task_ids = payload["id"]
         result = get_celery_task_statuses(task_ids)
@@ -324,6 +335,52 @@ async def process_incoming_ws_request(
         result = get_task_result(payload["id"])
     elif action == "get_task_results":
         result = get_celery_tasks_results(payload["id"])
+    elif action == "schedule_css_selectors_generation":
+        generation_data = CSSSelectorGenerationModel(**payload)
+        elements_ids = generation_data.id
+
+        document = generation_data.document
+        random_document_key = str(uuid.uuid4())
+        redis_app.set(name=random_document_key, value=inject_css_selector_generator_scripts(document), ex=120)
+        selectors_generation_results = []
+
+        num_of_tasks = app_config.SELENOID_PARALLEL_SESSIONS_COUNT
+        jobs_chunks = get_chunks_boundaries(elements_ids, num_of_tasks)
+
+        for start_idx, end_idx in jobs_chunks:
+            # Due to the implementation of get_chunks_boundaries we can get
+            # several empty chunks and one chunk with all elements in case when
+            # len(elements_ids) < num_of_tasks
+            # We can skip them to avoid sending of basically empty tasks to Celery
+            if start_idx == end_idx:
+                continue
+
+            task_id = convert_task_id_if_exists(
+                f"{CSS_SELECTOR_GEN_TASK_PREFIX}{uuid.uuid4()}"
+            )
+            task_kwargs = {
+                "document_key": random_document_key,
+                "elements_ids": elements_ids[start_idx:end_idx],
+            }
+
+            task_result_obj = task_schedule_css_selectors_generation.apply_async(
+                kwargs=task_kwargs, task_id=task_id, zpriority=2
+            )
+            selectors_generation_results.append(task_result_obj)
+            ws.created_tasks.append(task_result_obj)
+
+        celery_waiting_tasks = set()
+        for result_obj in selectors_generation_results:
+            celery_waiting_tasks.add(
+                asyncio.create_task(
+                    wait_until_task_reach_status(
+                        ws=ws,
+                        task_result_obj=result_obj,
+                        expected_status=CeleryStatuses.SUCCESS,
+                    )
+                )
+            )
+        await asyncio.wait(celery_waiting_tasks)
 
     return result
 

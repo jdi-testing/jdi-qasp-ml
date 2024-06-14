@@ -167,25 +167,32 @@ To validate models quality we use test web-pages, placed in directory **notebook
 
 # Docker
 ## Take docker image from github:
-### RC version
-#### macOS/Linux
+### Release version
+#### macOS / Linux
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
+curl --output jdi-bootstrap.sh https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/scripts/bootstrap.sh && \
+bash jdi-bootstrap.sh
 ```
+
 #### Windows
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:rc --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/rc/docker-compose-rc.yaml && docker compose up
+curl --output jdi-bootstrap.ps1 https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/master/scripts/bootstrap.ps1 && ^
+powershell -executionpolicy bypass .\jdi-bootstrap.ps1
 ```
 
 ### Development version
-#### macOS/Linux
+#### macOS / Linux
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+curl --output jdi-bootstrap.sh https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/scripts/bootstrap.sh && \
+bash jdi-bootstrap.sh -b develop -l develop
 ```
+
 #### Windows
 ```shell
-docker rm --force jdi-qasp-ml-api && docker image rm ghcr.io/jdi-testing/jdi-qasp-ml:latest --force && curl.exe --output docker-compose.yaml --url https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/docker-compose.yaml && docker compose up
+curl --output jdi-bootstrap.ps1 https://raw.githubusercontent.com/jdi-testing/jdi-qasp-ml/develop/scripts/bootstrap.ps1 && ^
+powershell -executionpolicy bypass .\jdi-bootstrap.ps1 -Branch develop -Label develop
 ```
+
 ## Installing version from any other repository branch:
 Example with branch "branch_name":
 
@@ -283,7 +290,34 @@ Response from websocket:
     "payload": {"1122334455667788990011223344": "1122334455667788990011223344"},
 }
 ```
-### 2. Get task status:
+### 2. Schedule CSS locators generation for specific elements in a document:
+Request sent:
+```
+{
+    "action": "schedule_css_locators_generation",
+    "payload": {
+        "document": '"<head jdn-hash=\\"0352637447734573274412895785\\">....',
+        "id": ["1122334455667788990011223344"]
+    }
+}
+```
+Response with the generated locator:
+```
+{
+    "action": "result_ready",
+    "payload": {
+        "id": "css-selectors-gen-47e475cd-3696-400e-b761-8db6ec38857d",
+        "result": [
+            {
+                "id": "1122334455667788990011223344",
+                "result": "p:nth-child(3)"
+            }
+        ]
+    }
+}
+```
+Result will be an empty string in case algorithm fails to find CSS locator for the element.
+### 3. Get task status:
 Request sent:
 ```
 {
@@ -291,7 +325,7 @@ Request sent:
     "payload": {"id": "1122334455667788990011223344"},
 }
 ```
-### 3. Get task statuses:
+### 4. Get task statuses:
 Request sent:
 ```
 {
@@ -305,7 +339,7 @@ Request sent:
     },
 }
 ```
-### 4. Revoke tasks:
+### 5. Revoke tasks:
 Request sent:
 ```
 {
@@ -332,7 +366,7 @@ Response from websocket:
     },
 }
 ```
-### 5. Get task result:
+### 6. Get task result:
 Request sent:
 ```
 {
@@ -340,7 +374,7 @@ Request sent:
     "payload": {"id": "1122334455667788990011223344"},
 }
 ```
-### 6. Get task results:
+### 7. Get task results:
 Request sent:
 ```
 {

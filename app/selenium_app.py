@@ -17,7 +17,9 @@ def get_webdriver() -> webdriver.Remote:
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    if config.IS_DEV_SHM_USAGE_DISABLED:
+        chrome_options.add_argument("--disable-dev-shm-usage")
 
     capabilities = {
         "browserName": "chrome",
@@ -28,10 +30,19 @@ def get_webdriver() -> webdriver.Remote:
     }
 
     return webdriver.Remote(
-        command_executor="http://jdi-qasp-ml-selenoid:4444/wd/hub",
+        command_executor="http://selenoid:4444/wd/hub",
         desired_capabilities=capabilities,
         options=chrome_options,
     )
+
+
+def inject_html(driver: webdriver.Remote, html: str) -> None:
+    driver.execute_script(
+        "document.write(arguments[0]);",
+        html,
+    )
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
 
 def get_page_elements(driver: webdriver.Remote, page_content: str) -> List[WebElement]:

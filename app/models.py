@@ -58,12 +58,6 @@ class PredictionRequestElement(BaseModel):
     text: Union[str, None]
 
 
-class PredictionInputModel(BaseModel):
-    document: str
-    elements: str
-    viewport: str
-
-
 class PredictedElement(BaseModel):
     element_id: str
     x: int
@@ -94,3 +88,43 @@ class ReportMail(BaseModel):
 class SystemInfoModel(BaseModel):
     cpu_count: int
     total_memory: int
+
+
+class PredictionRequest(BaseModel):
+    document: str = Field(
+        default="",
+        description=(
+            "Full HTML document for analysis. "
+            "Every element should have jdn-hash attribute, which value must be unique "
+            "across the document and should be unique across documents."
+        ),
+        example=(
+            "<html lang=\"en\" jdn-hash=\"111111\">"
+            "<body jdn-hash=\"222222\">"
+            "<h1 jdn-hash=\"333333\">Hello</h1>"
+            "</body></html>"
+        ),
+    )
+    elements: str = Field(
+        default="[]",
+        description="JSON dumped to string, containing list of elements on page with some info about them.",
+        example=(
+            "["
+                "{"
+                    "\"tag_name\":\"BODY\","
+                    "\"element_id\":\"222222\","
+                    "\"parent_id\":\"111111\","
+                    "\"x\":0,"
+                    "\"y\":0,"
+                    "\"width\":1070,"
+                    "\"height\":969,"
+                    "\"displayed\":true,"
+                    "\"onmouseover\":null,"
+                    "\"onmouseenter\":null,"
+                    "\"attributes\":"
+                    "{\"jdn-hash\":\"222222\"}"
+                "}"
+            "]"
+        ),
+    )
+    viewport: Dict

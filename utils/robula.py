@@ -158,9 +158,10 @@ class RobulaPlus:
         self.element = element
         self.document = document
 
-        if config["ignored_attributes"] is not None and len(config["ignored_attributes"]) != 0:
-            self.attribute_black_list.extend(config["ignored_attributes"])
-            self.attribute_black_list = list(dict.fromkeys(self.attribute_black_list))
+        if config.ignored_attributes:
+            self.attribute_black_list.extend(config.ignored_attributes)
+            # Remove duplicates from the list
+            self.attribute_black_list = list(set(self.attribute_black_list))
 
     def check_for_time_limit(self, start_time):
         evaluation_time_in_seconds = (

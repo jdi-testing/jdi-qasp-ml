@@ -158,7 +158,7 @@ class RobulaPlus:
         self.element = element
         self.document = document
 
-        if config["ignored_attributes"] is not None and len(config["ignored_attributes"]) != 0:
+        if config["ignored_attributes"]:
             self.attribute_black_list.update(config["ignored_attributes"])
 
     def check_for_time_limit(self, start_time):

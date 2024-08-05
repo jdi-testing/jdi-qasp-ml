@@ -124,7 +124,7 @@ class RobulaPlus:
             "alt",
             "value",
         ]
-        self.attribute_black_list = [
+        self.attribute_black_list = {
             "href",
             "src",
             "onclick",
@@ -140,7 +140,7 @@ class RobulaPlus:
             "fill",
             "xmlns",
             "data-label",
-        ]
+        }
         self.forbidden_tags = ["svg", "rect"]
 
         self.maximum_generation_time_in_seconds = config[
@@ -157,6 +157,9 @@ class RobulaPlus:
 
         self.element = element
         self.document = document
+
+        if config["ignored_attributes"]:
+            self.attribute_black_list.update(config["ignored_attributes"])
 
     def check_for_time_limit(self, start_time):
         evaluation_time_in_seconds = (

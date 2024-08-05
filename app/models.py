@@ -23,6 +23,7 @@ class RobulaSettingsModel(BaseModel):
     allow_indexes_in_the_middle: bool = True
     allow_indexes_at_the_end: bool = True
     advanced_calculation: bool = False
+    ignored_attributes: Optional[List[str]] = None
 
 
 class XPathGenerationModel(TaskIdModel):

@@ -57,7 +57,8 @@ def get_page_elements(driver: webdriver.Remote, page_content: str) -> List[WebEl
     return driver.find_elements(by=By.XPATH, value="//*")
 
 
-def get_elements_visibility(page_content: str, starting_element_idx: int, ending_element_idx: int, viewport: Dict) -> Dict[str, bool]:
+def get_elements_visibility(page_content: str, starting_element_idx: int, ending_element_idx: int, 
+                            viewport: Dict) -> Dict[str, bool]:
     """Returns a visibility of portion of elements contained in page_content
 
     starting_element_idx and ending_element_idx are referring to the starting

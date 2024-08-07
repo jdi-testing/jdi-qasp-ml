@@ -123,8 +123,8 @@ class PredictionRequest(BaseModel):
         ),
         example=(
             "["
-                "{"
-                    "\"tag_name\":\"BODY\","
+                "{"  # noqa: E131
+                    "\"tag_name\":\"BODY\","  # noqa: E131
                     "\"element_id\":\"222222\","
                     "\"parent_id\":\"111111\","
                     "\"x\":0,"

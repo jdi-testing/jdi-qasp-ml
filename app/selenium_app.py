@@ -57,7 +57,7 @@ def get_page_elements(driver: webdriver.Remote, page_content: str) -> List[WebEl
     return driver.find_elements(by=By.XPATH, value="//*")
 
 
-def get_elements_visibility(page_content: str, starting_element_idx: int, ending_element_idx: int) -> Dict[str, bool]:
+def get_elements_visibility(page_content: str, starting_element_idx: int, ending_element_idx: int, viewport: Dict) -> Dict[str, bool]:
     """Returns a visibility of portion of elements contained in page_content
 
     starting_element_idx and ending_element_idx are referring to the starting
@@ -65,6 +65,7 @@ def get_elements_visibility(page_content: str, starting_element_idx: int, ending
     get_page_elements() function.
     """
     driver = get_webdriver()
+    driver.set_window_size(viewport['width'], viewport['height'])
     all_elements = get_page_elements(driver, page_content)
 
     result = {}
@@ -92,7 +93,7 @@ def get_chunks_boundaries(data: Sized, desired_chunks_amount: int) -> Iterable[T
             yield i * chunk_size, data_size
 
 
-def get_element_id_to_is_displayed_mapping(page_content: str) -> Dict[str, bool]:
+def get_element_id_to_is_displayed_mapping(page_content: str, viewport: Dict) -> Dict[str, bool]:
     """Returns visibility status of all elements in the page
 
     Returned dictionary uses elements' jdn-hash property value as keys
@@ -100,6 +101,7 @@ def get_element_id_to_is_displayed_mapping(page_content: str) -> Dict[str, bool]
     escaped_page_content = str(page_content).encode('utf-8').decode('unicode_escape')
 
     driver = get_webdriver()
+    driver.set_window_size(viewport['width'], viewport['height'])
     all_elements = get_page_elements(driver, escaped_page_content)
     driver.quit()
 
@@ -109,7 +111,7 @@ def get_element_id_to_is_displayed_mapping(page_content: str) -> Dict[str, bool]
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_of_workers) as executor:
         futures = [
-            executor.submit(get_elements_visibility, escaped_page_content, s, e)
+            executor.submit(get_elements_visibility, escaped_page_content, s, e, viewport)
             for s, e in jobs_chunks
         ]
         for future in concurrent.futures.as_completed(futures):

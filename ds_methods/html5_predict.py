@@ -22,6 +22,7 @@ async def html5_predict_elements(body):
     body_json = json.loads(body_str)
     elements_json = body_json.get("elements", [])
     document_json = body_json.get("document", "")
+    viewport_json = body_json.get("viewport", {})
 
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
@@ -95,7 +96,7 @@ async def html5_predict_elements(body):
         result = results_df[columns_to_publish].to_dict(orient="records")
 
         logger.info("Determining visibility locators")
-        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document_json)
+        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document_json, viewport_json)
         for element in result:
             element["is_shown"] = element_id_to_is_displayed_map.get(element["element_id"], None)
         return result

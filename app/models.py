@@ -60,6 +60,7 @@ class PredictionRequestElement(BaseModel):
 class PredictionInputModel(BaseModel):
     document: str
     elements: str
+    viewport: Dict
 
 
 class PredictedElement(BaseModel):

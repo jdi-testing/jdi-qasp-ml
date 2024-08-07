@@ -59,14 +59,11 @@ class PredictionRequestElement(BaseModel):
 
 
 class PredictedElement(BaseModel):
-    element_id: str
-    x: int
-    y: int
-    width: int
-    height: int
-    predicted_label: str
-    predicted_probability: int
-    sort_key: int
+    element_id: str = Field(description="Value of `jdn-hash` element attribute")
+    predicted_label: str = Field(description="Label predicted by model")
+    childs: Optional[List[str]] = Field(description="List of `jdn-hash`es of child elements predicted by model")
+    displayed: bool = Field(description="Visibility status of element predicted by model")
+    is_shown: bool = Field(description="Visibility status of element determined in Selenium")
 
 
 class PredictionResponseModel(RootModel):
@@ -100,14 +97,30 @@ class PredictionRequest(BaseModel):
         ),
         example=(
             "<html lang=\"en\" jdn-hash=\"111111\">"
-            "<body jdn-hash=\"222222\">"
+            "<body id=\"body\" jdn-hash=\"222222\">"
             "<h1 jdn-hash=\"333333\">Hello</h1>"
             "</body></html>"
         ),
     )
     elements: str = Field(
         default="[]",
-        description="JSON dumped to string, containing list of elements on page with some info about them.",
+        description=(
+            "JSON dumped to string, containing list of elements on page with some info about them.\n\n"
+            "Documentation for objects fields. Sometimes JS code is used to describe values. In this case `el` will "
+            "be used to refer to page element.\n\n"
+            "`tag_name`: Tag name of the element, uppercased. `el.tagName`\n\n"
+            "`element_id`: Value of `jdn-hash` attribute for this element.\n\n"
+            "`parent_id`: Value of `jdn-hash` attribute of parent element. Null if element doesn't have parent.\n\n"
+            "`x`: Result of `window.pageXOffset + el.getBoundingClientRect().x`\n\n"
+            "`y`: Result of `window.pageYOffset + el.getBoundingClientRect().y`\n\n"
+            "`width`: `el.getBoundingClientRect().width`\n\n"
+            "`height`: `el.getBoundingClientRect().height`\n\n"
+            "`displayed`: Boolean value. True if `x > 0` or `y > 0` or `height >= 1` or `width >= 1`.\n\n"
+            "`onmouseover`: `el.onmouseover`\n\n"
+            "`onmouseenter`: `el.onmouseenter`\n\n"
+            "`attributes`: Object containing all of element attributes and their values (see payload example).\n\n"
+            "`text`: Rendered text content of the element and its descendants. `el.innerText`"
+        ),
         example=(
             "["
                 "{"
@@ -122,7 +135,8 @@ class PredictionRequest(BaseModel):
                     "\"onmouseover\":null,"
                     "\"onmouseenter\":null,"
                     "\"attributes\":"
-                    "{\"jdn-hash\":\"222222\"}"
+                    "{\"id\": \"body\", \"jdn-hash\":\"222222\"},"
+                    "\"text\": \"Hello\""
                 "}"
             "]"
         ),

@@ -338,8 +338,9 @@ async def process_incoming_ws_request(
         elements_ids = generation_data.id
 
         # Start Selenium session that will be used by Celery workers to generate CSS selectors
+        # Changing default idle timeout to prevent session from being destroyed by Selenoid
         document = inject_css_selector_generator_scripts(generation_data.document)
-        driver = get_webdriver()
+        driver = get_webdriver(extra_capabilities={"sessionTimeout": "30m"})
         inject_html(driver, document)
 
         selectors_generation_results = []

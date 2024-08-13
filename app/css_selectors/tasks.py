@@ -1,9 +1,8 @@
 import logging
-# from pathlib import Path
 from typing import List, Dict
 
 from app.celery_app import celery_app
-from app.selenium_app import get_webdriver, inject_html
+from app.selenium_app import get_webdriver
 from app.redis_app import redis_app
 
 
@@ -58,22 +57,25 @@ def _cache_calculations_results(func):
 @celery_app.task(bind=True)
 @_replace_error_messages("Error generating CSS selectors")
 @_cache_calculations_results
-def task_schedule_css_selectors_generation(
-        self, document_key: str, elements_ids: List[str]
-) -> List[Dict[str, str]]:
+def task_schedule_css_selector_generation(self, session_id: str, element_id: str) -> List[Dict[str, str]]:
+    """Get CSS selector for element using passed Selenium session.
+
+    :param session_id: Selenium session id
+    :param element_id: Value of jdn-hash attribute of element for which the CSS selector should be generated
+
+    :returns: List with result dictionary. List is used just to keep compatibility with old API.
+    """
     driver = get_webdriver()
-    inject_html(driver, redis_app.get(document_key).decode("utf-8"))
+    # Closing the browser, attaching to the shared Selenium session
+    driver.quit()
+    driver.session_id = session_id
 
-    result = []
-    for element_id in elements_ids:
-        result.append({
-            "id": element_id,
-            "result": driver.execute_script(
-                f"""
-                el = document.querySelector('[jdn-hash="{element_id}"]');
-                return generateSelectorByElement(el);
-                """
-            ),
-        })
-
-    return result
+    return [{
+        "id": element_id,
+        "result": driver.execute_script(
+            f"""
+            el = document.querySelector('[jdn-hash="{element_id}"]');
+            return generateSelectorByElement(el);
+            """
+        ),
+    }]

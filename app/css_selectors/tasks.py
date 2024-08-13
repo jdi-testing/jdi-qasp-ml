@@ -25,30 +25,16 @@ def _replace_error_messages(new_message: str):
 
 def _cache_calculations_results(func):
     def wrapper(*args, **kwargs):
-        elements_ids = kwargs["elements_ids"]
-        redis_keys = [f"css-selector-{e}" for e in elements_ids]
-        cached_selectors = redis_app.mget(redis_keys)
+        element_id = kwargs["element_id"]
+        redis_key = f"css-selector-{element_id}"
+        cached_selector = redis_app.get(redis_key)
 
-        result = []
-        not_cached_elements_ids = []
-
-        for element_id, selector in zip(elements_ids, cached_selectors):
-            if selector is None:
-                not_cached_elements_ids.append(element_id)
-            else:
-                logger.info(f"Using cached selector for element {element_id}")
-                result.append({"id": element_id, "result": selector.decode("utf-8")})
-
-        if not_cached_elements_ids:
-            new_kwargs = kwargs.copy()
-            new_kwargs["elements_ids"] = not_cached_elements_ids
-
-            new_results = func(*args, **new_kwargs)
-
-            result.extend(new_results)
-
-            for new_result in new_results:
-                redis_app.set(f"css-selector-{new_result['id']}", new_result["result"], ex=60*60*24)
+        if cached_selector:
+            logger.info(f"Using cached selector for element {element_id}")
+            result = [{"id": element_id, "result": cached_selector.decode("utf-8")}]
+        else:
+            result = func(*args, **kwargs)
+            redis_app.set(redis_key, result[0]["result"], ex=60*60*24)
         return result
 
     return wrapper

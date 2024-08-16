@@ -23,6 +23,7 @@ async def mui_predict_elements(body):
     body_json = json.loads(body_str)
     elements_json = body_json.get("elements", [])
     document_json = body_json.get("document", "")
+    viewport_json = body_json.get("viewport", {})
 
     # create softmax layser function to get probabilities from logits
     softmax = torch.nn.Softmax(dim=1)
@@ -113,7 +114,7 @@ async def mui_predict_elements(body):
         del model
         gc.collect()
         result = results_df[columns_to_publish].to_dict(orient="records")
-        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document_json)
+        element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document_json, viewport_json)
         for element in result:
             element["is_shown"] = element_id_to_is_displayed_map.get(element["element_id"], None)
         return result

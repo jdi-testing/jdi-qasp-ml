@@ -258,11 +258,7 @@ async def process_incoming_ws_request(
 ) -> typing.Dict:
     result = {}
 
-    if action == "ping":
-        await ws.send_json({"pong": payload})
-        logger.info("ANSWER TO PING WEBSOCKET MESSAGE FOR IS SENT")
-
-    elif action == "schedule_multiple_xpath_generations":
+    if action == "schedule_multiple_xpath_generations":
         logging_info = LoggingInfoModel(**logging_info)
         if ENV != "LOCAL":
             mongodb.create_initial_log_entry(

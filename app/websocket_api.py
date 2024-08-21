@@ -1,4 +1,5 @@
 import celery.states
+import asyncio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
 
@@ -8,11 +9,20 @@ from utils import api_utils
 
 router = APIRouter()
 
+async def process_and_send_result(action, payload, ws, logging_info):
+    result = await api_utils.process_incoming_ws_request(action, payload, ws, logging_info)
+    if result:
+        await ws.send_json(result)
 
 @router.websocket("/ws")
 async def websocket(ws: WebSocket):
     await ws.accept()
     ws.created_tasks = []
+
+    async def handle_pong(payload):
+        await ws.send_json({"pong": payload})
+        logger.info("ANSWER TO PING WEBSOCKET MESSAGE IS SENT")
+
     while ws.client_state != WebSocketState.DISCONNECTED:
         try:
             data = await ws.receive_json()
@@ -20,12 +30,12 @@ async def websocket(ws: WebSocket):
             payload = data["payload"]
             logging_info = data.get("logging_info")
 
-            result = await api_utils.process_incoming_ws_request(
-                action, payload, ws, logging_info
-            )
+            if action == "ping":
+                # Immediately handle pong response in its own task
+                asyncio.create_task(handle_pong(payload))
 
-            if result:
-                await ws.send_json(result)
+            # Process the incoming WebSocket request
+            asyncio.create_task(process_and_send_result(action, payload, ws, logging_info))
         except KeyError as e:
             logger.error(e)
             await ws.send_json({"error": "Invalid message format."})

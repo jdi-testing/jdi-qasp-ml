@@ -9,10 +9,12 @@ from utils import api_utils
 
 router = APIRouter()
 
+
 async def process_and_send_result(action, payload, ws, logging_info):
     result = await api_utils.process_incoming_ws_request(action, payload, ws, logging_info)
     if result:
         await ws.send_json(result)
+
 
 @router.websocket("/ws")
 async def websocket(ws: WebSocket):

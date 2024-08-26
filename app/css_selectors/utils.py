@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from selenium import webdriver
 
 
 def get_script_text(script_path: str) -> str:
@@ -23,3 +24,10 @@ def inject_css_selector_generator_scripts(document: str) -> str:
         doc_soup.head.append(script_tag)
 
     return str(doc_soup)
+
+
+class ExistingRemoteSession(webdriver.Remote):
+    """Dummy remote webdriver class that don't start new Selenium session"""
+    def start_session(self, capabilities, browser_profile=None):
+        # Skip the NEW_SESSION command issued by the original driver
+        pass

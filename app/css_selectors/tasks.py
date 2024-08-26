@@ -2,8 +2,9 @@ import logging
 from typing import List, Dict
 
 from app.celery_app import celery_app
-from app.selenium_app import get_webdriver
 from app.redis_app import redis_app
+
+from .utils import ExistingRemoteSession
 
 
 logger = logging.getLogger(__name__)
@@ -51,9 +52,7 @@ def task_schedule_css_selector_generation(self, session_id: str, element_id: str
 
     :returns: List with result dictionary. List is used just to keep compatibility with old API.
     """
-    driver = get_webdriver()
-    # Closing the browser, attaching to the shared Selenium session
-    driver.quit()
+    driver = ExistingRemoteSession(command_executor="http://selenoid:4444/wd/hub", desired_capabilities=None)
     driver.session_id = session_id
 
     return [{

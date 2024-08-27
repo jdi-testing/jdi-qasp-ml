@@ -22,7 +22,7 @@ async def html5_predict_elements(body):
     body_json = json.loads(body_str)
     elements_json = body_json.get("elements", [])
     document_json = body_json.get("document", "")
-    viewport_json = json.loads(body_json.get("viewport", {}))
+    viewport_json = json.loads(body_json.get("viewport", "{}"))
 
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")

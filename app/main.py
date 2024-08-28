@@ -96,7 +96,11 @@ async def get_file(path: str) -> FileResponse:
 async def mui_predict(prediction_request: PredictionRequest) -> JSONResponse:
     """HTML elements prediction based on received JSON. MUI model."""
     return JSONResponse(
-        await mui_predict_elements(prediction_request.document, prediction_request.elements)
+        await mui_predict_elements(
+            prediction_request.document,
+            prediction_request.elements,
+            prediction_request.viewport,
+        )
     )
 
 
@@ -104,7 +108,11 @@ async def mui_predict(prediction_request: PredictionRequest) -> JSONResponse:
 async def angular_predict(prediction_request: PredictionRequest) -> JSONResponse:
     """HTML elements prediction based on received JSON. Angular model."""
     return JSONResponse(
-        await angular_predict_elements(prediction_request.document, prediction_request.elements)
+        await angular_predict_elements(
+            prediction_request.document,
+            prediction_request.elements,
+            prediction_request.viewport,
+        )
     )
 
 
@@ -112,7 +120,11 @@ async def angular_predict(prediction_request: PredictionRequest) -> JSONResponse
 async def html5_predict(prediction_request: PredictionRequest) -> JSONResponse:
     """HTML elements prediction based on received JSON. HTML5 model."""
     return JSONResponse(
-        await html5_predict_elements(prediction_request.document, prediction_request.elements)
+        await html5_predict_elements(
+            prediction_request.document,
+            prediction_request.elements,
+            prediction_request.viewport,
+        )
     )
 
 

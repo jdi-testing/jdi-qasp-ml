@@ -3,6 +3,7 @@ import gc
 import json
 import logging
 import os
+from typing import Optional
 
 import pandas as pd
 import torch
@@ -11,6 +12,7 @@ from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
 from app import angular_df_path_full, angular_model_full
+from app.models import ViewportInfo
 from app.selenium_app import get_element_id_to_is_displayed_mapping
 from utils.dataset import MUI_JDNDataset
 
@@ -18,7 +20,7 @@ logger = logging.getLogger("jdi-qasp-ml")
 
 
 @alru_cache(maxsize=32)
-async def angular_predict_elements(document: str, elements: str, viewport_info: str):
+async def angular_predict_elements(document: str, elements: str, viewport_info: Optional[str]):
     # create softmax layser function to get probabilities from logits
     softmax = torch.nn.Softmax(dim=1)
 
@@ -106,6 +108,11 @@ async def angular_predict_elements(document: str, elements: str, viewport_info: 
         del model
         gc.collect()
         result = results_df[columns_to_publish].to_dict(orient="records")
+        viewport_info = (
+            ViewportInfo.model_validate_json(viewport_info)
+            if viewport_info
+            else None
+        )
         element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document, viewport_info)
         for element in result:
             element["is_shown"] = element_id_to_is_displayed_map.get(element["element_id"], None)

@@ -87,6 +87,11 @@ class SystemInfoModel(BaseModel):
     total_memory: int
 
 
+class ViewportInfo(BaseModel):
+    width: int = Field(..., description="Viewport width in pixels")
+    height: int = Field(..., description="Viewport height in pixels")
+
+
 class PredictionRequest(BaseModel):
     document: str = Field(
         default="",
@@ -135,10 +140,25 @@ class PredictionRequest(BaseModel):
                     "\"onmouseover\":null,"
                     "\"onmouseenter\":null,"
                     "\"attributes\":"
-                    "{\"id\": \"body\", \"jdn-hash\":\"222222\"},"
+                        "{\"id\": \"body\", \"jdn-hash\":\"222222\"},"  # noqa: E131
                     "\"text\": \"Hello\""
                 "}"
             "]"
         ),
     )
-    viewport: Dict
+    viewport: Optional[str] = Field(
+        default=None,
+        description=(
+            "JSON dumped to string, containing object with viewport width and height in pixels.\n\n"
+            "If null or omitted, browser default viewport size will be used.\n\n"
+            "Documentation for object fields.\n\n"
+            "`width`: Width of the viewport in pixels.\n\n"
+            "`height`: Height of the viewport in pixels.\n\n"
+        ),
+        example=(
+            "{"
+                "\"width\": 1920,"  # noqa: E131
+                "\"height\": 1080"
+            "}"
+        ),
+    )

@@ -4,12 +4,14 @@ import json
 import logging
 import os
 import pickle
+from typing import Optional
 
 import pandas as pd
 from async_lru import alru_cache
 
 from app import (UPLOAD_DIRECTORY, html5_classes_path, html5_df_path,
                  html5_model)
+from app.models import ViewportInfo
 from app.selenium_app import get_element_id_to_is_displayed_mapping
 from utils.dataset import HTML5_JDNDataset
 
@@ -17,7 +19,7 @@ logger = logging.getLogger("jdi-qasp-ml")
 
 
 @alru_cache(maxsize=32)
-async def html5_predict_elements(document: str, elements: str, viewport_info: str):
+async def html5_predict_elements(document: str, elements: str, viewport_info: Optional[str]):
     # generate temporary filename
     filename = dt.datetime.now().strftime("%Y%m%d%H%M%S%f.json")
     with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
@@ -90,6 +92,11 @@ async def html5_predict_elements(document: str, elements: str, viewport_info: st
         result = results_df[columns_to_publish].to_dict(orient="records")
 
         logger.info("Determining visibility locators")
+        viewport_info = (
+            ViewportInfo.model_validate_json(viewport_info)
+            if viewport_info
+            else None
+        )
         element_id_to_is_displayed_map = get_element_id_to_is_displayed_mapping(document, viewport_info)
         for element in result:
             element["is_shown"] = element_id_to_is_displayed_map.get(element["element_id"], None)

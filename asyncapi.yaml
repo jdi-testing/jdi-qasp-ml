@@ -1,7 +1,7 @@
 asyncapi: 3.0.0
 info:
   title: JDI-QASP-ml
-  version: "0.3.3"
+  version: 0.3.1+
   description: API for generating XPath locators and CSS selectors for elements on a web pages.
 servers:
   production:
@@ -263,11 +263,14 @@ components:
       type: string
       description:
         Value of elements' `jdn-hash` attribute.
-      example: "2605281042285993576117851871"
+      example: "222222"
     elementsIds:
       type: array
       items:
         $ref: "#/components/schemas/elementId"
+      examples:
+        - ["111111", "222222", "333333"]
+        - ["222222"]
     CSSSelectorsGenerationTaskId:
       type: string
       example: "css-selectors-gen-73de49b0-2b1b-4bf0-a3a1-23f546e8f765"

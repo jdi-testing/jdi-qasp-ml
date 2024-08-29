@@ -67,7 +67,13 @@ class PredictedElement(BaseModel):
 
 
 class PredictionResponseModel(RootModel):
-    root: List[PredictedElement]
+    root: List[PredictedElement] = Field(
+        description=(
+            "List of page elements predicted by model. Is a subset of elements passed in the input. "
+            "This means that if an element is present on the web page, but was not passed in the request's "
+            "`elements` parameter, it will not be analysed by model."
+        ),
+    )
 
 
 class Attachment(BaseModel):
@@ -98,7 +104,10 @@ class PredictionRequest(BaseModel):
         description=(
             "Full HTML document for analysis. "
             "Every element should have jdn-hash attribute, which value must be unique "
-            "across the document and should be unique across documents."
+            "across the document and should be unique across documents. If an element "
+            "is not assigned with the have jdn-hash attribute, it will not be possible "
+            "to refer to that element in `elements` array and model analysis will not be "
+            "performed for this element."
         ),
         example=(
             "<html lang=\"en\" jdn-hash=\"111111\">"
@@ -111,6 +120,7 @@ class PredictionRequest(BaseModel):
         default="[]",
         description=(
             "JSON dumped to string, containing list of elements on page with some info about them.\n\n"
+            "This elements will be then analyzed by a model. List should contain at least one object.\n\n"
             "Documentation for objects fields. Sometimes JS code is used to describe values. In this case `el` will "
             "be used to refer to page element.\n\n"
             "`tag_name`: Tag name of the element, uppercased. `el.tagName`\n\n"

@@ -176,6 +176,7 @@ components:
           default: null
           description: >-
             Maximum amount of seconds which should be spent to find XPath expression for one element.
+            No limits are applied if the value is `null`.
           example: 10
         allow_indexes_at_the_beginning:
           type: boolean

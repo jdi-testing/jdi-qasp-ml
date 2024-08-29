@@ -13,6 +13,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi import status as status
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import HttpUrl
 
@@ -48,6 +49,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = FastAPI()
 api.include_router(robula_api.router)
 api.include_router(websocket_api.router)
+api.mount("/wsdocs", StaticFiles(directory="wsdocs"))
 templates = Jinja2Templates(directory="templates")
 
 

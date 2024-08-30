@@ -24,7 +24,7 @@ jobs:
           npm install @asyncapi/html-template
       - name: Generate docs
         run: |
-          asyncapi generate fromTemplate asyncapi.yaml @asyncapi/html-template -o ./wsdocs
+          npx asyncapi generate fromTemplate asyncapi.yaml @asyncapi/html-template -o ./wsdocs
       - name: Archive WebSocket documentation build
         uses: actions/upload-artifact@v4
         with:

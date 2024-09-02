@@ -36,4 +36,3 @@ class StreamingResponseCoder(Coder):
         headers = data["headers"]
         status_code = data["status_code"]
         return StreamingResponse(content=content, headers=headers, status_code=status_code)
-    

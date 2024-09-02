@@ -14,10 +14,8 @@ from app.css_selectors import inject_css_selector_generator_scripts, CSS_SELECTO
 from app.logger import logger
 from app.models import LoggingInfoModel, TaskStatusModel, XPathGenerationModel, CSSSelectorGenerationModel
 from app.redis_app import redis_app
-from app.selenium_app import get_chunks_boundaries
-from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_selectors_generation
-
-from utils import config as app_config
+from app.selenium_app import get_webdriver, inject_html
+from app.tasks import ENV, task_schedule_xpath_generation, task_schedule_css_selector_generation
 
 
 def get_task_status(task_id) -> TaskStatusModel:
@@ -335,31 +333,24 @@ async def process_incoming_ws_request(
         generation_data = CSSSelectorGenerationModel(**payload)
         elements_ids = generation_data.id
 
-        document = generation_data.document
-        random_document_key = str(uuid.uuid4())
-        redis_app.set(name=random_document_key, value=inject_css_selector_generator_scripts(document), ex=120)
+        # Start Selenium session that will be used by Celery workers to generate CSS selectors
+        # Changing default idle timeout to prevent session from being destroyed by Selenoid
+        document = inject_css_selector_generator_scripts(generation_data.document)
+        driver = get_webdriver(extra_capabilities={"sessionTimeout": "30m"})
+        inject_html(driver, document)
+
         selectors_generation_results = []
 
-        num_of_tasks = app_config.SELENOID_PARALLEL_SESSIONS_COUNT
-        jobs_chunks = get_chunks_boundaries(elements_ids, num_of_tasks)
-
-        for start_idx, end_idx in jobs_chunks:
-            # Due to the implementation of get_chunks_boundaries we can get
-            # several empty chunks and one chunk with all elements in case when
-            # len(elements_ids) < num_of_tasks
-            # We can skip them to avoid sending of basically empty tasks to Celery
-            if start_idx == end_idx:
-                continue
-
+        for element_id in elements_ids:
             task_id = convert_task_id_if_exists(
-                f"{CSS_SELECTOR_GEN_TASK_PREFIX}{uuid.uuid4()}"
+                f"{CSS_SELECTOR_GEN_TASK_PREFIX}{element_id}"
             )
             task_kwargs = {
-                "document_key": random_document_key,
-                "elements_ids": elements_ids[start_idx:end_idx],
+                "session_id": driver.session_id,
+                "element_id": element_id,
             }
 
-            task_result_obj = task_schedule_css_selectors_generation.apply_async(
+            task_result_obj = task_schedule_css_selector_generation.apply_async(
                 kwargs=task_kwargs, task_id=task_id, zpriority=2
             )
             selectors_generation_results.append(task_result_obj)
@@ -377,6 +368,7 @@ async def process_incoming_ws_request(
                 )
             )
         await asyncio.wait(celery_waiting_tasks)
+        driver.quit()
 
     return result
 

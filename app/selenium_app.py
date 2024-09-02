@@ -1,4 +1,4 @@
-from typing import Iterable, Sized, Tuple, Dict, List
+from typing import Iterable, Sized, Tuple, Dict, List, Optional
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -9,17 +9,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 import concurrent.futures
 
 from app.logger import logger
+from app.models import ViewportInfo
 from utils import config
 
 
-def get_webdriver() -> webdriver.Remote:
+def get_webdriver(extra_capabilities: dict = None) -> webdriver.Remote:
     """Returns a remote Chrome webdriver instance"""
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--headless")
-
-    if config.IS_DEV_SHM_USAGE_DISABLED:
-        chrome_options.add_argument("--disable-dev-shm-usage")
 
     capabilities = {
         "browserName": "chrome",
@@ -28,12 +26,16 @@ def get_webdriver() -> webdriver.Remote:
             "enableVideo": False
         }
     }
+    if extra_capabilities:
+        capabilities.update(extra_capabilities)
 
-    return webdriver.Remote(
-        command_executor="http://selenoid:4444/wd/hub",
-        desired_capabilities=capabilities,
-        options=chrome_options,
-    )
+    for name, value in capabilities.items():
+        chrome_options.set_capability(name, value)
+
+    if config.IS_DEV_SHM_USAGE_DISABLED:
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
+    return webdriver.Remote(command_executor="http://selenoid:4444/wd/hub", options=chrome_options)
 
 
 def inject_html(driver: webdriver.Remote, html: str) -> None:
@@ -58,7 +60,7 @@ def get_page_elements(driver: webdriver.Remote, page_content: str) -> List[WebEl
 
 
 def get_elements_visibility(page_content: str, starting_element_idx: int, ending_element_idx: int,
-                            viewport: Dict) -> Dict[str, bool]:
+                            viewport: Optional[ViewportInfo]) -> Dict[str, bool]:
     """Returns a visibility of portion of elements contained in page_content
 
     starting_element_idx and ending_element_idx are referring to the starting
@@ -66,7 +68,8 @@ def get_elements_visibility(page_content: str, starting_element_idx: int, ending
     get_page_elements() function.
     """
     driver = get_webdriver()
-    driver.set_window_size(viewport['width'], viewport['height'])
+    if viewport:
+        driver.set_window_size(viewport.width, viewport.height)
     all_elements = get_page_elements(driver, page_content)
 
     result = {}
@@ -94,7 +97,7 @@ def get_chunks_boundaries(data: Sized, desired_chunks_amount: int) -> Iterable[T
             yield i * chunk_size, data_size
 
 
-def get_element_id_to_is_displayed_mapping(page_content: str, viewport: Dict) -> Dict[str, bool]:
+def get_element_id_to_is_displayed_mapping(page_content: str, viewport: Optional[ViewportInfo]) -> Dict[str, bool]:
     """Returns visibility status of all elements in the page
 
     Returned dictionary uses elements' jdn-hash property value as keys
@@ -102,7 +105,8 @@ def get_element_id_to_is_displayed_mapping(page_content: str, viewport: Dict) ->
     escaped_page_content = str(page_content).encode('utf-8').decode('unicode_escape')
 
     driver = get_webdriver()
-    driver.set_window_size(viewport['width'], viewport['height'])
+    if viewport:
+        driver.set_window_size(viewport.width, viewport.height)
     all_elements = get_page_elements(driver, escaped_page_content)
     driver.quit()
 

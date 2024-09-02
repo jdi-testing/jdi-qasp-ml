@@ -12,14 +12,11 @@ from app.logger import logger
 from utils import config
 
 
-def get_webdriver() -> webdriver.Remote:
+def get_webdriver(extra_capabilities: dict = None) -> webdriver.Remote:
     """Returns a remote Chrome webdriver instance"""
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--headless")
-
-    if config.IS_DEV_SHM_USAGE_DISABLED:
-        chrome_options.add_argument("--disable-dev-shm-usage")
 
     capabilities = {
         "browserName": "chrome",
@@ -28,12 +25,16 @@ def get_webdriver() -> webdriver.Remote:
             "enableVideo": False
         }
     }
+    if extra_capabilities:
+        capabilities.update(extra_capabilities)
 
-    return webdriver.Remote(
-        command_executor="http://selenoid:4444/wd/hub",
-        desired_capabilities=capabilities,
-        options=chrome_options,
-    )
+    for name, value in capabilities.items():
+        chrome_options.set_capability(name, value)
+
+    if config.IS_DEV_SHM_USAGE_DISABLED:
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
+    return webdriver.Remote(command_executor="http://selenoid:4444/wd/hub", options=chrome_options)
 
 
 def inject_html(driver: webdriver.Remote, html: str) -> None:

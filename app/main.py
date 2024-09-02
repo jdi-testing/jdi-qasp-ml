@@ -13,8 +13,12 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi import status as status
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, HTMLResponse
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi.templating import Jinja2Templates
+from fastapi_cache.decorator import cache
 from pydantic import HttpUrl
+from app.coder import StreamingResponseCoder
 
 import app.mongodb as mongodb
 from app import (
@@ -49,6 +53,12 @@ api = FastAPI()
 api.include_router(robula_api.router)
 api.include_router(websocket_api.router)
 templates = Jinja2Templates(directory="templates")
+
+
+@api.on_event("startup")
+async def on_startup():
+    # Initialize FastAPICache with appropriate backend, coder, etc.
+    FastAPICache.init(InMemoryBackend(), coder=StreamingResponseCoder, prefix="fastapi-cache")
 
 
 @api.get("/build")
@@ -131,6 +141,7 @@ async def system_info() -> Dict:
 
 
 @api.get("/download_template")
+@cache(expire=86400, coder=StreamingResponseCoder)
 async def download_template(
     repo_zip_url: HttpUrl = "https://github.com/jdi-templates/"
     "jdi-light-testng-empty-template/archive/refs/heads/main.zip",

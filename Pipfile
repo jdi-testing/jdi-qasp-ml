@@ -27,6 +27,7 @@ pytest-cov = "==3.0.0"
 pytest-mock = "==3.6.1"
 flake8 = "==4.0.1"
 fastapi = "*"
+fastapi_cache2 = {extras = ["redis"], version = "==0.2.1"}
 uvicorn = {extras = ["standard"], version = "*"}
 jinja2 = "*"
 psutil = "*"

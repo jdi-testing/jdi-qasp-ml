@@ -13,8 +13,26 @@ env:
   RUN_ON_RC: ${{ startsWith( github.head_ref, 'release/' ) }}
 
 jobs:
+  wsdocs-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: AsyncAPI CLI installation
+        run: |
+          npm install @asyncapi/cli
+          npm install @asyncapi/html-template
+      - name: Generate docs
+        run: |
+          npx asyncapi generate fromTemplate asyncapi.yaml @asyncapi/html-template -o ./wsdocs
+      - name: Archive WebSocket documentation build
+        uses: actions/upload-artifact@v4
+        with:
+          name: websocket-docs
+          path: wsdocs/
   build-and-push:
     runs-on: ubuntu-latest
+    needs: wsdocs-build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,9 +62,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up default environment
         run: cp .env.dist .env
+      - name: Fetch WebSocket documentation pages
+        uses: actions/download-artifact@v4
+        with:
+          name: websocket-docs
+          path: wsdocs/
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

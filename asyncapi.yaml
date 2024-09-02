@@ -1,0 +1,426 @@
+asyncapi: 3.0.0
+info:
+  title: JDI-QASP-ml
+  version: 0.3.1+
+  description: API for generating XPath locators and CSS selectors for elements on a web pages.
+servers:
+  production:
+    host: "localhost:5050"
+    protocol: ws
+channels:
+  websocket:
+    address: "ws"
+    description:
+      No authentication is required for communication.
+    messages:
+      scheduleXPathGeneration:
+        $ref: "#/components/messages/scheduleXPathGeneration"
+      XPathGenerationResult:
+        $ref: "#/components/messages/XPathGenerationResult"
+      XPathGenerationError:
+        $ref: "#/components/messages/XPathGenerationError"
+      scheduleCSSSelectorsGeneration:
+        $ref: "#/components/messages/scheduleCSSSelectorsGeneration"
+      CSSSelectorGenerationResult:
+        $ref: "#/components/messages/CSSSelectorGenerationResult"
+      CSSSelectorGenerationError:
+        $ref: "#/components/messages/CSSSelectorGenerationError"
+      BadMessageError:
+        $ref: "#/components/messages/BadMessageError"
+      Ping:
+        $ref: "#/components/messages/Ping"
+      Pong:
+        $ref: "#/components/messages/Pong"
+operations:
+  scheduleXPathGeneration:
+    action: "receive"
+    channel:
+      $ref: "#/channels/websocket"
+    messages:
+      - $ref: "#/channels/websocket/messages/scheduleXPathGeneration"
+    reply:
+      channel:
+        $ref: "#/channels/websocket"
+      messages:
+        - $ref: "#/channels/websocket/messages/XPathGenerationResult"
+        - $ref: "#/channels/websocket/messages/XPathGenerationError"
+        - $ref: "#/channels/websocket/messages/BadMessageError"
+  scheduleCSSSelectorsGeneration:
+    action: "receive"
+    channel:
+      $ref: "#/channels/websocket"
+    messages:
+      - $ref: "#/channels/websocket/messages/scheduleCSSSelectorsGeneration"
+    reply:
+      channel:
+        $ref: "#/channels/websocket"
+      messages:
+        - $ref: "#/channels/websocket/messages/CSSSelectorGenerationResult"
+        - $ref: "#/channels/websocket/messages/CSSSelectorGenerationError"
+        - $ref: "#/channels/websocket/messages/BadMessageError"
+  Ping:
+    action: "receive"
+    channel:
+      $ref: "#/channels/websocket"
+    messages:
+      - $ref: "#/channels/websocket/messages/Ping"
+    reply:
+      channel:
+        $ref: "#/channels/websocket"
+      messages:
+        - $ref: "#/channels/websocket/messages/Pong"
+        - $ref: "#/channels/websocket/messages/BadMessageError"
+components:
+  messages:
+    scheduleXPathGeneration:
+      title: Schedule XPath expression generation
+      summary: Get XPath expressions for selected elements on the page
+      description: >-
+        Request calculation of optimal XPath expressions for a set of the elements
+        on the web page with some provided limitations (i.e. one can specify that some
+        HTML attribute should not be used in resulting XPath expression because it contains
+        dynamic data).
+        
+        
+        Results are cached by elements' id in Celery. Advanced calculation may be requested
+        to bypass cache.
+        
+        
+        Calculation is performed using Robula algorithm.
+      payload:
+        $ref: "#/components/schemas/scheduleXPathGeneration"
+    XPathGenerationResult:
+      title: XPath expression calculation result
+      summary: Optimal XPath expression for an element
+      description: >-
+        Output of Robula algorithm for an element under given limitations
+        which were set in a request message.
+      payload:
+        $ref: "#/components/schemas/XPathGenerationResult"
+    XPathGenerationError:
+      title: Error occurred during XPath expression generation
+      description: >-
+        In general application tries to do it's best to provide some result even in cases
+        when Robula fails to generate locator. Most likely one could see this error when
+        element for which they asked to generate XPath expression isn't present on the web page
+        (there is no element with matching `jdn-hash` attribute value).
+      payload:
+        $ref: "#/components/schemas/XPathGenerationError"
+    scheduleCSSSelectorsGeneration:
+      title: Schedule CSS selectors generation
+      summary: Get CSS selectors for selected elements on the page
+      description: >-
+        Request calculation of optimal CSS locators for a set of the elements on the web page.
+      payload:
+        $ref: "#/components/schemas/scheduleCSSSelectorsGeneration"
+    CSSSelectorGenerationResult:
+      title: Generated CSS selector
+      summary: Best found unique CSS selector for an element
+      description: >-
+        Results are returned using an array although array contains only one element.
+        It's done for compatibility with the old API where several elements could be returned
+        in one result message.
+        
+        
+        Resulting selector could be empty in case underlying libraries failed to find it.
+        
+        
+        Results are cached by elements' id for one day (24 hours). Currently there is no other
+        way to bypass the cache and force recalculation apart from changing element id.
+      payload:
+        $ref: "#/components/schemas/CSSSelectorGenerationResult"
+    CSSSelectorGenerationError:
+      title: Internal server error during CSS selector generation
+      summary: Info on elements for which CSS selector generation failed
+      description: >-
+        This message is returned if there was an unhandled exception during CSS selector generation.
+      payload:
+        $ref: "#/components/schemas/CSSSelectorGenerationError"
+    BadMessageError:
+      title: Malformed message received
+      summary: Double-check the request message for missing fields
+      payload:
+        $ref: "#/components/schemas/BadMessageError"
+    Ping:
+      title: Ping server
+      summary: Check if application is still alive
+      description: >-
+        Could be useful for checking application during long-running XPath calculation.
+      payload:
+        $ref: "#/components/schemas/Ping"
+    Pong:
+      title: Response to ping message
+      summary: Indication that the application is indeed alive
+      payload:
+        $ref: "#/components/schemas/Pong"
+  schemas:
+    document:
+      type: string
+      description: >-
+        HTML document to be used in calculations.
+        
+        
+        Every element should have `jdn-hash` attribute, which value must be unique
+        across the document and should be unique across documents.
+      example: "<html lang=\"en\" jdn-hash=\"111111\">\
+        <body id=\"body\" jdn-hash=\"222222\">\
+        <h1 jdn-hash=\"333333\">Hello</h1>\
+        </body></html>"
+    robulaSettings:
+      type: object
+      description: >-
+        Configuration and some limitations for Robula algorithm.
+      properties:
+        maximum_generation_time:
+          type: integer
+          default: null
+          description: >-
+            Maximum amount of seconds which should be spent to find XPath expression for one element.
+            No limits are applied if the value is `null`.
+          example: 10
+        allow_indexes_at_the_beginning:
+          type: boolean
+          default: false
+          description: >-
+            Whether to allow resulting XPath expression to contain indexes at the beginning of expression
+            (e.g. `//div[1]/p`).
+        allow_indexes_in_the_middle:
+          type: boolean
+          default: true
+          description: >-
+            Whether to allow resulting XPath expression to contain indexes in the middle of expression
+            (e.g. `//div[@class='flex']/div[2]/p`).
+        allow_indexes_at_the_end:
+          type: boolean
+          default: true
+          description: >-
+            Whether to allow resulting XPath expression to contain indexes at the end of expression
+            (e.g. `//div/div/p[2]`).
+        advanced_calculation:
+          type: boolean
+          default: false
+          description: >-
+            Ignore cached results and force recalculation.
+        ignored_attributes:
+          type: array
+          default: null
+          items:
+            type: string
+          description: >-
+            Specify HTML attributes which must not be used in resulting XPath expression.
+            
+            
+            This can come in handy when you know that some attributes' values are dynamically generated
+            and thus can not be used to reliably locate an element on the page on subsequent page loads.
+            
+            
+            Some attributes are ignored by default, user-defined list is added to that set. Attributes ignored
+            by default:
+              - href
+              - src
+              - onclick
+              - onload
+              - tabindex
+              - width
+              - height
+              - style
+              - size
+              - maxlength
+              - jdn-hash
+              - xml:space
+              - fill
+              - xmlns
+              - data-label
+          example: ["tracking-id", "class"]
+    loggingInfo:
+      type: object
+      description:
+        Information for application usage analytics.
+      properties:
+        session_id:
+          type: integer
+          description:
+            Unique session id generated by client.
+          example: 23984729384798
+        element_library:
+          type: string
+          enum:
+            - HTML5
+            - MUI
+            - Vuetify
+          description:
+            Library chosen for page object generation.
+        page_object_creation:
+          type: string
+          description:
+            Page object name
+          example: "ExamplePage"
+        website_url:
+          type: string
+          description:
+            Full URL to the analyzed web page.
+          example: "https://example.org/"
+    elementId:
+      type: string
+      description:
+        Value of elements' `jdn-hash` attribute.
+      example: "222222"
+    elementsIds:
+      type: array
+      items:
+        $ref: "#/components/schemas/elementId"
+      examples:
+        - ["111111", "222222", "333333"]
+        - ["222222"]
+    CSSSelectorsGenerationTaskId:
+      type: string
+      example: "css-selectors-gen-73de49b0-2b1b-4bf0-a3a1-23f546e8f765"
+    celeryTaskStatus:
+      type: string
+      enum:
+        - PENDING
+        - RECEIVED
+        - STARTED
+        - SUCCESS
+        - FAILURE
+        - REVOKED
+        - REJECTED
+        - RETRY
+        - IGNORED
+      description:
+        Task status in Celery.
+    scheduleXPathGeneration:
+      type: object
+      properties:
+        action:
+          type: string
+          const: "schedule_multiple_xpath_generations"
+        payload:
+          type: object
+          properties:
+            document:
+              $ref: "#/components/schemas/document"
+            config:
+              $ref: "#/components/schemas/robulaSettings"
+            id:
+              $ref: "#/components/schemas/elementsIds"
+        logging_info:
+          $ref: "#/components/schemas/loggingInfo"
+    XPathGenerationResult:
+      type: object
+      properties:
+        action:
+          type: string
+          const: "result_ready"
+        payload:
+          type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/elementId"
+            result:
+              type: string
+              description:
+                XPath expression for the element.
+              example: "//*[contains(text(), 'Imprint')]"
+    XPathGenerationError:
+      type: object
+      properties:
+        action:
+          type: string
+          const: "status_changed"
+        error_message:
+          type: string
+          description:
+            Brief description of what gone wrong with the generation.
+          example: "Document does not contain given element!"
+        payload:
+          type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/elementId"
+            status:
+              $ref: "#/components/schemas/celeryTaskStatus"
+    scheduleCSSSelectorsGeneration:
+      type: object
+      properties:
+        action:
+          type: string
+          const: "schedule_css_selectors_generation"
+        payload:
+          type: object
+          properties:
+            document:
+              $ref: "#/components/schemas/document"
+            id:
+              $ref: "#/components/schemas/elementsIds"
+    CSSSelectorGenerationResult:
+      type: object
+      properties:
+        action:
+          type: string
+          const: "result_ready"
+        payload:
+          type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/CSSSelectorsGenerationTaskId"
+            result:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    $ref: "#/components/schemas/elementId"
+                  result:
+                    type: string
+                    description:
+                      CSS selector for the element.
+                    example: "div:nth-child(4) > .mt-2"
+    CSSSelectorGenerationError:
+      type: object
+      properties:
+        action:
+          type: string
+          const: "status_changed"
+        error_message:
+          type: string
+          const: "Error generating CSS selectors"
+        payload:
+          type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/CSSSelectorsGenerationTaskId"
+            status:
+              $ref: "#/components/schemas/celeryTaskStatus"
+            elements_ids:
+              $ref: "#/components/schemas/elementsIds"
+    BadMessageError:
+      type: object
+      properties:
+        error:
+          type: string
+          const: "Invalid message format."
+    Ping:
+      type: object
+      properties:
+        action:
+          type: string
+          const: "ping"
+        payload:
+          description: >-
+            Data you would like to see in the response to this ping message.
+            Could be used to associate responses with requests.
+      examples:
+        - action: ping
+          payload: "ping 1"
+        - action: ping
+          payload: 23490238
+    Pong:
+      type: object
+      properties:
+        pong:
+          description:
+            Payload from _ping_ message.
+      examples:
+        - pong: "ping 1"
+        - pong: 23490238

@@ -13,6 +13,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi import status as status
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import HttpUrl
 
@@ -28,7 +29,7 @@ from app import (
 )
 from app.logger import logger
 from app.models import (
-    PredictionInputModel,
+    PredictionRequest,
     PredictionResponseModel,
     ReportMail,
     SystemInfoModel,
@@ -48,6 +49,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 api = FastAPI()
 api.include_router(robula_api.router)
 api.include_router(websocket_api.router)
+api.mount("/wsdocs", StaticFiles(directory="wsdocs"))
 templates = Jinja2Templates(directory="templates")
 
 
@@ -93,26 +95,39 @@ async def get_file(path: str) -> FileResponse:
 
 
 @api.post("/mui-predict", response_model=PredictionResponseModel)
-async def mui_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
+async def mui_predict(prediction_request: PredictionRequest) -> JSONResponse:
     """HTML elements prediction based on received JSON. MUI model."""
-    body = await request.body()
-    return JSONResponse(await mui_predict_elements(body))
+    return JSONResponse(
+        await mui_predict_elements(
+            prediction_request.document,
+            prediction_request.elements,
+            prediction_request.viewport,
+        )
+    )
 
 
 @api.post("/angular-predict", response_model=PredictionResponseModel)
-async def angular_predict(
-    request: Request, input: PredictionInputModel
-) -> JSONResponse:
+async def angular_predict(prediction_request: PredictionRequest) -> JSONResponse:
     """HTML elements prediction based on received JSON. Angular model."""
-    body = await request.body()
-    return JSONResponse(await angular_predict_elements(body))
+    return JSONResponse(
+        await angular_predict_elements(
+            prediction_request.document,
+            prediction_request.elements,
+            prediction_request.viewport,
+        )
+    )
 
 
 @api.post("/html5-predict", response_model=PredictionResponseModel)
-async def html5_predict(request: Request, input: PredictionInputModel) -> JSONResponse:
+async def html5_predict(prediction_request: PredictionRequest) -> JSONResponse:
     """HTML elements prediction based on received JSON. HTML5 model."""
-    body = await request.body()
-    return JSONResponse(await html5_predict_elements(body))
+    return JSONResponse(
+        await html5_predict_elements(
+            prediction_request.document,
+            prediction_request.elements,
+            prediction_request.viewport,
+        )
+    )
 
 
 @api.get("/cpu-count")

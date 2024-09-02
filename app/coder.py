@@ -3,6 +3,7 @@ from io import BytesIO
 from fastapi.responses import StreamingResponse
 from fastapi_cache.coder import Coder
 
+
 class StreamingResponseCoder(Coder):
     @classmethod
     async def encode(cls, value: StreamingResponse) -> bytes:
@@ -35,3 +36,4 @@ class StreamingResponseCoder(Coder):
         headers = data["headers"]
         status_code = data["status_code"]
         return StreamingResponse(content=content, headers=headers, status_code=status_code)
+    
